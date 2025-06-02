@@ -60,5 +60,6 @@ describe('TodoItem', () => {
     await user.type(input, ' updated{Enter}')
     expect(handlers.onEdit).toHaveBeenCalledWith(todo.id, 'Test Todo updated')
   })
+
 })
 
