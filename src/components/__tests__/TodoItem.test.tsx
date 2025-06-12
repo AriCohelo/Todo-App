@@ -9,12 +9,8 @@ describe('TodoItem', () => {
   
   const todo: Todo = {
     id: '1',
-    userId: '1',
     task: 'Test Todo',
     completed: false,
-    priority: 'high',
-    createdAt: new Date(),
-    updatedAt: new Date(),  
   }
 
   const handlers = {
@@ -39,12 +35,6 @@ describe('TodoItem', () => {
 
     it('renders delete button', () => {
       expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument()
-    })
-
-    it('renders metadata', () => {
-      expect(screen.getByText(/Created:/)).toBeInTheDocument()
-      expect(screen.getByText(/Updated:/)).toBeInTheDocument()
-      expect(screen.getByText(`Priority: ${todo.priority}`)).toBeInTheDocument()
     })
   })
 

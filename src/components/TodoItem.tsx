@@ -11,6 +11,10 @@ export const TodoItem = ({ todo, onDelete, onToggle, onEdit }: TodoItemProps) =>
     }
   }
 
+  const handleBlur = () => {
+    onEdit(todo.id, inputValue)
+  }
+
   return (
     <div>
       <input 
@@ -23,12 +27,9 @@ export const TodoItem = ({ todo, onDelete, onToggle, onEdit }: TodoItemProps) =>
         value={inputValue}
         onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
         onKeyDown={handleEnterKey}
+        onBlur={handleBlur}
+        placeholder="add task"
       />
-      <div>
-        <p>Created: {todo.createdAt.toLocaleString()}</p>
-        <p>Updated: {todo.updatedAt.toLocaleString()}</p>
-        <p>Priority: {todo.priority}</p>
-      </div>
       <button onClick={() => onDelete(todo.id)}>Delete</button>
     </div>
   )

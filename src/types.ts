@@ -1,12 +1,16 @@
 // Todo related types
 export interface Todo {
   id: string;
-  userId: string;
   task: string;
   completed: boolean;
   category?: string;
+}
+
+export interface TodoList {
+  id: string;
+  title: string;
+  todos: Todo[];
   priority: 'high' | 'medium' | 'low';
-  dueDate?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,6 +20,11 @@ export interface TodoItemProps {
   onDelete: (id: string) => void;
   onToggle: (id: string) => void;
   onEdit: (id: string, newTask: string) => void;
+}
+
+export interface TodoListProps {
+  todoList: TodoList;
+  onUpdateList: (updatedList: TodoList) => void;
 }
 
 // User related types
