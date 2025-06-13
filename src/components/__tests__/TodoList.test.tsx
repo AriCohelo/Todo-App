@@ -31,7 +31,7 @@ describe('TodoList', () => {
     })
   })
 
-  describe('todo interactions', () => {
+  describe("TodoList integration scenarios", () => {
     it('updates todo text when editing', async () => {
       const todoInput = screen.getByPlaceholderText(/add task/i)
       await user.type(todoInput, 'Buy milk')

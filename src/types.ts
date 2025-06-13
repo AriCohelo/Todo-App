@@ -20,18 +20,11 @@ export interface TodoItemProps {
   onDelete: (id: string) => void;
   onToggle: (id: string) => void;
   onEdit: (id: string, newTask: string) => void;
+  onClick?: () => void;
 }
 
 export interface TodoListProps {
-  todoList: TodoList;
-  onUpdateList: (updatedList: TodoList) => void;
+  onSave?: (todoListData: TodoList) => void;
+  initialData?: TodoList;
+  readOnly?: boolean;
 }
-
-// User related types
-export interface User {
-  id: string;
-  email: string;
-  displayName: string;
-  createdAt: Date;
-  updatedAt: Date;
-} 

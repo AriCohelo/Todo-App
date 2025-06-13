@@ -2,7 +2,7 @@ import type { TodoItemProps } from '../types'
 import type { KeyboardEvent, ChangeEvent } from 'react'
 import { useState } from 'react'
 
-export const TodoItem = ({ todo, onDelete, onToggle, onEdit }: TodoItemProps) => {
+export const TodoItem = ({ todo, onDelete, onToggle, onEdit, onClick }: TodoItemProps) => {
   const [inputValue, setInputValue] = useState(todo.task)
 
   const handleEnterKey = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -13,6 +13,12 @@ export const TodoItem = ({ todo, onDelete, onToggle, onEdit }: TodoItemProps) =>
 
   const handleBlur = () => {
     onEdit(todo.id, inputValue)
+  }
+
+  const handleInputClick = () => {
+    if (onClick) {
+      onClick()
+    }
   }
 
   return (
@@ -28,6 +34,7 @@ export const TodoItem = ({ todo, onDelete, onToggle, onEdit }: TodoItemProps) =>
         onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
         onKeyDown={handleEnterKey}
         onBlur={handleBlur}
+        onClick={handleInputClick}
         placeholder="add task"
       />
       <button onClick={() => onDelete(todo.id)}>Delete</button>
