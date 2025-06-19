@@ -29,21 +29,13 @@ export const TodoTrigger = () => {
     }, [isModalOpen])
 
     return (
-        <div data-testid="todo-trigger" className="flex flex-col items-center  min-h-screen bg-indigo-50">
+        <div data-testid="todo-trigger" className="flex flex-col items-center  bg-zinc-700">
             <input 
-                placeholder="title" 
-                className="mb-4 p-3 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-indigo-900"
+                placeholder="take a note..." 
+                className="mb-4 p-3 border border-stone-300 rounded-lg focus:ring-2 outline-none text-stone-300"
                 onClick={handleOpenModal}
             />
-            <ul>
-                <li>
-                    <input 
-                        placeholder="add task" 
-                        className="p-3 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-indigo-900"
-                        onClick={handleOpenModal}
-                    />
-                </li>
-            </ul>
+           
             
             {isModalOpen && (
                 <div 

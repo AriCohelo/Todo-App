@@ -14,38 +14,35 @@ describe('TodoTrigger', () => {
 
   it('renders title field and content field within the trigger container', () => {
     // Should render title input field within the container
-    expect(within(triggerContainer).getByPlaceholderText(/title/i)).toBeInTheDocument()
+    expect(within(triggerContainer).getByPlaceholderText(/take a note/i)).toBeInTheDocument()
     
-    // Should render content area with at least one empty todo item within the container
-    expect(within(triggerContainer).getByPlaceholderText(/add task/i)).toBeInTheDocument()
-    
-    // Should render the list container within the trigger
-    expect(within(triggerContainer).getByRole('list')).toBeInTheDocument()
-    expect(within(triggerContainer).getAllByRole('listitem')).toHaveLength(1)
+  })
+  
+describe ('modal rendering', ()=>{
+  it('initially modal should not be present inside trigger', () => {
+    expect(within(triggerContainer).queryByTestId('todo-modal')).not.toBeInTheDocument()
+  })
+  it('modal should be present inside trigger when title input is clicked', async () => {
+    const titleInput = within(triggerContainer).getByPlaceholderText(/take a note/i)
+    await user.click(titleInput)
+    expect(within(triggerContainer).getByTestId('todo-modal')).toBeInTheDocument()
   })
 
+})
   describe('modal interactions', () => {
-    it('initially modal should not be present inside trigger', () => {
-      expect(within(triggerContainer).queryByTestId('todo-modal')).not.toBeInTheDocument()
-    })
 
     it('opens modal inside trigger when title input is clicked', async () => {
-      const titleInput = within(triggerContainer).getByPlaceholderText(/title/i)
+      const titleInput = within(triggerContainer).getByPlaceholderText(/take a note/i)
       await user.click(titleInput)
       
       expect(within(triggerContainer).getByTestId('todo-modal')).toBeInTheDocument()
     })
 
-    it('opens modal inside trigger when todo input is clicked', async () => {
-      const todoInput = within(triggerContainer).getByPlaceholderText(/add task/i)
-      await user.click(todoInput)
-      
-      expect(within(triggerContainer).getByTestId('todo-modal')).toBeInTheDocument()
-    })
+  
 
     it('closes modal inside trigger when ESC key is pressed', async () => {
       // First open the modal
-      const titleInput = within(triggerContainer).getByPlaceholderText(/title/i)
+      const titleInput = within(triggerContainer).getByPlaceholderText(/take a note/i)
       await user.click(titleInput)
       expect(within(triggerContainer).getByTestId('todo-modal')).toBeInTheDocument()
       
@@ -56,7 +53,7 @@ describe('TodoTrigger', () => {
 
     it('closes modal inside trigger when backdrop is clicked', async () => {
       // First open the modal
-      const titleInput = within(triggerContainer).getByPlaceholderText(/title/i)
+      const titleInput = within(triggerContainer).getByPlaceholderText(/take a note/i)
       await user.click(titleInput)
       expect(within(triggerContainer).getByTestId('todo-modal')).toBeInTheDocument()
       
