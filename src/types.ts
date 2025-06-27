@@ -11,7 +11,7 @@ export interface TodoItemProps {
   onEdit: (id: string, newTask: string) => void;
 }
 
-export interface TodoCard {
+export interface TodoCardData {
   id: string;
   title: string;
   todos: Todo[];
@@ -20,7 +20,14 @@ export interface TodoCard {
 }
 
 export interface TodoCardProps {
-  initialData?: TodoCard;
-  onSave?: (todoCardData: TodoCard) => void;
+  initialData?: TodoCardData;
+  onSave: (cardId: string) => void;
   onDelete: (cardId: string) => void;
+  onAddTodo: (cardId: string) => void;
+}
+export interface TodoBoardProps {
+  todoCards: TodoCardData[];
+  onSaveCard: (cardId: string) => void;
+  onDeleteCard: (cardId: string) => void;
+  onAddTodo: (cardId: string) => void;
 }

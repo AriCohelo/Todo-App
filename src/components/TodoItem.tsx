@@ -1,43 +1,43 @@
-import type { TodoItemProps } from '../types'
-import type { KeyboardEvent, ChangeEvent } from 'react'
-import { useState } from 'react'
+import type { TodoItemProps } from '../types';
+import type { KeyboardEvent, ChangeEvent } from 'react';
+import { useState } from 'react';
 
-export const TodoItem = ({ todo, onDelete, onToggle, onEdit, onClick }: TodoItemProps) => {
-  const [inputValue, setInputValue] = useState(todo.task)
+export const TodoItem = ({
+  todo,
+  onDelete,
+  onToggle,
+  onEdit,
+}: TodoItemProps) => {
+  const [TodoValue, setTodoValue] = useState(todo.task);
 
   const handleEnterKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      onEdit(todo.id, inputValue)
+      onEdit(todo.id, TodoValue);
     }
-  }
+  };
 
   const handleBlur = () => {
-    onEdit(todo.id, inputValue)
-  }
-
-  const handleInputClick = () => {
-    if (onClick) {
-      onClick()
-    }
-  }
+    onEdit(todo.id, TodoValue);
+  };
 
   return (
     <div>
-      <input 
-        type="checkbox" 
-        checked={todo.completed} 
-        onChange={() => onToggle(todo.id)} 
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={() => onToggle(todo.id)}
       />
       <input
         type="text"
-        value={inputValue}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
+        value={TodoValue}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          setTodoValue(e.target.value)
+        }
         onKeyDown={handleEnterKey}
         onBlur={handleBlur}
-        onClick={handleInputClick}
         placeholder="add task"
       />
       <button onClick={() => onDelete(todo.id)}>Delete</button>
     </div>
-  )
-}
+  );
+};
