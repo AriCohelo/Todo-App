@@ -21,13 +21,18 @@ export interface TodoCardData {
 
 export interface TodoCardProps {
   initialData?: TodoCardData;
-  onSave: (cardId: string) => void;
+  onSave: (cardData: TodoCardData) => void;
   onDelete: (cardId: string) => void;
   onAddTodo: (cardId: string) => void;
 }
+
 export interface TodoBoardProps {
   todoCards: TodoCardData[];
-  onSaveCard: (cardId: string) => void;
+  onSaveCard: (cardData: TodoCardData) => void;
   onDeleteCard: (cardId: string) => void;
   onAddTodo: (cardId: string) => void;
+}
+
+export interface TodoTriggerProps {
+  onCreateCard: (cardData: TodoCardData) => void;
 }

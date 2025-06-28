@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { TodoCard } from './TodoCard';
-export const TodoTrigger = () => {
+import type { TodoTriggerProps } from '../types';
+
+export const TodoTrigger = ({ onCreateCard }: TodoTriggerProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {

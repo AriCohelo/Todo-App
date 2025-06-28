@@ -18,8 +18,8 @@ export const TodoCard = ({
               key={todo.id}
               todo={todo}
               onDelete={() => {}}
-              onToggle={() => {}}
               onEdit={() => {}}
+              onToggle={() => {}}
             />
           ))
         ) : (
