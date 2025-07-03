@@ -76,6 +76,27 @@ describe('TodoCard', () => {
       expect(screen.getByDisplayValue('First todo')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Second todo')).toBeInTheDocument();
     });
+
+    it('populates title field with initial data title', () => {
+      const sampleData: TodoCardData = {
+        id: '1',
+        title: 'Initial Title',
+        todos: [{ id: '1', task: 'Sample todo', completed: false }],
+        priority: 'high',
+        updatedAt: new Date(),
+      };
+
+      render(
+        <TodoCard
+          initialData={sampleData}
+          onSave={() => {}}
+          onDelete={() => {}}
+          onAddTodo={() => {}}
+        />
+      );
+
+      expect(screen.getByDisplayValue('Initial Title')).toBeInTheDocument();
+    });
   });
 
   describe('interactions', () => {
@@ -88,7 +109,22 @@ describe('TodoCard', () => {
         <TodoCard onSave={onSave} onDelete={() => {}} onAddTodo={() => {}} />
       );
       await user.click(screen.getByRole('button', { name: 'Save' }));
-      expect(onSave).toHaveBeenCalledWith('');
+
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: expect.any(String),
+          title: '',
+          todos: expect.arrayContaining([
+            expect.objectContaining({
+              id: expect.any(String),
+              task: '',
+              completed: false,
+            }),
+          ]),
+          priority: 'medium',
+          updatedAt: expect.any(Date),
+        })
+      );
     });
 
     it('calls onDelete when Delete button is clicked', async () => {
@@ -110,6 +146,32 @@ describe('TodoCard', () => {
       );
       await user.click(screen.getByRole('button', { name: '+' }));
       expect(onAddTodo).toHaveBeenCalledWith('');
+    });
+
+    it('updates title state when typing in title field', async () => {
+      render(
+        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
+      );
+
+      const titleInput = screen.getByPlaceholderText(/enter a title/i);
+      await user.type(titleInput, 'My New Title');
+
+      expect(titleInput).toHaveValue('My New Title');
+    });
+
+    it('updates todo task when editing within the card', async () => {
+      const user = userEvent.setup();
+      render(
+        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
+      );
+
+      // Get the todo input more specifically by finding it within the todo list container
+      const todoContainer = screen.getByTestId('todo-list-container');
+      const todoInput = within(todoContainer).getByDisplayValue('');
+
+      await user.type(todoInput, 'Updated task');
+
+      expect(todoInput).toHaveValue('Updated task');
     });
   });
 });

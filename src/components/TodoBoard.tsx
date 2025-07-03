@@ -8,8 +8,7 @@ export const TodoBoard = ({
   onAddTodo,
 }: TodoBoardProps) => {
   return (
-    <div>
-      <h1>Todo Board</h1>
+    <div data-testid="todoBoard">
       {todoCards.map((card) => (
         <TodoCard
           key={card.id}

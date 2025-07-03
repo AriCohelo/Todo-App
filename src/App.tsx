@@ -6,25 +6,14 @@ import type { TodoCardData } from './types';
 function App() {
   const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);
 
-  const onToggle = (cardId: string, todoId: string) => {
-    setTodoCards((prev) =>
-      prev.map((card) =>
-        card.id === cardId
-          ? {
-              ...card,
-              todos: card.todos.map((todo) =>
-                todo.id === todoId
-                  ? { ...todo, completed: !todo.completed }
-                  : todo
-              ),
-            }
-          : card
-      )
-    );
-  };
-
   const onCreateCard = (cardData: TodoCardData) => {
     setTodoCards((prev) => [...prev, cardData]);
+  };
+
+  const onSaveCard = (updatedCard: TodoCardData) => {
+    setTodoCards((prev) =>
+      prev.map((card) => (card.id === updatedCard.id ? updatedCard : card))
+    );
   };
 
   return (
@@ -35,10 +24,9 @@ function App() {
       <TodoTrigger onCreateCard={onCreateCard} />
       <TodoBoard
         todoCards={todoCards}
-        onSaveCard={() => {}}
+        onSaveCard={onSaveCard}
         onDeleteCard={() => {}}
         onAddTodo={() => {}}
-        onToggle={onToggle}
       />
     </div>
   );

@@ -12,11 +12,6 @@ describe('TodoBoard', () => {
   };
 
   describe('rendering', () => {
-    it('renders Todo Board title', () => {
-      render(<TodoBoard todoCards={[]} {...mockHandlers} />);
-      expect(screen.getByText('Todo Board')).toBeInTheDocument();
-    });
-
     it('renders no TodoCards when todoCards array is empty', () => {
       render(<TodoBoard todoCards={[]} {...mockHandlers} />);
       expect(
@@ -73,7 +68,15 @@ describe('TodoBoard', () => {
       );
 
       await user.click(screen.getByRole('button', { name: 'Save' }));
-      expect(onSaveCard).toHaveBeenCalledWith('1');
+      expect(onSaveCard).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: '1',
+          title: 'Test Card',
+          todos: [],
+          priority: 'medium',
+          updatedAt: expect.any(Date),
+        })
+      );
     });
 
     it('calls onDeleteCard when TodoCard Delete button is clicked', async () => {

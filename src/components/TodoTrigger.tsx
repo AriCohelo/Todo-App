@@ -52,7 +52,7 @@ export const TodoTrigger = ({ onCreateCard }: TodoTriggerProps) => {
             onClick={(e) => e.stopPropagation()}
           >
             <TodoCard
-              onSave={() => {}}
+              onSave={onCreateCard}
               onDelete={() => {}}
               onAddTodo={() => {}}
             />

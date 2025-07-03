@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { TodoItem } from './TodoItem';
-import type { TodoCardProps } from '../types';
+import type { TodoCardProps, TodoCardData } from '../types';
 
 export const TodoCard = ({
   initialData,
@@ -7,33 +8,49 @@ export const TodoCard = ({
   onDelete,
   onAddTodo,
 }: TodoCardProps) => {
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [todos, setTodos] = useState(
+    initialData?.todos || [
+      { id: crypto.randomUUID(), task: '', completed: false },
+    ]
+  );
+
+  const handleSave = () => {
+    const cardData: TodoCardData = {
+      id: initialData?.id || crypto.randomUUID(),
+      title: title, // Use the form input value
+      todos: todos,
+      priority: initialData?.priority || 'medium',
+      updatedAt: new Date(),
+    };
+    onSave(cardData); // Pass the complete object
+  };
   return (
     <div>
-      <input type="text" placeholder="Enter a title" />
-
+      <input
+        type="text"
+        placeholder="Enter a title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
       <div data-testid="todo-list-container">
-        {initialData?.todos.length ? (
-          initialData.todos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onDelete={() => {}}
-              onEdit={() => {}}
-              onToggle={() => {}}
-            />
-          ))
-        ) : (
+        {todos.map((todo) => (
           <TodoItem
-            todo={{ id: '', task: '', completed: false }}
+            key={todo.id}
+            todo={todo}
             onDelete={() => {}}
+            onEdit={(todoId, newTask) => {
+              setTodos((prev) =>
+                prev.map((t) => (t.id === todoId ? { ...t, task: newTask } : t))
+              );
+            }}
             onToggle={() => {}}
-            onEdit={() => {}}
           />
-        )}
+        ))}
       </div>
       <button onClick={() => onAddTodo(initialData?.id || '')}>+</button>
       <div role="toolbar">
-        <button onClick={() => onSave(initialData?.id || '')}>Save</button>
+        <button onClick={handleSave}>Save</button>
         <button onClick={() => onDelete(initialData?.id || '')}>Delete</button>
       </div>
     </div>
