@@ -32,18 +32,19 @@ export const TodoTrigger = ({ onCreateCard }: TodoTriggerProps) => {
 
   return (
     <div
-      data-testid="todo-trigger"
+      data-testid="todoTrigger"
       className="flex flex-col items-center  bg-zinc-700"
     >
       <input
         placeholder="take a note..."
         className="mb-4 p-3 border border-stone-300 rounded-lg focus:ring-2 outline-none text-stone-300"
+        data-testid="todoTrigger-input"
         onClick={handleOpenModal}
       />
 
       {isModalOpen && (
         <div
-          data-testid="todo-modal"
+          data-testid="todoTrigger-modal"
           className="fixed inset-0 bg-indigo-900/30 flex items-center justify-center"
           onClick={handleCloseModal}
         >

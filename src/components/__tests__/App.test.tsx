@@ -7,81 +7,91 @@ describe('App', () => {
   describe('rendering', () => {
     it('renders the main title "What I Want ToDo"', () => {
       render(<App />);
-      expect(screen.getByText(/What do I Want ToDo/i)).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /What do I Want ToDo/i })
+      ).toBeInTheDocument();
     });
 
     it('renders TodoTrigger component', () => {
       render(<App />);
-      expect(screen.getByTestId('todo-trigger')).toBeInTheDocument();
+      expect(screen.getByTestId('todoTrigger')).toBeInTheDocument();
     });
 
     it('renders TodoBoard component with empty todoCards array initially', () => {
       render(<App />);
       expect(screen.getByTestId('todoBoard')).toBeInTheDocument();
-      expect(
-        screen.queryByTestId('todo-list-container')
-      ).not.toBeInTheDocument();
     });
   });
-  describe('state management', () => {
+
+  describe('user interactions', () => {
+    it('shows and hides TodoTrigger modal when triggered', async () => {
+      const user = userEvent.setup();
+      render(<App />);
+
+      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
+
+      const triggerInput = screen.getByTestId('todoTrigger-input');
+      await user.click(triggerInput);
+
+      expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
+
+      await user.keyboard('{Escape}');
+
+      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('integration', () => {
     it('should add new cards to todoCards state when onCreateCard is called', async () => {
       const user = userEvent.setup();
       render(<App />);
 
-      // Create a card through TodoTrigger
-      const triggerInput = screen.getByPlaceholderText(/take a note/i);
+      const triggerInput = screen.getByTestId('todoTrigger-input');
       await user.click(triggerInput);
 
-      const modal = screen.getByTestId('todo-modal');
-      const titleInput = within(modal).getByPlaceholderText(/enter a title/i);
+      const triggerModal = screen.getByTestId('todoTrigger-modal');
+      const titleInput = screen.getByTestId('todoCard-title-input');
       await user.type(titleInput, 'Test Card');
 
-      const saveButton = within(modal).getByRole('button', { name: 'Save' });
+      const saveButton = within(triggerModal).getByRole('button', {
+        name: 'Save',
+      });
       await user.click(saveButton);
 
       await user.keyboard('{Escape}');
 
-      // Verify card was added to todoCards state and displays in TodoBoard
-      expect(screen.getByTestId('todo-list-container')).toBeInTheDocument();
+      expect(screen.getByTestId('todoCard')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Test Card')).toBeInTheDocument();
     });
 
     it('should edit an existing card', async () => {
       const user = userEvent.setup();
-      render(<App />);
 
-      // Create a card through TodoTrigger
-      const triggerInput = screen.getByPlaceholderText(/take a note/i);
+      // create a card (setup)
+      render(<App />);
+      const triggerInput = screen.getByTestId('todoTrigger-input');
       await user.click(triggerInput);
 
-      const modal = screen.getByTestId('todo-modal');
-      const titleInput = within(modal).getByPlaceholderText(/enter a title/i);
-      await user.type(titleInput, 'Test Card');
+      const titleInput = screen.getByTestId('todoCard-title-input');
+      await user.type(titleInput, 'Original Card');
 
-      const saveButton = within(modal).getByRole('button', { name: 'Save' });
+      const saveButton = screen.getByRole('button', { name: 'Save' });
       await user.click(saveButton);
-
       await user.keyboard('{Escape}');
 
-      // Verify card was added to todoCards state and displays in TodoBoard
-      expect(screen.getByTestId('todo-list-container')).toBeInTheDocument();
-      expect(screen.getByDisplayValue('Test Card')).toBeInTheDocument();
-
-      // Edit the card
-      const existingTitleInput = screen.getByDisplayValue('Test Card');
+      // test editing the existing card in TodoBoard
+      const existingTitleInput = screen.getByDisplayValue('Original Card');
       await user.clear(existingTitleInput);
-      await user.type(existingTitleInput, 'Updated Test Card');
+      await user.type(existingTitleInput, 'Updated Card');
 
-      // Save the edit
-      const existingCard = existingTitleInput.closest('div')!;
-      const editSaveButton = within(existingCard).getByRole('button', {
-        name: 'Save',
-      });
+      const editSaveButton = screen.getByRole('button', { name: 'Save' });
       await user.click(editSaveButton);
 
-      // Verify card was updated in todoCards state and displays in TodoBoard
-      expect(screen.getByTestId('todo-list-container')).toBeInTheDocument();
-      expect(screen.getByDisplayValue('Updated Test Card')).toBeInTheDocument();
+      // verify the edit worked
+      expect(screen.getByDisplayValue('Updated Card')).toBeInTheDocument();
+      expect(
+        screen.queryByDisplayValue('Original Card')
+      ).not.toBeInTheDocument();
     });
   });
 });

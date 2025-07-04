@@ -26,14 +26,15 @@ export const TodoCard = ({
     onSave(cardData); // Pass the complete object
   };
   return (
-    <div>
+    <div data-testid="todoCard">
       <input
         type="text"
         placeholder="Enter a title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        data-testid="todoCard-title-input"
       />
-      <div data-testid="todo-list-container">
+      <div data-testid="todoItem-list">
         {todos.map((todo) => (
           <TodoItem
             key={todo.id}
