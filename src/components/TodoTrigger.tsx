@@ -13,6 +13,11 @@ export const TodoTrigger = ({ onCreateCard }: TodoTriggerProps) => {
     setIsModalOpen(false);
   };
 
+  const handleSave = (cardData: any) => {
+    onCreateCard(cardData);
+    handleCloseModal();
+  };
+
   // Handle ESC key to close modal
   useEffect(() => {
     const handleEscKey = (e: KeyboardEvent) => {
@@ -53,7 +58,7 @@ export const TodoTrigger = ({ onCreateCard }: TodoTriggerProps) => {
             onClick={(e) => e.stopPropagation()}
           >
             <TodoCard
-              onSave={onCreateCard}
+              onSave={handleSave}
               onDelete={() => {}}
               onAddTodo={() => {}}
             />

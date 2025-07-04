@@ -18,7 +18,7 @@ describe('TodoCard', () => {
     });
 
     it('renders a todo list container', () => {
-      const todoListContainer = screen.getByTestId('todo-list-container');
+      const todoListContainer = screen.getByTestId('todoItem-list');
       expect(todoListContainer).toBeInTheDocument();
     });
 
@@ -46,7 +46,7 @@ describe('TodoCard', () => {
     });
 
     it('renders empty TodoItem when no initialData', () => {
-      const container = screen.getByTestId('todo-list-container');
+      const container = screen.getByTestId('todoItem-list');
       const checkboxes = within(container).getAllByRole('checkbox');
       expect(checkboxes).toHaveLength(1);
       expect(checkboxes[0]).not.toBeChecked();
@@ -99,21 +99,25 @@ describe('TodoCard', () => {
     });
   });
 
-  describe('interactions', () => {
-    const user = userEvent.setup();
-
+  describe('user interactions', () => {
     it('calls onSave when Save button is clicked', async () => {
+      const user = userEvent.setup();
       const onSave = vi.fn();
 
       render(
         <TodoCard onSave={onSave} onDelete={() => {}} onAddTodo={() => {}} />
       );
+
+      // First enable the save button by interacting
+      const titleInput = screen.getByTestId('todoCard-title-input');
+      await user.type(titleInput, 'Test');
+
       await user.click(screen.getByRole('button', { name: 'Save' }));
 
       expect(onSave).toHaveBeenCalledWith(
         expect.objectContaining({
           id: expect.any(String),
-          title: '',
+          title: 'Test',
           todos: expect.arrayContaining([
             expect.objectContaining({
               id: expect.any(String),
@@ -128,6 +132,7 @@ describe('TodoCard', () => {
     });
 
     it('calls onDelete when Delete button is clicked', async () => {
+      const user = userEvent.setup();
       const onDelete = vi.fn();
 
       render(
@@ -139,6 +144,7 @@ describe('TodoCard', () => {
     });
 
     it('calls onAddTodo when + button is clicked', async () => {
+      const user = userEvent.setup();
       const onAddTodo = vi.fn();
 
       render(
@@ -149,6 +155,7 @@ describe('TodoCard', () => {
     });
 
     it('updates title state when typing in title field', async () => {
+      const user = userEvent.setup();
       render(
         <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
       );
@@ -165,13 +172,48 @@ describe('TodoCard', () => {
         <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
       );
 
-      // Get the todo input more specifically by finding it within the todo list container
-      const todoContainer = screen.getByTestId('todo-list-container');
+      const todoContainer = screen.getByTestId('todoItem-list');
       const todoInput = within(todoContainer).getByDisplayValue('');
 
       await user.type(todoInput, 'Updated task');
 
       expect(todoInput).toHaveValue('Updated task');
+    });
+
+    it('disables save button initially and enables after user interaction', async () => {
+      const user = userEvent.setup();
+      render(
+        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
+      );
+
+      const saveButton = screen.getByRole('button', { name: 'Save' });
+
+      expect(saveButton).toBeDisabled();
+
+      const titleInput = screen.getByTestId('todoCard-title-input');
+      await user.type(titleInput, 'Test');
+
+      expect(saveButton).toBeEnabled();
+
+      await user.click(saveButton);
+
+      expect(saveButton).toBeDisabled();
+    });
+
+    it('enables save button when editing todo items', async () => {
+      const user = userEvent.setup();
+      render(
+        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
+      );
+
+      const saveButton = screen.getByRole('button', { name: 'Save' });
+      expect(saveButton).toBeDisabled();
+
+      const todoContainer = screen.getByTestId('todoItem-list');
+      const todoInput = within(todoContainer).getByDisplayValue('');
+      await user.type(todoInput, 'New todo task{Enter}');
+
+      expect(saveButton).toBeEnabled();
     });
   });
 });
