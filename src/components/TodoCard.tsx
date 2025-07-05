@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TodoItem } from './TodoItem';
 import type { TodoCardProps, TodoCardData } from '../types';
 
@@ -7,6 +7,8 @@ export const TodoCard = ({
   onSave,
   onDelete,
   onAddTodo,
+  isModal = false,
+  onClose,
 }: TodoCardProps) => {
   const [title, setTitle] = useState(initialData?.title || '');
   const [todos, setTodos] = useState(
@@ -15,6 +17,15 @@ export const TodoCard = ({
     ]
   );
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  // Update internal state when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title);
+      setTodos(initialData.todos);
+      setHasUnsavedChanges(false);
+    }
+  }, [initialData]);
 
   const handleSave = () => {
     const cardData: TodoCardData = {
@@ -26,9 +37,36 @@ export const TodoCard = ({
     };
     onSave(cardData);
     setHasUnsavedChanges(false);
+    if (isModal && onClose) {
+      onClose();
+    }
   };
 
-  return (
+  const handleBackdropClick = () => {
+    if (hasUnsavedChanges) {
+      handleSave();
+    } else {
+      if (onClose) onClose();
+    }
+  };
+
+  const handleEscKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      if (onClose) onClose();
+    }
+  };
+
+  // Handle ESC key if in modal mode
+  useEffect(() => {
+    if (isModal) {
+      document.addEventListener('keydown', handleEscKey);
+      return () => {
+        document.removeEventListener('keydown', handleEscKey);
+      };
+    }
+  }, [isModal]);
+
+  const cardContent = (
     <div data-testid="todoCard">
       <input
         type="text"
@@ -64,7 +102,6 @@ export const TodoCard = ({
         ))}
       </div>
       <button
-        data-testid="todoCard-save-btn"
         onClick={() => {
           onAddTodo(initialData?.id || '');
           setHasUnsavedChanges(true);
@@ -80,4 +117,25 @@ export const TodoCard = ({
       </div>
     </div>
   );
+
+  // If in modal mode, wrap with modal backdrop
+  if (isModal) {
+    return (
+      <div
+        data-testid="todoTrigger-modal"
+        className="fixed inset-0 bg-indigo-900/30 flex items-center justify-center"
+        onClick={handleBackdropClick}
+      >
+        <div
+          className="bg-white p-6 rounded-lg shadow-lg border border-indigo-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {cardContent}
+        </div>
+      </div>
+    );
+  }
+
+  // Otherwise, return just the card content
+  return cardContent;
 };

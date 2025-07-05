@@ -1,6 +1,6 @@
 import type { TodoItemProps } from '../types';
 import type { KeyboardEvent, ChangeEvent } from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export const TodoItem = ({
   todo,
@@ -9,6 +9,11 @@ export const TodoItem = ({
   onEdit,
 }: TodoItemProps) => {
   const [TodoValue, setTodoValue] = useState(todo.task);
+
+  // Sync internal state with prop changes
+  useEffect(() => {
+    setTodoValue(todo.task);
+  }, [todo.task]);
 
   const handleEnterKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {

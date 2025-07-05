@@ -216,4 +216,70 @@ describe('TodoCard', () => {
       expect(saveButton).toBeEnabled();
     });
   });
+
+  describe('modal behavior', () => {
+    it('closes modal when ESC key is pressed', async () => {
+      const user = userEvent.setup();
+      const onClose = vi.fn();
+
+      render(
+        <TodoCard
+          isModal={true}
+          onClose={onClose}
+          onSave={() => {}}
+          onDelete={() => {}}
+          onAddTodo={() => {}}
+        />
+      );
+
+      await user.keyboard('{Escape}');
+      expect(onClose).toHaveBeenCalled();
+    });
+
+    it('closes modal when backdrop is clicked without changes', async () => {
+      const user = userEvent.setup();
+      const onClose = vi.fn();
+
+      render(
+        <TodoCard
+          isModal={true}
+          onClose={onClose}
+          onSave={() => {}}
+          onDelete={() => {}}
+          onAddTodo={() => {}}
+        />
+      );
+
+      const backdrop = screen.getByTestId('todoTrigger-modal');
+      await user.click(backdrop);
+      expect(onClose).toHaveBeenCalled();
+    });
+
+    it('saves and closes modal when backdrop is clicked with changes', async () => {
+      const user = userEvent.setup();
+      const onClose = vi.fn();
+      const onSave = vi.fn();
+
+      render(
+        <TodoCard
+          isModal={true}
+          onClose={onClose}
+          onSave={onSave}
+          onDelete={() => {}}
+          onAddTodo={() => {}}
+        />
+      );
+
+      // Make changes
+      const titleInput = screen.getByTestId('todoCard-title-input');
+      await user.type(titleInput, 'Test Title');
+
+      // Click backdrop
+      const backdrop = screen.getByTestId('todoTrigger-modal');
+      await user.click(backdrop);
+
+      expect(onSave).toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
 });

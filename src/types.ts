@@ -24,15 +24,17 @@ export interface TodoCardProps {
   onSave: (cardData: TodoCardData) => void;
   onDelete: (cardId: string) => void;
   onAddTodo: (cardId: string) => void;
+  isModal?: boolean;
+  onClose?: () => void;
 }
 
 export interface TodoBoardProps {
   todoCards: TodoCardData[];
-  onSaveCard: (cardData: TodoCardData) => void;
+  onCardClick: (card: TodoCardData) => void;
   onDeleteCard: (cardId: string) => void;
   onAddTodo: (cardId: string) => void;
 }
 
 export interface TodoTriggerProps {
-  onCreateCard: (cardData: TodoCardData) => void;
+  onOpenModal: () => void;
 }

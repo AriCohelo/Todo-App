@@ -29,43 +29,6 @@ describe('TodoTrigger', () => {
     });
   });
 
-  describe('modal interactions', () => {
-    let triggerContainer: HTMLElement;
-    let titleInput: HTMLElement;
-
-    beforeEach(() => {
-      render(<TodoTrigger onCreateCard={() => {}} />);
-      triggerContainer = screen.getByTestId('todoTrigger');
-      titleInput = screen.getByTestId('todoTrigger-input');
-    });
-
-    it('opens modal when title input is clicked', async () => {
-      await user.click(titleInput);
-      expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
-    });
-
-    it('closes modal when ESC key is pressed', async () => {
-      // Open modal
-      await user.click(titleInput);
-      expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
-
-      // Close with ESC
-      await user.keyboard('{Escape}');
-      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
-    });
-
-    it('closes modal when backdrop is clicked', async () => {
-      // Open modal
-      await user.click(titleInput);
-      expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
-
-      // Close by clicking backdrop
-      const modalBackdrop = screen.getByTestId('todoTrigger-modal');
-      await user.click(modalBackdrop);
-      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
-    });
-  });
-
   describe('card creation', () => {
     it('calls onCreateCard when Save button is clicked with updated data', async () => {
       const onCreateCard = vi.fn();

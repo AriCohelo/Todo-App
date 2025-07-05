@@ -14,9 +14,7 @@ describe('TodoBoard', () => {
   describe('rendering', () => {
     it('renders no TodoCards when todoCards array is empty', () => {
       render(<TodoBoard todoCards={[]} {...mockHandlers} />);
-      expect(
-        screen.queryByTestId('todo-list-container')
-      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId('todoItem-list')).not.toBeInTheDocument();
     });
 
     it('renders TodoCards when todoCards array has data', () => {
@@ -39,7 +37,7 @@ describe('TodoBoard', () => {
 
       render(<TodoBoard todoCards={sampleCards} {...mockHandlers} />);
 
-      expect(screen.getAllByTestId('todo-list-container')).toHaveLength(2);
+      expect(screen.getAllByTestId('todoItem-list')).toHaveLength(2);
       expect(screen.getByDisplayValue('First todo')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Second todo')).toBeInTheDocument();
     });
@@ -67,11 +65,15 @@ describe('TodoBoard', () => {
         />
       );
 
+      // Make changes to enable the Save button
+      const titleInput = screen.getByDisplayValue('Test Card');
+      await user.type(titleInput, ' Updated');
+
       await user.click(screen.getByRole('button', { name: 'Save' }));
       expect(onSaveCard).toHaveBeenCalledWith(
         expect.objectContaining({
           id: '1',
-          title: 'Test Card',
+          title: 'Test Card Updated',
           todos: [],
           priority: 'medium',
           updatedAt: expect.any(Date),

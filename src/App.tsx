@@ -1,33 +1,87 @@
+import { useState } from 'react';
 import { TodoTrigger } from './components/TodoTrigger';
 import { TodoBoard } from './components/TodoBoard';
-import { useState } from 'react';
+import { TodoCard } from './components/TodoCard';
 import type { TodoCardData } from './types';
 
 function App() {
   const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    mode: null as 'create' | 'edit' | null,
+    editingCard: undefined as TodoCardData | undefined,
+  });
 
-  const onCreateCard = (cardData: TodoCardData) => {
+  const handleOpenCreateModal = () => {
+    setModalState({
+      isOpen: true,
+      mode: 'create',
+      editingCard: undefined,
+    });
+  };
+
+  const handleOpenEditModal = (card: TodoCardData) => {
+    setModalState({
+      isOpen: true,
+      mode: 'edit',
+      editingCard: card,
+    });
+  };
+
+  const handleCloseModal = () => {
+    setModalState({
+      isOpen: false,
+      mode: null,
+      editingCard: undefined,
+    });
+  };
+
+  const handleCreateCard = (cardData: TodoCardData) => {
     setTodoCards((prev) => [...prev, cardData]);
   };
 
-  const onSaveCard = (updatedCard: TodoCardData) => {
+  const handleUpdateCard = (cardData: TodoCardData) => {
     setTodoCards((prev) =>
-      prev.map((card) => (card.id === updatedCard.id ? updatedCard : card))
+      prev.map((card) => (card.id === cardData.id ? cardData : card))
     );
   };
 
+  const handleDeleteCard = (cardId: string) => {
+    setTodoCards((prev) => prev.filter((card) => card.id !== cardId));
+  };
+
+  const handleAddTodo = (cardId: string) => {
+    // Add todo logic
+  };
+
   return (
-    <div className="flex flex-col items-center bg-zinc-700 min-h-screen p-8">
-      <h1 className="mb-4 p-3  text-stone-300 text-center text-3xl">
-        What Do I Want ToDo
+    <div className="min-h-screen bg-zinc-700 p-4">
+      <h1 className="text-2xl font-bold text-center mb-8">
+        What do I Want ToDo
       </h1>
-      <TodoTrigger onCreateCard={onCreateCard} />
+
+      <TodoTrigger onOpenModal={handleOpenCreateModal} />
+
       <TodoBoard
         todoCards={todoCards}
-        onSaveCard={onSaveCard}
-        onDeleteCard={() => {}}
-        onAddTodo={() => {}}
+        onCardClick={handleOpenEditModal}
+        onDeleteCard={handleDeleteCard}
+        onAddTodo={handleAddTodo}
       />
+
+      {/* Single modal for entire app */}
+      {modalState.isOpen && (
+        <TodoCard
+          isModal={true}
+          initialData={modalState.editingCard}
+          onSave={
+            modalState.mode === 'create' ? handleCreateCard : handleUpdateCard
+          }
+          onClose={handleCloseModal}
+          onDelete={handleDeleteCard}
+          onAddTodo={handleAddTodo}
+        />
+      )}
     </div>
   );
 }

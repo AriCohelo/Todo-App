@@ -3,20 +3,21 @@ import type { TodoBoardProps } from '../types';
 
 export const TodoBoard = ({
   todoCards,
-  onSaveCard,
+  onCardClick,
   onDeleteCard,
   onAddTodo,
 }: TodoBoardProps) => {
   return (
     <div data-testid="todoBoard">
       {todoCards.map((card) => (
-        <TodoCard
-          key={card.id}
-          initialData={card}
-          onSave={onSaveCard}
-          onDelete={onDeleteCard}
-          onAddTodo={onAddTodo}
-        />
+        <div key={card.id} onClick={() => onCardClick(card)}>
+          <TodoCard
+            initialData={card}
+            onSave={() => {}} // Not used in board view
+            onDelete={onDeleteCard}
+            onAddTodo={onAddTodo}
+          />
+        </div>
       ))}
     </div>
   );

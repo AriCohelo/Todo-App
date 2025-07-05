@@ -1,70 +1,17 @@
-import { useState, useEffect } from 'react';
-import { TodoCard } from './TodoCard';
 import type { TodoTriggerProps } from '../types';
 
-export const TodoTrigger = ({ onCreateCard }: TodoTriggerProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleSave = (cardData: any) => {
-    onCreateCard(cardData);
-    handleCloseModal();
-  };
-
-  // Handle ESC key to close modal
-  useEffect(() => {
-    const handleEscKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleCloseModal();
-      }
-    };
-
-    if (isModalOpen) {
-      document.addEventListener('keydown', handleEscKey);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-    };
-  }, [isModalOpen]);
-
+export const TodoTrigger = ({ onOpenModal }: TodoTriggerProps) => {
   return (
     <div
       data-testid="todoTrigger"
-      className="flex flex-col items-center  bg-zinc-700"
+      className="flex flex-col items-center bg-zinc-700"
     >
       <input
         placeholder="take a note..."
         className="mb-4 p-3 border border-stone-300 rounded-lg focus:ring-2 outline-none text-stone-300"
         data-testid="todoTrigger-input"
-        onClick={handleOpenModal}
+        onClick={onOpenModal}
       />
-
-      {isModalOpen && (
-        <div
-          data-testid="todoTrigger-modal"
-          className="fixed inset-0 bg-indigo-900/30 flex items-center justify-center"
-          onClick={handleCloseModal}
-        >
-          <div
-            className="bg-white p-6 rounded-lg shadow-lg border border-indigo-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <TodoCard
-              onSave={handleSave}
-              onDelete={() => {}}
-              onAddTodo={() => {}}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
