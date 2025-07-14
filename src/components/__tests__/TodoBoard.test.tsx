@@ -8,7 +8,6 @@ describe('TodoBoard', () => {
   const mockHandlers = {
     onCardClick: vi.fn(),
     onDeleteCard: vi.fn(),
-    onAddTodo: vi.fn(),
   };
 
   describe('rendering', () => {
@@ -61,14 +60,13 @@ describe('TodoBoard', () => {
           todoCards={[sampleCard]}
           onCardClick={onCardClick}
           onDeleteCard={() => {}}
-          onAddTodo={() => {}}
-        />
+                  />
       );
 
       // Click on the card
       const cardElement = screen.getByTestId('todoItem-list');
       await user.click(cardElement);
-      expect(onCardClick).toHaveBeenCalledWith(sampleCard);
+      expect(onCardClick).toHaveBeenCalledWith(sampleCard, 'title');
     });
 
     it('calls onDeleteCard when TodoCard Delete button is clicked', async () => {
@@ -78,8 +76,7 @@ describe('TodoBoard', () => {
           todoCards={[sampleCard]}
           onCardClick={() => {}}
           onDeleteCard={onDeleteCard}
-          onAddTodo={() => {}}
-        />
+                  />
       );
 
       const toolbar = screen.getByRole('toolbar');
@@ -87,19 +84,5 @@ describe('TodoBoard', () => {
       expect(onDeleteCard).toHaveBeenCalledWith('1');
     });
 
-    it('calls onAddTodo when TodoCard + button is clicked', async () => {
-      const onAddTodo = vi.fn();
-      render(
-        <TodoBoard
-          todoCards={[sampleCard]}
-          onCardClick={() => {}}
-          onDeleteCard={() => {}}
-          onAddTodo={onAddTodo}
-        />
-      );
-
-      await user.click(screen.getByRole('button', { name: '+' }));
-      expect(onAddTodo).toHaveBeenCalledWith('1');
-    });
   });
 });

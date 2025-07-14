@@ -10,7 +10,7 @@ export const TodoTrigger = ({ onOpenModal }: TodoTriggerProps) => {
         placeholder="take a note..."
         className="mb-4 p-3 border border-stone-300 rounded-lg focus:ring-2 outline-none text-stone-300"
         data-testid="todoTrigger-input"
-        onClick={onOpenModal}
+        onClick={() => onOpenModal('title')}
       />
     </div>
   );

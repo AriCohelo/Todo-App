@@ -5,17 +5,17 @@ export const TodoBoard = ({
   todoCards,
   onCardClick,
   onDeleteCard,
-  onAddTodo,
+  onUpdateCard,
 }: TodoBoardProps) => {
   return (
     <div data-testid="todoBoard">
       {todoCards.map((card) => (
-        <div key={card.id} onClick={() => onCardClick(card)}>
+        <div key={card.id}>
           <TodoCard
             initialData={card}
-            onSave={() => {}} // Not used in board view
+            onSave={onUpdateCard}
             onDelete={onDeleteCard}
-            onAddTodo={onAddTodo}
+            onCardClick={onCardClick}
           />
         </div>
       ))}

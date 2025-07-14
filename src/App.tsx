@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { TodoTrigger } from './components/TodoTrigger';
 import { TodoBoard } from './components/TodoBoard';
 import { TodoCard } from './components/TodoCard';
-import type { TodoCardData } from './types';
+import type { TodoCardData, FocusTarget } from './types';
 
 function App() {
   const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);
@@ -10,21 +10,24 @@ function App() {
     isOpen: false,
     mode: null as 'create' | 'edit' | null,
     editingCard: undefined as TodoCardData | undefined,
+    focusTarget: undefined as FocusTarget | undefined,
   });
 
-  const handleOpenCreateModal = () => {
+  const handleOpenCreateModal = (focusTarget?: FocusTarget) => {
     setModalState({
       isOpen: true,
       mode: 'create',
       editingCard: undefined,
+      focusTarget: focusTarget || 'title',
     });
   };
 
-  const handleOpenEditModal = (card: TodoCardData) => {
+  const handleOpenEditModal = (card: TodoCardData, focusTarget?: FocusTarget) => {
     setModalState({
       isOpen: true,
       mode: 'edit',
       editingCard: card,
+      focusTarget: focusTarget || 'title',
     });
   };
 
@@ -33,6 +36,7 @@ function App() {
       isOpen: false,
       mode: null,
       editingCard: undefined,
+      focusTarget: undefined,
     });
   };
 
@@ -50,9 +54,6 @@ function App() {
     setTodoCards((prev) => prev.filter((card) => card.id !== cardId));
   };
 
-  const handleAddTodo = (cardId: string) => {
-    // Add todo logic
-  };
 
   return (
     <div className="min-h-screen bg-zinc-700 p-4">
@@ -66,7 +67,7 @@ function App() {
         todoCards={todoCards}
         onCardClick={handleOpenEditModal}
         onDeleteCard={handleDeleteCard}
-        onAddTodo={handleAddTodo}
+        onUpdateCard={handleUpdateCard}
       />
 
       {/* Single modal for entire app */}
@@ -79,7 +80,7 @@ function App() {
           }
           onClose={handleCloseModal}
           onDelete={handleDeleteCard}
-          onAddTodo={handleAddTodo}
+          focusTarget={modalState.focusTarget}
         />
       )}
     </div>

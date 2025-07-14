@@ -233,6 +233,45 @@ describe('App', () => {
     });
   });
 
+  describe('todo management', () => {
+    it('adds new todo to existing card when + button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<App />);
+
+      // Create a card first
+      const triggerInput = screen.getByTestId('todoTrigger-input');
+      await user.click(triggerInput);
+
+      const modal = screen.getByTestId('todoTrigger-modal');
+      const titleInput = within(modal).getByTestId('todoCard-title-input');
+      await user.type(titleInput, 'Test Card');
+
+      const saveButton = within(modal).getByRole('button', { name: 'Save' });
+      await user.click(saveButton);
+
+      // Click on the card to edit
+      const todoBoard = screen.getByTestId('todoBoard');
+      const cardElement = within(todoBoard).getByTestId('todoCard');
+      await user.click(cardElement);
+
+      // In edit modal, click + button to add new todo
+      const editModal = screen.getByTestId('todoTrigger-modal');
+      const todoContainer = within(editModal).getByTestId('todoItem-list');
+      
+      // Should start with 1 todo
+      let todoInputs = within(todoContainer).getAllByRole('textbox');
+      expect(todoInputs).toHaveLength(1);
+
+      // Click + button
+      const addButton = within(editModal).getByRole('button', { name: '+' });
+      await user.click(addButton);
+
+      // Should now have 2 todos
+      todoInputs = within(todoContainer).getAllByRole('textbox');
+      expect(todoInputs).toHaveLength(2);
+    });
+  });
+
   describe('card management', () => {
     it('deletes card when Delete button is clicked', async () => {
       const user = userEvent.setup();

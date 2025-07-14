@@ -7,11 +7,8 @@ describe('TodoTrigger', () => {
   const user = userEvent.setup();
 
   describe('rendering', () => {
-    let triggerContainer: HTMLElement;
-
     beforeEach(() => {
       render(<TodoTrigger onOpenModal={() => {}} />);
-      triggerContainer = screen.getByTestId('todoTrigger');
     });
 
     it('renders title field within the trigger container', () => {

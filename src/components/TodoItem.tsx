@@ -7,6 +7,9 @@ export const TodoItem = ({
   onDelete,
   onToggle,
   onEdit,
+  inputRef,
+  onClick,
+  showCheckbox = true,
 }: TodoItemProps) => {
   const [TodoValue, setTodoValue] = useState(todo.task);
 
@@ -27,12 +30,21 @@ export const TodoItem = ({
 
   return (
     <div>
+      {showCheckbox && (
+        <input
+          type="checkbox"
+          checked={todo.completed}
+          onChange={() => onToggle(todo.id)}
+        />
+      )}
       <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={() => onToggle(todo.id)}
-      />
-      <input
+        ref={(ref) => {
+          if (typeof inputRef === 'function') {
+            inputRef(ref);
+          } else if (inputRef && 'current' in inputRef) {
+            inputRef.current = ref;
+          }
+        }}
         type="text"
         value={TodoValue}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -40,9 +52,18 @@ export const TodoItem = ({
         }
         onKeyDown={handleEnterKey}
         onBlur={handleBlur}
+        onClick={(e) => {
+          if (onClick) {
+            e.stopPropagation();
+            onClick();
+          }
+        }}
         placeholder="add task"
       />
-      <button onClick={() => onDelete(todo.id)}>Delete</button>
+      <button onClick={(e) => {
+        e.stopPropagation();
+        onDelete(todo.id);
+      }}>Delete</button>
     </div>
   );
 };

@@ -9,6 +9,9 @@ export interface TodoItemProps {
   onDelete: (id: string) => void;
   onToggle: (id: string) => void;
   onEdit: (id: string, newTask: string) => void;
+  inputRef?: React.RefObject<HTMLInputElement> | ((ref: HTMLInputElement | null) => void);
+  onClick?: () => void;
+  showCheckbox?: boolean;
 }
 
 export interface TodoCardData {
@@ -23,18 +26,21 @@ export interface TodoCardProps {
   initialData?: TodoCardData;
   onSave: (cardData: TodoCardData) => void;
   onDelete: (cardId: string) => void;
-  onAddTodo: (cardId: string) => void;
   isModal?: boolean;
   onClose?: () => void;
+  focusTarget?: FocusTarget;
+  onCardClick?: (card: TodoCardData, focusTarget?: FocusTarget) => void;
 }
 
 export interface TodoBoardProps {
   todoCards: TodoCardData[];
-  onCardClick: (card: TodoCardData) => void;
+  onCardClick: (card: TodoCardData, focusTarget?: FocusTarget) => void;
   onDeleteCard: (cardId: string) => void;
-  onAddTodo: (cardId: string) => void;
+  onUpdateCard: (cardData: TodoCardData) => void;
 }
 
 export interface TodoTriggerProps {
-  onOpenModal: () => void;
+  onOpenModal: (focusTarget?: FocusTarget) => void;
 }
+
+export type FocusTarget = 'title' | 'new-todo' | { type: 'todo'; index: number };

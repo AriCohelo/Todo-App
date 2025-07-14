@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TodoCard } from '../TodoCard';
 import type { TodoCardData } from '../../types';
@@ -8,7 +8,7 @@ describe('TodoCard', () => {
   describe('rendering', () => {
     beforeEach(() => {
       render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
+        <TodoCard onSave={() => {}} onDelete={() => {}} />
       );
     });
 
@@ -47,6 +47,24 @@ describe('TodoCard', () => {
 
     it('renders empty TodoItem when no initialData', () => {
       const container = screen.getByTestId('todoItem-list');
+      // In non-modal mode, checkboxes should not be visible
+      const checkboxes = within(container).queryAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(0);
+      
+      // But text inputs should still be there
+      const textInputs = within(container).getAllByRole('textbox');
+      expect(textInputs).toHaveLength(1);
+    });
+
+    it('renders checkboxes in modal mode', () => {
+      // Clean up any existing renders
+      cleanup();
+      
+      render(
+        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
+      );
+      
+      const container = screen.getByTestId('todoItem-list');
       const checkboxes = within(container).getAllByRole('checkbox');
       expect(checkboxes).toHaveLength(1);
       expect(checkboxes[0]).not.toBeChecked();
@@ -69,8 +87,7 @@ describe('TodoCard', () => {
           initialData={sampleData}
           onSave={() => {}}
           onDelete={() => {}}
-          onAddTodo={() => {}}
-        />
+                  />
       );
 
       expect(screen.getByDisplayValue('First todo')).toBeInTheDocument();
@@ -91,8 +108,7 @@ describe('TodoCard', () => {
           initialData={sampleData}
           onSave={() => {}}
           onDelete={() => {}}
-          onAddTodo={() => {}}
-        />
+                  />
       );
 
       expect(screen.getByDisplayValue('Initial Title')).toBeInTheDocument();
@@ -105,7 +121,7 @@ describe('TodoCard', () => {
       const onSave = vi.fn();
 
       render(
-        <TodoCard onSave={onSave} onDelete={() => {}} onAddTodo={() => {}} />
+        <TodoCard onSave={onSave} onDelete={() => {}} />
       );
 
       // First enable the save button by interacting
@@ -136,28 +152,54 @@ describe('TodoCard', () => {
       const onDelete = vi.fn();
 
       render(
-        <TodoCard onSave={() => {}} onDelete={onDelete} onAddTodo={() => {}} />
+        <TodoCard onSave={() => {}} onDelete={onDelete} />
       );
       const toolbar = screen.getByRole('toolbar');
       await user.click(within(toolbar).getByRole('button', { name: 'Delete' }));
       expect(onDelete).toHaveBeenCalledWith('');
     });
 
-    it('calls onAddTodo when + button is clicked', async () => {
+
+    it('adds new todo item locally when + button is clicked', async () => {
       const user = userEvent.setup();
-      const onAddTodo = vi.fn();
+      const sampleData: TodoCardData = {
+        id: '1',
+        title: 'Test Card',
+        todos: [
+          { id: '1', task: 'First todo', completed: false },
+        ],
+        priority: 'high',
+        updatedAt: new Date(),
+      };
 
       render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={onAddTodo} />
+        <TodoCard
+          initialData={sampleData}
+          onSave={() => {}}
+          onDelete={() => {}}
+                  />
       );
+
+      // Should start with 1 todo
+      const todoContainer = screen.getByTestId('todoItem-list');
+      let todoInputs = within(todoContainer).getAllByRole('textbox');
+      expect(todoInputs).toHaveLength(1);
+
+      // Click + button
       await user.click(screen.getByRole('button', { name: '+' }));
-      expect(onAddTodo).toHaveBeenCalledWith('');
+
+      // Should now have 2 todos
+      todoInputs = within(todoContainer).getAllByRole('textbox');
+      expect(todoInputs).toHaveLength(2);
+      
+      // The new todo should be empty
+      expect(todoInputs[1]).toHaveValue('');
     });
 
     it('updates title state when typing in title field', async () => {
       const user = userEvent.setup();
       render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
+        <TodoCard onSave={() => {}} onDelete={() => {}} />
       );
 
       const titleInput = screen.getByPlaceholderText(/enter a title/i);
@@ -169,7 +211,7 @@ describe('TodoCard', () => {
     it('updates todo task when editing within the card', async () => {
       const user = userEvent.setup();
       render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
+        <TodoCard onSave={() => {}} onDelete={() => {}} />
       );
 
       const todoContainer = screen.getByTestId('todoItem-list');
@@ -183,7 +225,7 @@ describe('TodoCard', () => {
     it('disables save button initially and enables after user interaction', async () => {
       const user = userEvent.setup();
       render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
+        <TodoCard onSave={() => {}} onDelete={() => {}} />
       );
 
       const saveButton = screen.getByRole('button', { name: 'Save' });
@@ -203,7 +245,7 @@ describe('TodoCard', () => {
     it('enables save button when editing todo items', async () => {
       const user = userEvent.setup();
       render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} onAddTodo={() => {}} />
+        <TodoCard onSave={() => {}} onDelete={() => {}} />
       );
 
       const saveButton = screen.getByRole('button', { name: 'Save' });
@@ -228,8 +270,7 @@ describe('TodoCard', () => {
           onClose={onClose}
           onSave={() => {}}
           onDelete={() => {}}
-          onAddTodo={() => {}}
-        />
+                  />
       );
 
       await user.keyboard('{Escape}');
@@ -246,8 +287,7 @@ describe('TodoCard', () => {
           onClose={onClose}
           onSave={() => {}}
           onDelete={() => {}}
-          onAddTodo={() => {}}
-        />
+                  />
       );
 
       const backdrop = screen.getByTestId('todoTrigger-modal');
@@ -266,8 +306,7 @@ describe('TodoCard', () => {
           onClose={onClose}
           onSave={onSave}
           onDelete={() => {}}
-          onAddTodo={() => {}}
-        />
+                  />
       );
 
       // Make changes
