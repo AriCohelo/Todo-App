@@ -6,7 +6,7 @@ import type { TodoCardData } from '../../types';
 
 describe('TodoBoard', () => {
   const mockHandlers = {
-    onSaveCard: vi.fn(),
+    onCardClick: vi.fn(),
     onDeleteCard: vi.fn(),
     onAddTodo: vi.fn(),
   };
@@ -54,31 +54,21 @@ describe('TodoBoard', () => {
       updatedAt: new Date(),
     };
 
-    it('calls onSaveCard when TodoCard Save button is clicked', async () => {
-      const onSaveCard = vi.fn();
+    it('calls onCardClick when TodoCard is clicked', async () => {
+      const onCardClick = vi.fn();
       render(
         <TodoBoard
           todoCards={[sampleCard]}
-          onSaveCard={onSaveCard}
+          onCardClick={onCardClick}
           onDeleteCard={() => {}}
           onAddTodo={() => {}}
         />
       );
 
-      // Make changes to enable the Save button
-      const titleInput = screen.getByDisplayValue('Test Card');
-      await user.type(titleInput, ' Updated');
-
-      await user.click(screen.getByRole('button', { name: 'Save' }));
-      expect(onSaveCard).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: '1',
-          title: 'Test Card Updated',
-          todos: [],
-          priority: 'medium',
-          updatedAt: expect.any(Date),
-        })
-      );
+      // Click on the card
+      const cardElement = screen.getByTestId('todoItem-list');
+      await user.click(cardElement);
+      expect(onCardClick).toHaveBeenCalledWith(sampleCard);
     });
 
     it('calls onDeleteCard when TodoCard Delete button is clicked', async () => {
@@ -86,7 +76,7 @@ describe('TodoBoard', () => {
       render(
         <TodoBoard
           todoCards={[sampleCard]}
-          onSaveCard={() => {}}
+          onCardClick={() => {}}
           onDeleteCard={onDeleteCard}
           onAddTodo={() => {}}
         />
@@ -102,7 +92,7 @@ describe('TodoBoard', () => {
       render(
         <TodoBoard
           todoCards={[sampleCard]}
-          onSaveCard={() => {}}
+          onCardClick={() => {}}
           onDeleteCard={() => {}}
           onAddTodo={onAddTodo}
         />
