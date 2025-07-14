@@ -80,7 +80,7 @@ describe('TodoBoard', () => {
       );
 
       const toolbar = screen.getByRole('toolbar');
-      await user.click(within(toolbar).getByRole('button', { name: 'Delete' }));
+      await user.click(within(toolbar).getByRole('button', { name: 'Delete card' }));
       expect(onDeleteCard).toHaveBeenCalledWith('1');
     });
 

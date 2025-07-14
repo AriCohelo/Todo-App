@@ -263,7 +263,7 @@ describe('App', () => {
       expect(todoInputs).toHaveLength(1);
 
       // Click + button
-      const addButton = within(editModal).getByRole('button', { name: '+' });
+      const addButton = within(editModal).getByRole('button', { name: 'Add item' });
       await user.click(addButton);
 
       // Should now have 2 todos
@@ -297,7 +297,7 @@ describe('App', () => {
       // Delete the card from TodoBoard
       const toolbar = within(todoBoard).getByRole('toolbar');
       const deleteButton = within(toolbar).getByRole('button', {
-        name: 'Delete',
+        name: 'Delete card',
       });
       await user.click(deleteButton);
 

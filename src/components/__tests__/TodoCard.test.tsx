@@ -22,8 +22,17 @@ describe('TodoCard', () => {
       expect(todoListContainer).toBeInTheDocument();
     });
 
-    it('renders a add button', () => {
-      const addButton = screen.getByRole('button', { name: '+' });
+    it('does not render add button in board view', () => {
+      const addButton = screen.queryByRole('button', { name: 'Add item' });
+      expect(addButton).not.toBeInTheDocument();
+    });
+
+    it('renders add button in modal view', () => {
+      cleanup();
+      render(
+        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
+      );
+      const addButton = screen.getByRole('button', { name: 'Add item' });
       expect(addButton).toBeInTheDocument();
     });
 
@@ -32,7 +41,11 @@ describe('TodoCard', () => {
       expect(toolbar).toBeInTheDocument();
     });
 
-    it('renders a save button', () => {
+    it('renders a save button in modal mode', () => {
+      cleanup();
+      render(
+        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
+      );
       const saveButton = screen.getByRole('button', { name: 'Save' });
       expect(saveButton).toBeInTheDocument();
     });
@@ -40,18 +53,18 @@ describe('TodoCard', () => {
     it('renders a delete button in toolbar', () => {
       const toolbar = screen.getByRole('toolbar');
       const deleteButton = within(toolbar).getByRole('button', {
-        name: 'Delete',
+        name: 'Delete card',
       });
       expect(deleteButton).toBeInTheDocument();
     });
 
     it('renders empty TodoItem when no initialData', () => {
       const container = screen.getByTestId('todoItem-list');
-      // In non-modal mode, checkboxes should not be visible
+      // Checkboxes should be visible in both modal and board view
       const checkboxes = within(container).queryAllByRole('checkbox');
-      expect(checkboxes).toHaveLength(0);
+      expect(checkboxes).toHaveLength(1);
       
-      // But text inputs should still be there
+      // Text inputs should be there
       const textInputs = within(container).getAllByRole('textbox');
       expect(textInputs).toHaveLength(1);
     });
@@ -121,7 +134,7 @@ describe('TodoCard', () => {
       const onSave = vi.fn();
 
       render(
-        <TodoCard onSave={onSave} onDelete={() => {}} />
+        <TodoCard onSave={onSave} onDelete={() => {}} isModal={true} />
       );
 
       // First enable the save button by interacting
@@ -155,7 +168,7 @@ describe('TodoCard', () => {
         <TodoCard onSave={() => {}} onDelete={onDelete} />
       );
       const toolbar = screen.getByRole('toolbar');
-      await user.click(within(toolbar).getByRole('button', { name: 'Delete' }));
+      await user.click(within(toolbar).getByRole('button', { name: 'Delete card' }));
       expect(onDelete).toHaveBeenCalledWith('');
     });
 
@@ -177,7 +190,8 @@ describe('TodoCard', () => {
           initialData={sampleData}
           onSave={() => {}}
           onDelete={() => {}}
-                  />
+          isModal={true}
+        />
       );
 
       // Should start with 1 todo
@@ -186,7 +200,7 @@ describe('TodoCard', () => {
       expect(todoInputs).toHaveLength(1);
 
       // Click + button
-      await user.click(screen.getByRole('button', { name: '+' }));
+      await user.click(screen.getByRole('button', { name: 'Add item' }));
 
       // Should now have 2 todos
       todoInputs = within(todoContainer).getAllByRole('textbox');
@@ -225,7 +239,7 @@ describe('TodoCard', () => {
     it('disables save button initially and enables after user interaction', async () => {
       const user = userEvent.setup();
       render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} />
+        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
       );
 
       const saveButton = screen.getByRole('button', { name: 'Save' });
@@ -245,7 +259,7 @@ describe('TodoCard', () => {
     it('enables save button when editing todo items', async () => {
       const user = userEvent.setup();
       render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} />
+        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
       );
 
       const saveButton = screen.getByRole('button', { name: 'Save' });

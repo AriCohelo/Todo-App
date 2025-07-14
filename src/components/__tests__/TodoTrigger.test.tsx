@@ -16,7 +16,7 @@ describe('TodoTrigger', () => {
     });
 
     it('renders input with correct placeholder', () => {
-      expect(screen.getByPlaceholderText('take a note...')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Take a note...')).toBeInTheDocument();
     });
   });
 

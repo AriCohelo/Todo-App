@@ -35,7 +35,7 @@ describe('TodoItem', () => {
 
     it('renders delete button', () => {
       expect(
-        screen.getByRole('button', { name: 'Delete' })
+        screen.getByRole('button', { name: 'Delete item' })
       ).toBeInTheDocument();
     });
   });
@@ -65,7 +65,7 @@ describe('TodoItem', () => {
       expect(handlers.onToggle).toHaveBeenCalledWith(todo.id);
     });
     it('deletes todo when delete button is clicked', async () => {
-      await user.click(screen.getByRole('button', { name: 'Delete' }));
+      await user.click(screen.getByRole('button', { name: 'Delete item' }));
       expect(handlers.onDelete).toHaveBeenCalledWith(todo.id);
     });
     it('updates input value when typing', async () => {

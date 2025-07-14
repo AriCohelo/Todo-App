@@ -38,15 +38,7 @@ export const TodoCard = ({
     todoItemRefs.current = todoItemRefs.current.slice(0, todos.length);
   }, [todos.length]);
 
-  // Auto-save when shouldAutoSave is true and todos state has updated
-  useEffect(() => {
-    if (shouldAutoSave && !isModal && hasUnsavedChanges) {
-      handleSave();
-      setShouldAutoSave(false);
-    }
-  }, [shouldAutoSave, todos, isModal, hasUnsavedChanges]);
-
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     const cardData: TodoCardData = {
       id: initialData?.id || crypto.randomUUID(),
       title: title,
@@ -58,6 +50,28 @@ export const TodoCard = ({
     setHasUnsavedChanges(false);
     if (isModal && onClose) {
       onClose();
+    }
+  }, [initialData, title, todos, onSave, isModal, onClose]);
+
+  // Auto-save when shouldAutoSave is true and todos state has updated
+  useEffect(() => {
+    if (shouldAutoSave && !isModal && hasUnsavedChanges) {
+      handleSave();
+      setShouldAutoSave(false);
+    }
+  }, [shouldAutoSave, todos, isModal, hasUnsavedChanges, handleSave]);
+
+  const getCardBackgroundColor = () => {
+    const priority = initialData?.priority || 'medium';
+    switch (priority) {
+      case 'high':
+        return 'bg-green-700 text-white';
+      case 'medium':
+        return 'bg-zinc-800 text-zinc-300';
+      case 'low':
+        return 'bg-yellow-700 text-white';
+      default:
+        return 'bg-zinc-800 text-zinc-300';
     }
   };
 
@@ -107,6 +121,7 @@ export const TodoCard = ({
   const cardContent = (
     <div 
       data-testid="todoCard"
+      className={`${getCardBackgroundColor()} p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-transparent hover:border-zinc-600`}
       onClick={() => {
         // General click handler - defaults to title focus
         if (!isModal && onCardClick && initialData) {
@@ -129,14 +144,14 @@ export const TodoCard = ({
             onCardClick(initialData, 'title');
           }
         }}
+        className="w-full bg-transparent border-none outline-none font-medium text-lg placeholder-opacity-60 mb-2"
         data-testid="todoCard-title-input"
       />
-      <div data-testid="todoItem-list">
+      <div data-testid="todoItem-list" className="space-y-1">
         {todos.map((todo, index) => (
           <TodoItem
             key={todo.id}
             todo={todo}
-            showCheckbox={isModal}
             inputRef={(ref: HTMLInputElement | null) => {
               todoItemRefs.current[index] = ref;
             }}
@@ -166,32 +181,74 @@ export const TodoCard = ({
                 )
               );
               setHasUnsavedChanges(true);
+              // Trigger auto-save when not in modal mode
+              if (!isModal) {
+                setShouldAutoSave(true);
+              }
             }}
           />
         ))}
       </div>
-      <button
-        onClick={() => {
-          const newTodo = { id: crypto.randomUUID(), task: '', completed: false };
-          setTodos((prev) => [...prev, newTodo]);
-          setHasUnsavedChanges(true);
-          
-          // If not in modal and we have a click handler, open modal focused on new todo
-          if (!isModal && onCardClick && initialData) {
-            onCardClick(initialData, 'new-todo');
-          }
-        }}
-      >
-        +
-      </button>
-      <div role="toolbar">
-        <button onClick={handleSave} disabled={!hasUnsavedChanges}>
-          Save
-        </button>
-        <button onClick={(e) => {
-          e.stopPropagation();
-          onDelete(initialData?.id || '');
-        }}>Delete</button>
+      <div className="mt-3 flex items-center justify-between" role="toolbar">
+        {isModal && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const newTodo = { id: crypto.randomUUID(), task: '', completed: false };
+              setTodos((prev) => [...prev, newTodo]);
+              setHasUnsavedChanges(true);
+            }}
+            className="flex items-center gap-1 text-zinc-400 hover:text-zinc-200 text-sm transition-colors"
+            title="Add item"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            <span>Add item</span>
+          </button>
+        )}
+        {!isModal && <div></div>}
+
+        <div className="flex items-center gap-2">
+          {/* Date tooltip */}
+          <div 
+            className="text-xs text-zinc-500 cursor-help"
+            title={`Created: ${initialData?.updatedAt ? new Date(initialData.updatedAt).toLocaleDateString() : 'Unknown'}\nLast modified: ${initialData?.updatedAt ? new Date(initialData.updatedAt).toLocaleString() : 'Unknown'}`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+
+          {/* Delete button */}
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(initialData?.id || '');
+            }}
+            className="text-zinc-400 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-900/20"
+            title="Delete card"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+
+          {/* Save button (only in modal) */}
+          {isModal && (
+            <button 
+              onClick={handleSave} 
+              disabled={!hasUnsavedChanges}
+              className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-colors"
+              title="Save changes"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Save
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

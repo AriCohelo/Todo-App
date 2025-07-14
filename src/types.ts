@@ -11,7 +11,6 @@ export interface TodoItemProps {
   onEdit: (id: string, newTask: string) => void;
   inputRef?: React.RefObject<HTMLInputElement> | ((ref: HTMLInputElement | null) => void);
   onClick?: () => void;
-  showCheckbox?: boolean;
 }
 
 export interface TodoCardData {
