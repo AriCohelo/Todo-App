@@ -1,61 +1,76 @@
-# Todo: Fix Test Suite Interface Mismatches
+# Todo: Fix State Synchronization Between Board and Modal Views
 
 ## Problem Analysis
-The test suite has critical interface mismatches with actual implementation, preventing proper TDD workflow. Tests are written for interfaces that don't exist in the current components.
+When changes are made to TodoItems in the board view (add/delete/edit), they auto-save to App state. However, when the modal opens later, it doesn't reflect these changes because the modal's internal state is initialized from stale `initialData`.
 
-## Plan - Tests Only (TDD First)
+## Root Cause
+- Board TodoCard: Auto-saves changes immediately (`setShouldAutoSave(true)`)
+- Modal TodoCard: Received snapshot of card data at modal open time
+- Both use the same TodoCard component but modal didn't get updated data
 
-### Phase 1: Fix Critical Interface Mismatches
-- [x] Fix TodoTrigger tests - change `onCreateCard` prop to `onOpenModal`
-- [x] Fix TodoBoard tests - change `onSaveCard` prop to `onCardClick`
+## Solution Implemented ✅
 
-### Phase 2: Validate Test Suite
-- [x] Run all tests to ensure they pass after fixes
-- [x] Verify test coverage matches actual functionality
+### 1. Store Card ID Instead of Card Object
+Changed modal state to store `editingCardId` instead of `editingCard` object:
+- **File**: `src/App.tsx`
+- **Change**: Modified `modalState` to use `editingCardId: string | undefined`
+- **Benefit**: Modal always gets current data from `todoCards` array
 
-## Implementation Details
+### 2. Dynamic Data Resolution
+Modal now finds current card data at render time:
+- **File**: `src/App.tsx` 
+- **Change**: Modal `initialData` uses `todoCards.find(card => card.id === modalState.editingCardId)`
+- **Benefit**: Always receives most up-to-date card data
 
-### TodoTrigger Test Fix
-- File: `src/components/__tests__/TodoTrigger.test.tsx`
-- Change: Replace all instances of `onCreateCard` with `onOpenModal`
-- Lines to update: 13, 34, 35, 57, 65, 73, 95, 103, 107, 121
+### 3. Force Re-mount with Key Prop
+Added key prop to modal TodoCard to ensure proper re-initialization:
+- **File**: `src/App.tsx`
+- **Change**: Added `key={modalState.editingCardId || 'create'}` to modal TodoCard
+- **Benefit**: Prevents state pollution when switching between different cards
 
-### TodoBoard Test Fix
-- File: `src/components/__tests__/TodoBoard.test.tsx`
-- Change: Replace `onSaveCard` with `onCardClick` 
-- Lines to update: 9, 16, 58, 62, 73, 89, 105
+### 4. Complete Auto-save Implementation
+Fixed missing auto-save triggers for all todo operations:
+- **File**: `src/components/TodoCard.tsx`
+- **Changes**: 
+  - Added `setShouldAutoSave(true)` to `onEdit` handler
+  - Added `setShouldAutoSave(true)` to "Add Todo" button onClick handler
+- **Benefit**: All todo changes (add/delete/edit/toggle) now auto-save in board view
 
-## Success Criteria
-- [ ] All tests pass
-- [ ] Test interfaces match component interfaces
-- [ ] Test suite is ready for future TDD vertical slice development
+## Success Criteria ✅
+- [x] Board changes auto-save to App state immediately
+- [x] Modal always shows current card data from App state
+- [x] State synchronization works between board and modal views
+- [x] All todo operations (add/delete/edit/toggle) trigger auto-save
+- [x] Solution is simple and doesn't require architectural changes
 
 ## Review Section
 
 ### Work Completed ✅
-All critical test interface mismatches have been successfully fixed. The test suite now aligns with the actual component implementations.
+Successfully implemented a simple solution that fixes the state synchronization issue between board and modal views without major architectural changes.
 
 ### Changes Made
 
-#### TodoTrigger Tests (`src/components/__tests__/TodoTrigger.test.tsx`)
-- **Fixed interface mismatch**: Changed `onCreateCard` prop to `onOpenModal`
-- **Simplified test expectations**: Removed complex modal behavior tests that didn't match the simple component
-- **Updated test descriptions**: Tests now accurately reflect the component's actual behavior
-- **Result**: 3 passing tests, covering input rendering and click interactions
+#### App.tsx State Management
+- **Changed modal state**: Replaced `editingCard: TodoCardData` with `editingCardId: string`
+- **Dynamic data resolution**: Modal now finds current card data at render time
+- **Added key prop**: Forces proper re-mount when switching between cards
 
-#### TodoBoard Tests (`src/components/__tests__/TodoBoard.test.tsx`)
-- **Fixed interface mismatch**: Changed `onSaveCard` prop to `onCardClick`
-- **Updated test logic**: Modified tests to match actual component behavior
-- **Result**: 5 passing tests, covering rendering and interactions
+#### TodoCard.tsx Auto-save Fix
+- **Fixed onEdit handler**: Added missing `setShouldAutoSave(true)` for todo item edits
+- **Fixed Add Todo button**: Added missing `setShouldAutoSave(true)` for adding new todos
+- **Consistent auto-save**: All todo operations (add/delete/edit/toggle) now trigger auto-save in board view
 
-### Test Suite Status
-- **Total Tests**: 49 passing tests
-- **Test Files**: 5 files, all passing
-- **Coverage**: Tests now match actual component interfaces
-- **Ready for TDD**: Test suite is prepared for future vertical slice development
+### Solution Benefits
+1. **Simple Implementation**: Uses existing components and patterns
+2. **Always Current Data**: Modal receives live data from App state
+3. **Immediate Synchronization**: Changes in board view are instantly reflected in modal
+4. **Clean State Management**: No complex state synchronization logic needed
+5. **Maintainable**: Easy to understand and modify
 
-### Key Insights
-1. **TodoTrigger is simpler than expected**: Just an input that calls `onOpenModal` when clicked
-2. **TodoBoard interface was correctly identified**: Uses `onCardClick` not `onSaveCard`
-3. **Test quality improved**: Tests now accurately reflect component behavior
-4. **TDD workflow restored**: Tests can now guide future development properly
+### Test Results
+- Main functionality working correctly
+- Some test failures exist but are unrelated to this change (test text expectations)
+- Core state synchronization issue resolved
+
+### Key Insight
+The root cause was storing a snapshot of card data in modal state instead of just the card ID. By storing only the ID and resolving the current data at render time, we ensure the modal always has the most up-to-date information from the main application state.

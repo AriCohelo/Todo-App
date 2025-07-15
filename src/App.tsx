@@ -9,7 +9,7 @@ function App() {
   const [modalState, setModalState] = useState({
     isOpen: false,
     mode: null as 'create' | 'edit' | null,
-    editingCard: undefined as TodoCardData | undefined,
+    editingCardId: undefined as string | undefined,
     focusTarget: undefined as FocusTarget | undefined,
   });
 
@@ -17,7 +17,7 @@ function App() {
     setModalState({
       isOpen: true,
       mode: 'create',
-      editingCard: undefined,
+      editingCardId: undefined,
       focusTarget: focusTarget || 'title',
     });
   };
@@ -26,7 +26,7 @@ function App() {
     setModalState({
       isOpen: true,
       mode: 'edit',
-      editingCard: card,
+      editingCardId: card.id,
       focusTarget: focusTarget || 'title',
     });
   };
@@ -35,7 +35,7 @@ function App() {
     setModalState({
       isOpen: false,
       mode: null,
-      editingCard: undefined,
+      editingCardId: undefined,
       focusTarget: undefined,
     });
   };
@@ -73,8 +73,13 @@ function App() {
       {/* Single modal for entire app */}
       {modalState.isOpen && (
         <TodoCard
+          key={modalState.editingCardId || 'create'}
           isModal={true}
-          initialData={modalState.editingCard}
+          initialData={
+            modalState.mode === 'edit' 
+              ? todoCards.find(card => card.id === modalState.editingCardId)
+              : undefined
+          }
           onSave={
             modalState.mode === 'create' ? handleCreateCard : handleUpdateCard
           }
