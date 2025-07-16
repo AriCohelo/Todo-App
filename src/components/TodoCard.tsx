@@ -1,6 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
 import { TodoItem } from './TodoItem';
-import type { TodoCardProps, TodoCardData } from '../types';
+import { useFormState } from '../hooks/useFormState';
+import { useFocusManagement } from '../hooks/useFocusManagement';
+import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
+import { useAutoSave } from '../hooks/useAutoSave';
+import { usePriorityColors } from '../hooks/usePriorityColors';
+import type { TodoCardProps } from '../types';
 
 export const TodoCard = ({
   initialData,
@@ -12,69 +16,36 @@ export const TodoCard = ({
   onCardClick,
   isBeingEdited = false,
 }: TodoCardProps) => {
-  const [title, setTitle] = useState(initialData?.title || '');
-  const [todos, setTodos] = useState(
-    initialData?.todos || [
-      { id: crypto.randomUUID(), task: '', completed: false },
-    ]
-  );
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [shouldAutoSave, setShouldAutoSave] = useState(false);
+  // Use custom hooks to manage component logic
+  const {
+    title,
+    todos,
+    hasUnsavedChanges,
+    handleSave,
+    updateTitle,
+    addTodo,
+    deleteTodo,
+    editTodo,
+    toggleTodo,
+  } = useFormState({ initialData, onSave, isModal, onClose });
 
-  // Refs for focus management
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const todoItemRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const { titleInputRef, setTodoItemRef } = useFocusManagement({
+    isModal,
+    focusTarget,
+    todos,
+  });
 
-  // Update internal state when initialData changes
-  useEffect(() => {
-    if (initialData) {
-      setTitle(initialData.title);
-      setTodos(initialData.todos);
-      setHasUnsavedChanges(false);
-    }
-  }, [initialData]);
+  useKeyboardEvents({ isModal, onClose });
 
-  // Update refs array when todos change
-  useEffect(() => {
-    todoItemRefs.current = todoItemRefs.current.slice(0, todos.length);
-  }, [todos.length]);
+  const { triggerAutoSave } = useAutoSave({
+    isModal,
+    hasUnsavedChanges,
+    handleSave,
+  });
 
-  const handleSave = useCallback(() => {
-    const cardData: TodoCardData = {
-      id: initialData?.id || crypto.randomUUID(),
-      title: title,
-      todos: todos,
-      priority: initialData?.priority || 'medium',
-      updatedAt: new Date(),
-    };
-    onSave(cardData);
-    setHasUnsavedChanges(false);
-    if (isModal && onClose) {
-      onClose();
-    }
-  }, [initialData, title, todos, onSave, isModal, onClose]);
-
-  // Auto-save when shouldAutoSave is true and todos state has updated
-  useEffect(() => {
-    if (shouldAutoSave && !isModal && hasUnsavedChanges) {
-      handleSave();
-      setShouldAutoSave(false);
-    }
-  }, [shouldAutoSave, todos, isModal, hasUnsavedChanges, handleSave]);
-
-  const getCardBackgroundColor = () => {
-    const priority = initialData?.priority || 'medium';
-    switch (priority) {
-      case 'high':
-        return 'bg-green-700 text-white';
-      case 'medium':
-        return 'bg-zinc-800 text-zinc-300';
-      case 'low':
-        return 'bg-yellow-700 text-white';
-      default:
-        return 'bg-zinc-800 text-zinc-300';
-    }
-  };
+  const { cardBackgroundColor } = usePriorityColors({
+    priority: initialData?.priority || 'medium',
+  });
 
   const handleBackdropClick = () => {
     if (hasUnsavedChanges) {
@@ -84,53 +55,12 @@ export const TodoCard = ({
     }
   };
 
-  const handleEscKey = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (onClose) onClose();
-      }
-    },
-    [onClose]
-  );
-
-  // Handle ESC key if in modal mode
-  useEffect(() => {
-    if (isModal) {
-      document.addEventListener('keydown', handleEscKey);
-      return () => {
-        document.removeEventListener('keydown', handleEscKey);
-      };
-    }
-  }, [isModal, handleEscKey]);
-
-  // Focus management for modal
-  useEffect(() => {
-    if (isModal && focusTarget) {
-      // Use setTimeout to ensure the DOM is ready
-      setTimeout(() => {
-        if (focusTarget === 'title') {
-          titleInputRef.current?.focus();
-        } else if (focusTarget === 'new-todo') {
-          // Focus on the last todo item (the new one)
-          const lastIndex = todos.length - 1;
-          todoItemRefs.current[lastIndex]?.focus();
-        } else if (
-          typeof focusTarget === 'object' &&
-          focusTarget.type === 'todo'
-        ) {
-          // Focus on specific todo item
-          todoItemRefs.current[focusTarget.index]?.focus();
-        }
-      }, 0);
-    }
-  }, [isModal, focusTarget, todos.length]);
-
   // If being edited, render invisible placeholder
   if (isBeingEdited) {
     return (
       <div
         data-testid="todoCard"
-        className={`${getCardBackgroundColor()} p-4 rounded-lg shadow-md invisible`}
+        className={`${cardBackgroundColor} p-4 rounded-lg shadow-md invisible`}
       >
         <input
           type="text"
@@ -180,7 +110,7 @@ export const TodoCard = ({
   const cardContent = (
     <div
       data-testid="todoCard"
-      className={`${getCardBackgroundColor()} p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-transparent hover:border-zinc-600`}
+      className={`${cardBackgroundColor} p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-transparent hover:border-zinc-600`}
       onClick={() => {
         // General click handler - defaults to title focus
         if (!isModal && onCardClick && initialData) {
@@ -193,10 +123,7 @@ export const TodoCard = ({
         type="text"
         placeholder="Enter a title"
         value={title}
-        onChange={(e) => {
-          setTitle(e.target.value);
-          setHasUnsavedChanges(true);
-        }}
+        onChange={(e) => updateTitle(e.target.value)}
         onClick={(e) => {
           if (!isModal && onCardClick && initialData) {
             e.stopPropagation();
@@ -212,7 +139,7 @@ export const TodoCard = ({
             key={todo.id}
             todo={todo}
             inputRef={(ref: HTMLInputElement | null) => {
-              todoItemRefs.current[index] = ref;
+              setTodoItemRef(index, ref);
             }}
             onClick={() => {
               if (!isModal && onCardClick && initialData) {
@@ -220,33 +147,24 @@ export const TodoCard = ({
               }
             }}
             onDelete={(todoId) => {
-              setTodos((prev) => prev.filter((t) => t.id !== todoId));
-              setHasUnsavedChanges(true);
+              deleteTodo(todoId);
               // Trigger auto-save when not in modal mode
               if (!isModal) {
-                setShouldAutoSave(true);
+                triggerAutoSave();
               }
             }}
             onEdit={(todoId, newTask) => {
-              setTodos((prev) =>
-                prev.map((t) => (t.id === todoId ? { ...t, task: newTask } : t))
-              );
-              setHasUnsavedChanges(true);
+              editTodo(todoId, newTask);
               // Trigger auto-save when not in modal mode
               if (!isModal) {
-                setShouldAutoSave(true);
+                triggerAutoSave();
               }
             }}
             onToggle={(todoId) => {
-              setTodos((prev) =>
-                prev.map((t) =>
-                  t.id === todoId ? { ...t, completed: !t.completed } : t
-                )
-              );
-              setHasUnsavedChanges(true);
+              toggleTodo(todoId);
               // Trigger auto-save when not in modal mode
               if (!isModal) {
-                setShouldAutoSave(true);
+                triggerAutoSave();
               }
             }}
           />
@@ -257,16 +175,10 @@ export const TodoCard = ({
       <button
         onClick={(e) => {
           e.stopPropagation();
-          const newTodo = {
-            id: crypto.randomUUID(),
-            task: '',
-            completed: false,
-          };
-          setTodos((prev) => [...prev, newTodo]);
-          setHasUnsavedChanges(true);
+          addTodo();
           // Trigger auto-save when not in modal mode
           if (!isModal) {
-            setShouldAutoSave(true);
+            triggerAutoSave();
           }
         }}
         className="flex items-center gap-1 text-zinc-400 hover:text-zinc-200 text-sm transition-colors mt-2 w-full justify-center py-1 rounded hover:bg-zinc-700/50"
