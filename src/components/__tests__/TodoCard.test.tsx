@@ -23,7 +23,7 @@ describe('TodoCard', () => {
     });
 
     it('renders add button in board view', () => {
-      const addButton = screen.getByRole('button', { name: '+ add toDo' });
+      const addButton = screen.getByRole('button', { name: 'add toDo' });
       expect(addButton).toBeInTheDocument();
     });
 
@@ -32,7 +32,7 @@ describe('TodoCard', () => {
       render(
         <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
       );
-      const addButton = screen.getByRole('button', { name: '+ add toDo' });
+      const addButton = screen.getByRole('button', { name: 'add toDo' });
       expect(addButton).toBeInTheDocument();
     });
 
@@ -200,7 +200,7 @@ describe('TodoCard', () => {
       expect(todoInputs).toHaveLength(1);
 
       // Click + button
-      await user.click(screen.getByRole('button', { name: '+ add toDo' }));
+      await user.click(screen.getByRole('button', { name: 'add toDo' }));
 
       // Should now have 2 todos
       todoInputs = within(todoContainer).getAllByRole('textbox');

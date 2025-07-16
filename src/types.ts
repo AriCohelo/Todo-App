@@ -29,17 +29,9 @@ export interface TodoCardProps {
   onClose?: () => void;
   focusTarget?: FocusTarget;
   onCardClick?: (card: TodoCardData, focusTarget?: FocusTarget) => void;
+  isBeingEdited?: boolean;
 }
 
-export interface TodoBoardProps {
-  todoCards: TodoCardData[];
-  onCardClick: (card: TodoCardData, focusTarget?: FocusTarget) => void;
-  onDeleteCard: (cardId: string) => void;
-  onUpdateCard: (cardData: TodoCardData) => void;
-}
-
-export interface TodoTriggerProps {
-  onOpenModal: (focusTarget?: FocusTarget) => void;
-}
+// TodoBoard and TodoTrigger no longer need props - they use context
 
 export type FocusTarget = 'title' | 'new-todo' | { type: 'todo'; index: number };

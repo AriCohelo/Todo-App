@@ -1,59 +1,10 @@
-import { useState } from 'react';
+import { TodoProvider, useTodoContext } from './context/TodoContext';
 import { TodoTrigger } from './components/TodoTrigger';
 import { TodoBoard } from './components/TodoBoard';
 import { TodoCard } from './components/TodoCard';
-import type { TodoCardData, FocusTarget } from './types';
 
-function App() {
-  const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);
-  const [modalState, setModalState] = useState({
-    isOpen: false,
-    mode: null as 'create' | 'edit' | null,
-    editingCardId: undefined as string | undefined,
-    focusTarget: undefined as FocusTarget | undefined,
-  });
-
-  const handleOpenCreateModal = (focusTarget?: FocusTarget) => {
-    setModalState({
-      isOpen: true,
-      mode: 'create',
-      editingCardId: undefined,
-      focusTarget: focusTarget || 'title',
-    });
-  };
-
-  const handleOpenEditModal = (card: TodoCardData, focusTarget?: FocusTarget) => {
-    setModalState({
-      isOpen: true,
-      mode: 'edit',
-      editingCardId: card.id,
-      focusTarget: focusTarget || 'title',
-    });
-  };
-
-  const handleCloseModal = () => {
-    setModalState({
-      isOpen: false,
-      mode: null,
-      editingCardId: undefined,
-      focusTarget: undefined,
-    });
-  };
-
-  const handleCreateCard = (cardData: TodoCardData) => {
-    setTodoCards((prev) => [...prev, cardData]);
-  };
-
-  const handleUpdateCard = (cardData: TodoCardData) => {
-    setTodoCards((prev) =>
-      prev.map((card) => (card.id === cardData.id ? cardData : card))
-    );
-  };
-
-  const handleDeleteCard = (cardId: string) => {
-    setTodoCards((prev) => prev.filter((card) => card.id !== cardId));
-  };
-
+function AppContent() {
+  const { todoCards, modalState, createCard, updateCard, deleteCard, closeModal } = useTodoContext();
 
   return (
     <div className="min-h-screen bg-zinc-700 p-4">
@@ -61,14 +12,9 @@ function App() {
         What do I Want ToDo
       </h1>
 
-      <TodoTrigger onOpenModal={handleOpenCreateModal} />
+      <TodoTrigger />
 
-      <TodoBoard
-        todoCards={todoCards}
-        onCardClick={handleOpenEditModal}
-        onDeleteCard={handleDeleteCard}
-        onUpdateCard={handleUpdateCard}
-      />
+      <TodoBoard />
 
       {/* Single modal for entire app */}
       {modalState.isOpen && (
@@ -81,14 +27,22 @@ function App() {
               : undefined
           }
           onSave={
-            modalState.mode === 'create' ? handleCreateCard : handleUpdateCard
+            modalState.mode === 'create' ? createCard : updateCard
           }
-          onClose={handleCloseModal}
-          onDelete={handleDeleteCard}
+          onClose={closeModal}
+          onDelete={deleteCard}
           focusTarget={modalState.focusTarget}
         />
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <TodoProvider>
+      <AppContent />
+    </TodoProvider>
   );
 }
 

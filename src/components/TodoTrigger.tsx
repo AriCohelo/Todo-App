@@ -1,6 +1,7 @@
-import type { TodoTriggerProps } from '../types';
+import { useTodoContext } from '../context/TodoContext';
 
-export const TodoTrigger = ({ onOpenModal }: TodoTriggerProps) => {
+export const TodoTrigger = () => {
+  const { openCreateModal } = useTodoContext();
   return (
     <div
       data-testid="todoTrigger"
@@ -12,13 +13,13 @@ export const TodoTrigger = ({ onOpenModal }: TodoTriggerProps) => {
             placeholder="Take a note..."
             className="flex-1 p-4 bg-transparent text-zinc-300 placeholder-zinc-500 outline-none rounded-l-lg"
             data-testid="todoTrigger-input"
-            onClick={() => onOpenModal('title')}
+            onClick={() => openCreateModal('title')}
             readOnly
           />
           <div className="flex items-center gap-2 pr-4">
             <button 
               className="p-2 hover:bg-zinc-700 rounded-full transition-colors"
-              onClick={() => onOpenModal('new-todo')}
+              onClick={() => openCreateModal('new-todo')}
               title="Create checklist"
             >
               <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,7 +28,7 @@ export const TodoTrigger = ({ onOpenModal }: TodoTriggerProps) => {
             </button>
             <button 
               className="p-2 hover:bg-zinc-700 rounded-full transition-colors"
-              onClick={() => onOpenModal('title')}
+              onClick={() => openCreateModal('title')}
               title="Draw"
             >
               <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,7 +37,7 @@ export const TodoTrigger = ({ onOpenModal }: TodoTriggerProps) => {
             </button>
             <button 
               className="p-2 hover:bg-zinc-700 rounded-full transition-colors"
-              onClick={() => onOpenModal('title')}
+              onClick={() => openCreateModal('title')}
               title="Add image"
             >
               <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
