@@ -14,16 +14,7 @@ function AppContent() {
   } = useTodoContext();
 
   return (
-    <div
-      className="min-h-screen p-4"
-      style={{
-        backgroundImage: 'url("/background.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div className="min-h-screen p-4 app-background">
       <h1 className="text-2xl font-bold text-center mb-8 text-[#3D3D3D]">
         What do I Want ToDo
       </h1>
