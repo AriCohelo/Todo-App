@@ -74,8 +74,8 @@ describe('TodoItem', () => {
       await user.type(input, ' updated');
 
       expect(input).toHaveValue('Test Todo updated');
-      // onEdit should NOT be called yet (only on Enter/blur)
-      expect(handlers.onEdit).not.toHaveBeenCalled();
+      // onEdit should be called on every keystroke to update hasUnsavedChanges
+      expect(handlers.onEdit).toHaveBeenCalled();
     });
   });
 });

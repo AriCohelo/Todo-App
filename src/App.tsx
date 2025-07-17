@@ -7,8 +7,13 @@ function AppContent() {
   const { todoCards, modalState, createCard, updateCard, deleteCard, closeModal } = useTodoContext();
 
   return (
-    <div className="min-h-screen bg-zinc-700 p-4">
-      <h1 className="text-2xl font-bold text-center mb-8">
+    <div 
+      className="min-h-screen p-4 bg-cover bg-center bg-fixed"
+      style={{
+        backgroundImage: 'url("./background.jpg")'
+      }}
+    >
+      <h1 className="text-2xl font-bold text-center mb-8 text-[#3D3D3D]">
         What do I Want ToDo
       </h1>
 

@@ -26,7 +26,7 @@ export const TodoItem = ({
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="flex-shrink-0 w-4 h-4 rounded border border-zinc-500 bg-zinc-800 text-zinc-400 focus:ring-0 focus:border-zinc-400 checked:bg-zinc-800 checked:border-zinc-400 accent-zinc-400"
+        className="flex-shrink-0 w-3 h-3 rounded-sm border-2 border-[#3D3D3D] bg-transparent text-[#3D3D3D] focus:ring-0 focus:border-[#3D3D3D] checked:bg-[#3D3D3D]/20"
       />
       <input
         ref={(ref) => {
@@ -47,9 +47,9 @@ export const TodoItem = ({
             onClick();
           }
         }}
-        placeholder="add task"
-        className={`flex-1 bg-transparent border-none outline-none text-sm min-w-0 ${
-          todo.completed ? 'line-through text-zinc-500' : 'no-underline'
+        placeholder="Add task"
+        className={`flex-1 bg-transparent border-none outline-none text-[18px] tracking-[3px] text-[#3D3D3D] min-w-0 ${
+          todo.completed ? 'line-through text-[#3D3D3D]/50' : 'no-underline'
         }`}
       />
       <button
@@ -57,7 +57,7 @@ export const TodoItem = ({
           e.stopPropagation();
           onDelete(todo.id);
         }}
-        className="flex-shrink-0 text-zinc-400 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-900/20"
+        className="flex-shrink-0 text-[#3D3D3D] hover:text-red-600 transition-colors p-1 rounded hover:bg-white/10"
         title="Delete item"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

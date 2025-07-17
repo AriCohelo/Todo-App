@@ -16,6 +16,7 @@ export const useInputValue = ({ initialValue, onSave }: UseInputValueProps) => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
+    onSave(e.target.value);
   };
 
   const handleEnterKey = (e: KeyboardEvent<HTMLInputElement>) => {
