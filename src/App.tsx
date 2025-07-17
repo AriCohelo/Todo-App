@@ -4,13 +4,24 @@ import { TodoBoard } from './components/TodoBoard';
 import { TodoCard } from './components/TodoCard';
 
 function AppContent() {
-  const { todoCards, modalState, createCard, updateCard, deleteCard, closeModal } = useTodoContext();
+  const {
+    todoCards,
+    modalState,
+    createCard,
+    updateCard,
+    deleteCard,
+    closeModal,
+  } = useTodoContext();
 
   return (
-    <div 
-      className="min-h-screen p-4 bg-cover bg-center bg-fixed"
+    <div
+      className="min-h-screen p-4"
       style={{
-        backgroundImage: 'url("./background.jpg")'
+        backgroundImage: 'url("/background.jpg")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
       }}
     >
       <h1 className="text-2xl font-bold text-center mb-8 text-[#3D3D3D]">
@@ -27,13 +38,11 @@ function AppContent() {
           key={modalState.editingCardId || 'create'}
           isModal={true}
           initialData={
-            modalState.mode === 'edit' 
-              ? todoCards.find(card => card.id === modalState.editingCardId)
+            modalState.mode === 'edit'
+              ? todoCards.find((card) => card.id === modalState.editingCardId)
               : undefined
           }
-          onSave={
-            modalState.mode === 'create' ? createCard : updateCard
-          }
+          onSave={modalState.mode === 'create' ? createCard : updateCard}
           onClose={closeModal}
           onDelete={deleteCard}
           focusTarget={modalState.focusTarget}
