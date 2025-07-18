@@ -17,7 +17,6 @@ export interface TodoCardData {
   id: string;
   title: string;
   todos: Todo[];
-  priority: 'high' | 'medium' | 'low';
   updatedAt: Date;
 }
 

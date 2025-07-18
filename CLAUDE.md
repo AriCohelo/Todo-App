@@ -61,3 +61,4 @@
 
 - Remember that Context API is a thing I never had use so later I would need to explain me what are we going to do in this session in where we are gonna fix the prop drilling
 - Always read the claude.md 
+- Never suggest commit messages including double quotes "

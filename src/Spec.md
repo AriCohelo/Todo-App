@@ -23,9 +23,8 @@ A modern Todo application with user authentication, personal todo lists, and a r
 - Mark todos as complete/incomplete
 - Organize todos by categories/tags
 - Search and filter todos
-- Sort todos by different criteria (date, priority, status)
+- Sort todos by different criteria (date, status)
 - Add due dates to todos
-- Add priority levels (High, Medium, Low)
 
 ### 4. Data Structure
 
@@ -48,7 +47,6 @@ interface Todo {
   task: string;
   completed: boolean;
   category?: string;
-  priority: 'high' | 'medium' | 'low';
   dueDate?: Date;
   createdAt: Date;
   updatedAt: Date;

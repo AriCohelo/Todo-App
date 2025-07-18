@@ -31,7 +31,6 @@ export const useFormState = ({ initialData, onSave, isModal, onClose }: UseFormS
       id: initialData?.id || crypto.randomUUID(),
       title: title,
       todos: todos,
-      priority: initialData?.priority || 'medium',
       updatedAt: new Date(),
     };
     onSave(cardData);

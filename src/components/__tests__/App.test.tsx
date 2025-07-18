@@ -150,7 +150,7 @@ describe('App', () => {
       // Card should be invisible in TodoBoard while being edited
       const invisibleCard = within(todoBoard).queryByDisplayValue('Original Card');
       expect(invisibleCard).toBeInTheDocument();
-      expect(invisibleCard?.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
+      expect(invisibleCard?.closest('[data-testid="todoCard"]')?.parentElement).toHaveClass('invisible');
     });
 
     it('updates existing card when Save button is clicked in edit mode', async () => {
@@ -176,7 +176,7 @@ describe('App', () => {
       // Card should be invisible in TodoBoard while being edited
       const invisibleCard = within(todoBoard).queryByDisplayValue('Original Card');
       expect(invisibleCard).toBeInTheDocument();
-      expect(invisibleCard?.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
+      expect(invisibleCard?.closest('[data-testid="todoCard"]')?.parentElement).toHaveClass('invisible');
 
       // Edit the title in the modal
       const editModal = screen.getByTestId('todoTrigger-modal');
@@ -233,7 +233,7 @@ describe('App', () => {
       // Card should be invisible in TodoBoard while being edited
       const invisibleCard = within(todoBoard).queryByDisplayValue('Test Card');
       expect(invisibleCard).toBeInTheDocument();
-      expect(invisibleCard?.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
+      expect(invisibleCard?.closest('[data-testid="todoCard"]')?.parentElement).toHaveClass('invisible');
 
       // Press ESC to close
       await user.keyboard('{Escape}');
@@ -271,7 +271,7 @@ describe('App', () => {
       // Card should be invisible in TodoBoard while being edited
       const invisibleCard = within(todoBoard).queryByDisplayValue('Test Card');
       expect(invisibleCard).toBeInTheDocument();
-      expect(invisibleCard?.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
+      expect(invisibleCard?.closest('[data-testid="todoCard"]')?.parentElement).toHaveClass('invisible');
 
       // In edit modal, click + button to add new todo
       const editModal = screen.getByTestId('todoTrigger-modal');

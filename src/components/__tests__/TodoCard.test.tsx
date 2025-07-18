@@ -91,7 +91,6 @@ describe('TodoCard', () => {
           { id: '1', task: 'First todo', completed: false },
           { id: '2', task: 'Second todo', completed: true },
         ],
-        priority: 'high',
         updatedAt: new Date(),
       };
 
@@ -112,7 +111,6 @@ describe('TodoCard', () => {
         id: '1',
         title: 'Initial Title',
         todos: [{ id: '1', task: 'Sample todo', completed: false }],
-        priority: 'high',
         updatedAt: new Date(),
       };
 
@@ -154,8 +152,7 @@ describe('TodoCard', () => {
               completed: false,
             }),
           ]),
-          priority: 'medium',
-          updatedAt: expect.any(Date),
+            updatedAt: expect.any(Date),
         })
       );
     });
@@ -181,7 +178,6 @@ describe('TodoCard', () => {
         todos: [
           { id: '1', task: 'First todo', completed: false },
         ],
-        priority: 'high',
         updatedAt: new Date(),
       };
 

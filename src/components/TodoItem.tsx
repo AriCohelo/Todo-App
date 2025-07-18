@@ -1,5 +1,6 @@
 import type { TodoItemProps } from '../types';
 import { useInputValue } from '../hooks/useInputValue';
+import { Icon } from './Icon';
 
 export const TodoItem = ({
   todo,
@@ -60,9 +61,7 @@ export const TodoItem = ({
         className="flex-shrink-0 text-[#3D3D3D] hover:text-red-600 transition-colors p-1 rounded hover:bg-white/10"
         title="Delete item"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <Icon name="x" className="w-4 h-4" alt="Delete item" />
       </button>
     </div>
   );
