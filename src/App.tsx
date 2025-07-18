@@ -14,11 +14,7 @@ function AppContent() {
   } = useTodoContext();
 
   return (
-    <div className="min-h-screen p-4 app-background">
-      <h1 className="text-2xl font-bold text-center mb-8 text-[#3D3D3D]">
-        What do I Want ToDo
-      </h1>
-
+    <div className="min-h-screen p-16 app-background">
       <TodoTrigger />
 
       <TodoBoard />

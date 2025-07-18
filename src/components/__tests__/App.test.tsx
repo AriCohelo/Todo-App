@@ -5,12 +5,6 @@ import userEvent from '@testing-library/user-event';
 
 describe('App', () => {
   describe('rendering', () => {
-    it('renders the main title "What I Want ToDo"', () => {
-      render(<App />);
-      expect(
-        screen.getByRole('heading', { name: /What do I Want ToDo/i })
-      ).toBeInTheDocument();
-    });
 
     it('renders TodoTrigger component', () => {
       render(<App />);
