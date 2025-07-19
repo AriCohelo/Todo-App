@@ -41,13 +41,18 @@ describe('TodoCard', () => {
       expect(toolbar).toBeInTheDocument();
     });
 
-    it('renders a save button in modal mode', () => {
+    it('renders a save button only in modal mode', () => {
       cleanup();
       render(
         <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
       );
       const saveButton = screen.getByRole('button', { name: 'Save' });
       expect(saveButton).toBeInTheDocument();
+    });
+
+    it('does not render a save button in board mode', () => {
+      const saveButton = screen.queryByRole('button', { name: 'Save' });
+      expect(saveButton).not.toBeInTheDocument();
     });
 
     it('renders a delete button in toolbar', () => {
@@ -60,16 +65,16 @@ describe('TodoCard', () => {
 
     it('renders empty TodoItem when no initialData', () => {
       const container = screen.getByTestId('todoItem-list');
-      // Checkboxes should be visible in both modal and board view
-      const checkboxes = within(container).queryAllByRole('checkbox');
-      expect(checkboxes).toHaveLength(1);
+      // Checkbox icons should be visible in both modal and board view
+      const checkboxIcons = within(container).queryAllByAltText('Uncompleted task');
+      expect(checkboxIcons).toHaveLength(1);
       
       // Text inputs should be there
       const textInputs = within(container).getAllByRole('textbox');
       expect(textInputs).toHaveLength(1);
     });
 
-    it('renders checkboxes in modal mode', () => {
+    it('renders checkbox icons in modal mode', () => {
       // Clean up any existing renders
       cleanup();
       
@@ -78,9 +83,8 @@ describe('TodoCard', () => {
       );
       
       const container = screen.getByTestId('todoItem-list');
-      const checkboxes = within(container).getAllByRole('checkbox');
-      expect(checkboxes).toHaveLength(1);
-      expect(checkboxes[0]).not.toBeChecked();
+      const checkboxIcons = within(container).getAllByAltText('Uncompleted task');
+      expect(checkboxIcons).toHaveLength(1);
     });
 
     it('renders TodoItems when initialData has todos', () => {

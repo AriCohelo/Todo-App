@@ -29,8 +29,8 @@ describe('TodoItem', () => {
       expect(screen.getByDisplayValue('Test Todo')).toBeInTheDocument();
     });
 
-    it('renders checkbox', () => {
-      expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    it('renders checkbox icon', () => {
+      expect(screen.getByAltText('Uncompleted task')).toBeInTheDocument();
     });
 
     it('renders delete button', () => {
@@ -60,8 +60,8 @@ describe('TodoItem', () => {
         'Test Todo updated'
       );
     });
-    it('toggles completion when checkbox is clicked', async () => {
-      await user.click(screen.getByRole('checkbox'));
+    it('toggles completion when checkbox icon is clicked', async () => {
+      await user.click(screen.getByAltText('Uncompleted task'));
       expect(handlers.onToggle).toHaveBeenCalledWith(todo.id);
     });
     it('deletes todo when delete button is clicked', async () => {

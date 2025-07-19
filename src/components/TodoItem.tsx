@@ -17,17 +17,16 @@ export const TodoItem = ({
 
   return (
     <div className="flex items-center gap-2 w-full">
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={(e) => {
+      <Icon name="grabber" className="w-4 h-4" alt="grab and drag todoItem" />
+
+      <Icon
+        name={todo.completed ? 'checkbox-checked' : 'checkbox-empty'}
+        className="flex-shrink-0 w-3 h-3 cursor-pointer"
+        onClick={(e) => {
           e.stopPropagation();
           onToggle(todo.id);
         }}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        className="flex-shrink-0 w-3 h-3 rounded-sm border-2 border-[#3D3D3D] bg-transparent text-[#3D3D3D] focus:ring-0 focus:border-[#3D3D3D] checked:bg-[#3D3D3D]/20"
+        alt={todo.completed ? 'Completed task' : 'Uncompleted task'}
       />
       <input
         ref={(ref) => {
@@ -58,7 +57,7 @@ export const TodoItem = ({
           e.stopPropagation();
           onDelete(todo.id);
         }}
-        className="flex-shrink-0 text-[#3D3D3D] hover:text-red-600 transition-colors p-1 rounded hover:bg-white/10"
+        className="flex-shrink-0 text-[#3D3D3D] hover:text-red-600 transition-colors p-1 rounded hover:bg-white/10 cursor-pointer"
         title="Delete item"
       >
         <Icon name="x" className="w-4 h-4" alt="Delete item" />

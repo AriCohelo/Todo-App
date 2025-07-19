@@ -19,7 +19,6 @@ function AppContent() {
 
       <TodoBoard />
 
-      {/* Single modal for entire app */}
       {modalState.isOpen && (
         <TodoCard
           key={modalState.editingCardId || 'create'}

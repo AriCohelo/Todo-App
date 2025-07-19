@@ -1,6 +1,6 @@
 import React from 'react';
 
-type IconName = 'plus' | 'palette' | 'trash' | 'x';
+type IconName = 'plus' | 'palette' | 'trash' | 'x' | 'grabber' | 'checkbox-checked' | 'checkbox-empty' | 'add-todoitem';
 
 interface IconProps {
   name: IconName;

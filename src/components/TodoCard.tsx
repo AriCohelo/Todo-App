@@ -16,7 +16,6 @@ export const TodoCard = ({
   onCardClick,
   isBeingEdited = false,
 }: TodoCardProps) => {
-  // Use custom hooks to manage component logic
   const {
     title,
     todos,
@@ -43,7 +42,6 @@ export const TodoCard = ({
     handleSave,
   });
 
-
   const handleBackdropClick = () => {
     if (hasUnsavedChanges) {
       handleSave();
@@ -52,20 +50,24 @@ export const TodoCard = ({
     }
   };
 
-
   const cardContent = (
     <div
-      className={`p-[6px] rounded-[20px] shadow-[0_4px_12px_rgba(0,0,0,0.25)] opacity-[0.77] hover:opacity-90 transition-all cursor-pointer w-full ${isBeingEdited ? 'invisible' : ''}`}
+      className={`p-[6px] rounded-[20px] shadow-[0_4px_12px_rgba(0,0,0,0.25)] opacity-[0.77] hover:opacity-90 transition-all cursor-pointer w-full ${
+        isBeingEdited ? 'invisible' : ''
+      }`}
       style={{
         background:
           'linear-gradient(135deg, rgba(255, 255, 255, 1.0) 0%, rgba(255, 255, 255, 1.0) 77.404%, rgba(102, 102, 102, 1.0) 100%)',
       }}
-      onClick={isBeingEdited ? undefined : () => {
-        // General click handler - defaults to title focus
-        if (!isModal && onCardClick && initialData) {
-          onCardClick(initialData, 'title');
-        }
-      }}
+      onClick={
+        isBeingEdited
+          ? undefined
+          : () => {
+              if (!isModal && onCardClick && initialData) {
+                onCardClick(initialData, 'title');
+              }
+            }
+      }
     >
       <div
         data-testid="todoCard"
@@ -80,13 +82,19 @@ export const TodoCard = ({
           type="text"
           placeholder="Enter a title..."
           value={title}
-          onChange={isBeingEdited ? undefined : (e) => updateTitle(e.target.value)}
-          onClick={isBeingEdited ? undefined : (e) => {
-            if (!isModal && onCardClick && initialData) {
-              e.stopPropagation();
-              onCardClick(initialData, 'title');
-            }
-          }}
+          onChange={
+            isBeingEdited ? undefined : (e) => updateTitle(e.target.value)
+          }
+          onClick={
+            isBeingEdited
+              ? undefined
+              : (e) => {
+                  if (!isModal && onCardClick && initialData) {
+                    e.stopPropagation();
+                    onCardClick(initialData, 'title');
+                  }
+                }
+          }
           className="w-full bg-transparent border-none outline-none font-semibold text-[23px] tracking-[3px] text-[#3D3D3D] placeholder-[#3D3D3D]/60 mb-2"
           data-testid="todoCard-title-input"
           readOnly={isBeingEdited}
@@ -99,135 +107,140 @@ export const TodoCard = ({
               inputRef={(ref: HTMLInputElement | null) => {
                 setTodoItemRef(index, ref);
               }}
-              onClick={isBeingEdited ? undefined : () => {
-                if (!isModal && onCardClick && initialData) {
-                  onCardClick(initialData, { type: 'todo', index });
-                }
-              }}
-              onDelete={isBeingEdited ? () => {} : (todoId) => {
-                deleteTodo(todoId);
-                // Trigger auto-save when not in modal mode
-                if (!isModal) {
-                  triggerAutoSave();
-                }
-              }}
-              onEdit={isBeingEdited ? () => {} : (todoId, newTask) => {
-                editTodo(todoId, newTask);
-                // Trigger auto-save when not in modal mode
-                if (!isModal) {
-                  triggerAutoSave();
-                }
-              }}
-              onToggle={isBeingEdited ? () => {} : (todoId) => {
-                toggleTodo(todoId);
-                // Trigger auto-save when not in modal mode
-                if (!isModal) {
-                  triggerAutoSave();
-                }
-              }}
+              onClick={
+                isBeingEdited
+                  ? undefined
+                  : () => {
+                      if (!isModal && onCardClick && initialData) {
+                        onCardClick(initialData, { type: 'todo', index });
+                      }
+                    }
+              }
+              onDelete={
+                isBeingEdited
+                  ? () => {}
+                  : (todoId) => {
+                      deleteTodo(todoId);
+                      if (!isModal) {
+                        triggerAutoSave();
+                      }
+                    }
+              }
+              onEdit={
+                isBeingEdited
+                  ? () => {}
+                  : (todoId, newTask) => {
+                      editTodo(todoId, newTask);
+                      if (!isModal) {
+                        triggerAutoSave();
+                      }
+                    }
+              }
+              onToggle={
+                isBeingEdited
+                  ? () => {}
+                  : (todoId) => {
+                      toggleTodo(todoId);
+                      if (!isModal) {
+                        triggerAutoSave();
+                      }
+                    }
+              }
             />
           ))}
         </div>
 
-        {/* Add todo button */}
         <button
-          onClick={isBeingEdited ? undefined : (e) => {
-            e.stopPropagation();
-            addTodo();
-            // Trigger auto-save when not in modal mode
-            if (!isModal) {
-              triggerAutoSave();
-            }
-          }}
-          className="flex items-center gap-1 text-[#3D3D3D] hover:text-[#3D3D3D]/80 text-[18px] tracking-[3px] transition-colors mt-2 w-full justify-center py-1 rounded hover:bg-white/10"
+          onClick={
+            isBeingEdited
+              ? undefined
+              : (e) => {
+                  e.stopPropagation();
+                  addTodo();
+                  if (!isModal) {
+                    triggerAutoSave();
+                  }
+                }
+          }
+          className="text-[#3D3D3D] hover:text-[#3D3D3D]/80 transition-colors mt-2 w-8 h-8 rounded hover:bg-white/10 cursor-pointer self-start"
           title="Add task"
           aria-label="add toDo"
           disabled={isBeingEdited}
         >
-          <Icon name="plus" className="w-4 h-4" alt="Add task" />
-          <span>Add task</span>
+          <Icon name="add-todoitem" className="w-8 h-8" alt="Add task" />
         </button>
-
-        <div className="mt-3 grid grid-cols-9 gap-2" role="toolbar">
-          {/* Empty spaces (columns 1-6) */}
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-
-          {/* Palette icon (column 7) */}
-          <button
-            onClick={isBeingEdited ? undefined : (e) => {
-              e.stopPropagation();
-              // Add palette functionality here
-            }}
-            className="text-[#3D3D3D] hover:text-[#3D3D3D]/80 transition-colors justify-self-center"
-            title="Color palette"
-            disabled={isBeingEdited}
-          >
-            <Icon name="palette" className="w-4 h-4" alt="Color palette" />
-          </button>
-
-          {/* Trashcan icon (column 8) */}
-          <button
-            onClick={isBeingEdited ? undefined : (e) => {
-              e.stopPropagation();
-              onDelete(initialData?.id || '');
-            }}
-            className="text-[#3D3D3D] hover:text-red-600 transition-colors justify-self-center"
-            title="Delete card"
-            disabled={isBeingEdited}
-          >
-            <Icon name="trash" className="w-4 h-4" alt="Delete card" />
-          </button>
-
-          {/* Close/Save button (column 9) */}
-          <button
-            onClick={isBeingEdited ? undefined : (e) => {
-              e.stopPropagation();
-              if (isModal) {
-                handleSave();
-              }
-              // In non-modal mode, this acts as a close/save action
-              if (!isModal && hasUnsavedChanges) {
-                handleSave();
-              }
-            }}
-            className="text-[#3D3D3D] hover:text-[#3D3D3D]/80 text-[18px] tracking-[3px] font-medium transition-colors justify-self-center"
-            title={isModal ? 'Save changes' : 'Close'}
-            disabled={isBeingEdited || (isModal && !hasUnsavedChanges)}
-          >
-            {isModal ? 'Save' : 'Close'}
-          </button>
-
-          {/* Second row - empty spaces for alignment */}
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-
-          {/* Date modified text (column 9, row 2) */}
-          <div className="text-[8px] tracking-[2px] text-[#3D3D3D] justify-self-center">
+        <div className="text-[8px] tracking-[2px] text-[#3D3D3D] w-full text-right">
+          <span>
             Edited{' '}
             {initialData?.updatedAt
               ? new Date(initialData.updatedAt).toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
                 })
-              : 'Jul 17'}
-          </div>
+              : new Date().toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                })}
+          </span>
+        </div>
+        <div className="mt-1 grid grid-cols-9" role="toolbar">
+          <button
+            onClick={
+              isBeingEdited
+                ? undefined
+                : (e) => {
+                    e.stopPropagation();
+                  }
+            }
+            className={`text-[#3D3D3D] hover:text-[#3D3D3D]/80 transition-colors justify-self-end cursor-pointer ${
+              isModal ? 'col-start-6' : 'col-start-8'
+            }`}
+            title="Color palette"
+            disabled={isBeingEdited}
+          >
+            <Icon name="palette" className="w-4 h-4" alt="Color palette" />
+          </button>
+
+          <button
+            onClick={
+              isBeingEdited
+                ? undefined
+                : (e) => {
+                    e.stopPropagation();
+                    onDelete(initialData?.id || '');
+                  }
+            }
+            className={`text-[#3D3D3D] hover:text-red-600 transition-colors justify-self-end cursor-pointer ${
+              isModal ? 'col-start-7' : 'col-start-9'
+            }`}
+            title="Delete card"
+            disabled={isBeingEdited}
+          >
+            <Icon name="trash" className="w-4 h-4" alt="Delete card" />
+          </button>
+
+          {isModal && (
+            <button
+              onClick={
+                isBeingEdited
+                  ? undefined
+                  : (e) => {
+                      e.stopPropagation();
+                      handleSave();
+                    }
+              }
+              className="text-[#3D3D3D] hover:text-[#3D3D3D]/80 text-[18px] tracking-[3px] font-medium transition-colors justify-self-end cursor-pointer col-start-8 col-span-2"
+              title="Save changes"
+              disabled={isBeingEdited || !hasUnsavedChanges}
+            >
+              Save
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 
-  // If in modal mode, wrap with modal backdrop
   if (isModal) {
     return (
       <div
@@ -246,6 +259,5 @@ export const TodoCard = ({
   }
   3;
 
-  // Otherwise, return just the card content
   return cardContent;
 };
