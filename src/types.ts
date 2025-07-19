@@ -9,8 +9,10 @@ export interface TodoItemProps {
   onDelete: (id: string) => void;
   onToggle: (id: string) => void;
   onEdit: (id: string, newTask: string) => void;
+  onReorder?: (fromIndex: number, toIndex: number) => void;
   inputRef?: React.RefObject<HTMLInputElement> | ((ref: HTMLInputElement | null) => void);
   onClick?: () => void;
+  index: number;
 }
 
 export interface TodoCardData {

@@ -26,6 +26,7 @@ export const TodoCard = ({
     deleteTodo,
     editTodo,
     toggleTodo,
+    reorderTodos,
   } = useFormState({ initialData, onSave, isModal, onClose });
 
   const { titleInputRef, setTodoItemRef } = useFocusManagement({
@@ -98,6 +99,7 @@ export const TodoCard = ({
           <TodoItem
             key={todo.id}
             todo={todo}
+            index={index}
             inputRef={(ref: HTMLInputElement | null) => {
               setTodoItemRef(index, ref);
             }}
@@ -135,6 +137,16 @@ export const TodoCard = ({
                 ? () => {}
                 : (todoId) => {
                     toggleTodo(todoId);
+                    if (!isModal) {
+                      triggerAutoSave();
+                    }
+                  }
+            }
+            onReorder={
+              isBeingEdited
+                ? undefined
+                : (fromIndex, toIndex) => {
+                    reorderTodos(fromIndex, toIndex);
                     if (!isModal) {
                       triggerAutoSave();
                     }
