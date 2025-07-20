@@ -99,8 +99,8 @@ export const TodoItem = ({
           }
         }}
         placeholder="Add task"
-        className={`flex-1 bg-transparent border-none outline-none text-[18px] tracking-[3px] text-[#3D3D3D] min-w-0 ${
-          todo.completed ? 'line-through text-[#3D3D3D]/50' : 'no-underline'
+        className={`flex-1 bg-transparent border-none outline-none text-[18px] tracking-[3px] text-gray-700 min-w-0 ${
+          todo.completed ? 'line-through text-gray-700/50' : 'no-underline'
         }`}
       />
       <button
@@ -108,7 +108,7 @@ export const TodoItem = ({
           e.stopPropagation();
           onDelete(todo.id);
         }}
-        className="flex-shrink-0 text-[#3D3D3D] hover:text-red-600 transition-colors p-1 rounded hover:bg-white/10 cursor-pointer"
+        className="flex-shrink-0 text-gray-700 hover:text-red-600 transition-colors p-1 rounded hover:bg-white/10 cursor-pointer"
         title="Delete item"
       >
         <Icon name="x" className="w-4 h-4 hover:opacity-80 transition-all" alt="Delete item" />

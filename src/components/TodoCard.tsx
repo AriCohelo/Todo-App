@@ -1,9 +1,11 @@
 import { TodoItem } from './TodoItem';
 import { Icon } from './Icon';
+import { ColorPicker } from './ColorPicker';
 import { useFormState } from '../hooks/useFormState';
 import { useFocusManagement } from '../hooks/useFocusManagement';
 import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
 import { useAutoSave } from '../hooks/useAutoSave';
+import { useState, useEffect, useRef } from 'react';
 import type { TodoCardProps } from '../types';
 
 export const TodoCard = ({
@@ -18,10 +20,12 @@ export const TodoCard = ({
 }: TodoCardProps) => {
   const {
     title,
+    backgroundColor,
     todos,
     hasUnsavedChanges,
     handleSave,
     updateTitle,
+    updateBackgroundColor,
     addTodo,
     deleteTodo,
     editTodo,
@@ -43,6 +47,47 @@ export const TodoCard = ({
     handleSave,
   });
 
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const colorPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(event.target as Node)) {
+        setShowColorPicker(false);
+      }
+    };
+
+    if (showColorPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showColorPicker]);
+
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
+  const getBackgroundStyle = () => {
+    const bgColor = backgroundColor || initialData?.backgroundColor || '#f87171';
+    return {
+      background: `linear-gradient(135deg, ${hexToRgba(bgColor, 0.4)} 0%, ${hexToRgba(bgColor, 0.1)} 100%) padding-box, linear-gradient(135deg, #FFFFFF 0%, #FFFFFF 77%, #4b5563 100%) border-box`,
+      border: '6px solid transparent',
+    };
+  };
+
+  const handleColorSelect = (color: string) => {
+    updateBackgroundColor(color);
+    if (!isModal) {
+      triggerAutoSave();
+    }
+  };
+
   const handleBackdropClick = () => {
     if (hasUnsavedChanges) {
       handleSave();
@@ -57,11 +102,7 @@ export const TodoCard = ({
       className={`p-6 rounded-3xl backdrop-blur-2xl flex flex-col relative min-h-0 shadow-xl opacity-75 hover:opacity-90 transition-all cursor-pointer w-full ${
         isBeingEdited ? 'invisible' : ''
       }`}
-      style={{
-        background:
-          'linear-gradient(135deg, rgba(255, 95, 95, 0.4) 0%, rgba(255, 95, 95, 0.1) 100%) padding-box, linear-gradient(135deg, #FFFFFF 0%, #FFFFFF 77%, #666666 100%) border-box',
-        border: '6px solid transparent',
-      }}
+      style={getBackgroundStyle()}
       onClick={
         isBeingEdited
           ? undefined
@@ -196,15 +237,24 @@ export const TodoCard = ({
               ? undefined
               : (e) => {
                   e.stopPropagation();
+                  setShowColorPicker(!showColorPicker);
                 }
           }
-          className={`text-gray-700 hover:text-gray-700/80 transition-colors justify-self-end cursor-pointer ${
+          className={`text-gray-700 hover:text-gray-700/80 transition-colors justify-self-end cursor-pointer relative ${
             isModal ? 'col-start-6' : 'col-start-8'
           }`}
           title="Color palette"
           disabled={isBeingEdited}
         >
           <Icon name="palette" className="w-4 h-4 hover:opacity-80 transition-all" alt="Color palette" />
+          {showColorPicker && (
+            <ColorPicker
+              ref={colorPickerRef}
+              selectedColor={backgroundColor || initialData?.backgroundColor}
+              onColorSelect={handleColorSelect}
+              onClose={() => setShowColorPicker(false)}
+            />
+          )}
         </button>
 
         <button
@@ -213,13 +263,29 @@ export const TodoCard = ({
               ? undefined
               : (e) => {
                   e.stopPropagation();
-                  onDelete(initialData?.id || '');
+                  if (isModal) {
+                    if (initialData) {
+                      // EDIT MODE: Delete the actual card and close modal
+                      onDelete(initialData.id);
+                      if (onClose) onClose();
+                    } else {
+                      // CREATE MODE: Just close modal (discard all changes, don't create card)
+                      if (onClose) onClose();
+                    }
+                  } else {
+                    // BOARD VIEW: Delete card (unchanged behavior)
+                    onDelete(initialData?.id || '');
+                  }
                 }
           }
           className={`text-gray-700 hover:text-red-600 transition-colors justify-self-end cursor-pointer ${
             isModal ? 'col-start-7' : 'col-start-9'
           }`}
-          title="Delete card"
+          title={
+            isModal 
+              ? (initialData ? "Delete card" : "Discard changes and close")
+              : "Delete card"
+          }
           disabled={isBeingEdited}
         >
           <Icon name="trash" className="w-4 h-4 hover:opacity-80 transition-all" alt="Delete card" />

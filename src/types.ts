@@ -20,6 +20,7 @@ export interface TodoCardData {
   title: string;
   todos: Todo[];
   updatedAt: Date;
+  backgroundColor?: string;
 }
 
 export interface TodoCardProps {

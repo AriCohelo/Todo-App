@@ -10,6 +10,7 @@ interface UseFormStateProps {
 
 export const useFormState = ({ initialData, onSave, isModal, onClose }: UseFormStateProps) => {
   const [title, setTitle] = useState(initialData?.title || '');
+  const [backgroundColor, setBackgroundColor] = useState(initialData?.backgroundColor);
   const [todos, setTodos] = useState<Todo[]>(
     initialData?.todos || [
       { id: crypto.randomUUID(), task: '', completed: false },
@@ -21,6 +22,7 @@ export const useFormState = ({ initialData, onSave, isModal, onClose }: UseFormS
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
+      setBackgroundColor(initialData.backgroundColor);
       setTodos(initialData.todos);
       setHasUnsavedChanges(false);
     }
@@ -32,16 +34,22 @@ export const useFormState = ({ initialData, onSave, isModal, onClose }: UseFormS
       title: title,
       todos: todos,
       updatedAt: new Date(),
+      backgroundColor: backgroundColor,
     };
     onSave(cardData);
     setHasUnsavedChanges(false);
     if (isModal && onClose) {
       onClose();
     }
-  }, [initialData, title, todos, onSave, isModal, onClose]);
+  }, [initialData, title, todos, backgroundColor, onSave, isModal, onClose]);
 
   const updateTitle = (newTitle: string) => {
     setTitle(newTitle);
+    setHasUnsavedChanges(true);
+  };
+
+  const updateBackgroundColor = (newColor: string) => {
+    setBackgroundColor(newColor);
     setHasUnsavedChanges(true);
   };
 
@@ -93,10 +101,12 @@ export const useFormState = ({ initialData, onSave, isModal, onClose }: UseFormS
 
   return {
     title,
+    backgroundColor,
     todos,
     hasUnsavedChanges,
     handleSave,
     updateTitle,
+    updateBackgroundColor,
     updateTodos,
     addTodo,
     deleteTodo,

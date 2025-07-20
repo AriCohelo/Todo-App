@@ -67,3 +67,9 @@
   * Preventing default behavior in drag over handler to allow dropping
   * Implementing drop handler to reorder todos by updating the state
   * Ensuring the drag and drop logic works with the existing state management approach
+- Color Picker Implementation Memory:
+  * Used a state variable to manage the selected color
+  * Created an input of type "color" to allow direct color selection
+  * Implemented an onChange handler to update the color state when a new color is picked
+  * Passed the selected color to the relevant component/state for styling or task categorization
+  * Ensured the color picker integrates smoothly with the existing todo item creation/editing flow
