@@ -64,17 +64,21 @@ export const TodoItem = ({
       onDrop={handleDrop}
       onDragEnd={handleDragEnd}
     >
-      <Icon name="grabber" className="w-4 h-4 cursor-grab active:cursor-grabbing" alt="grab and drag todoItem" />
+      <Icon name="grabber" className="w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80 transition-all" alt="grab and drag todoItem" />
 
-      <Icon
-        name={todo.completed ? 'checkbox-checked' : 'checkbox-empty'}
+      <div
         className="flex-shrink-0 w-3 h-3 cursor-pointer"
         onClick={(e) => {
           e.stopPropagation();
           onToggle(todo.id);
         }}
-        alt={todo.completed ? 'Completed task' : 'Uncompleted task'}
-      />
+      >
+        <Icon
+          name={todo.completed ? 'checkbox-checked' : 'checkbox-empty'}
+          className="w-3 h-3 hover:opacity-80 transition-all"
+          alt={todo.completed ? 'Completed task' : 'Uncompleted task'}
+        />
+      </div>
       <input
         ref={(ref) => {
           if (typeof inputRef === 'function') {
@@ -107,7 +111,7 @@ export const TodoItem = ({
         className="flex-shrink-0 text-[#3D3D3D] hover:text-red-600 transition-colors p-1 rounded hover:bg-white/10 cursor-pointer"
         title="Delete item"
       >
-        <Icon name="x" className="w-4 h-4" alt="Delete item" />
+        <Icon name="x" className="w-4 h-4 hover:opacity-80 transition-all" alt="Delete item" />
       </button>
     </div>
   );

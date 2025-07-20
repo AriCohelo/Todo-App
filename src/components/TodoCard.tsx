@@ -173,7 +173,7 @@ export const TodoCard = ({
         aria-label="add toDo"
         disabled={isBeingEdited}
       >
-        <Icon name="add-todoitem" className="w-8 h-8" alt="Add task" />
+        <Icon name="add-todoitem" className="w-8 h-8 hover:opacity-80 transition-all" alt="Add task" />
       </button>
       <div className="text-xs tracking-wide text-gray-700 w-full text-right">
         <span>
@@ -204,7 +204,7 @@ export const TodoCard = ({
           title="Color palette"
           disabled={isBeingEdited}
         >
-          <Icon name="palette" className="w-4 h-4" alt="Color palette" />
+          <Icon name="palette" className="w-4 h-4 hover:opacity-80 transition-all" alt="Color palette" />
         </button>
 
         <button
@@ -222,7 +222,7 @@ export const TodoCard = ({
           title="Delete card"
           disabled={isBeingEdited}
         >
-          <Icon name="trash" className="w-4 h-4" alt="Delete card" />
+          <Icon name="trash" className="w-4 h-4 hover:opacity-80 transition-all" alt="Delete card" />
         </button>
 
         {isModal && (
