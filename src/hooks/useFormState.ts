@@ -42,6 +42,7 @@ export const useFormState = ({ initialData, onSave, isModal, onClose }: UseFormS
   };
 
   const updateBackgroundColor = (newColor: string) => {
+    console.log('updateBackgroundColor called with:', newColor, 'current backgroundColor:', backgroundColor);
     setBackgroundColor(newColor);
     setHasUnsavedChanges(true);
   };

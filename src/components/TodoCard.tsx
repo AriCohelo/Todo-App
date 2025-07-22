@@ -5,7 +5,7 @@ import { useFormState } from '../hooks/useFormState';
 import { useFocusManagement } from '../hooks/useFocusManagement';
 import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
 import { useAutoSave } from '../hooks/useAutoSave';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { getColorById, migrateColor } from '../constants/colors';
 import type { TodoCardProps } from '../types';
 
@@ -53,7 +53,10 @@ export const TodoCard = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (colorPickerRef.current && !colorPickerRef.current.contains(event.target as Node)) {
+      if (
+        colorPickerRef.current &&
+        !colorPickerRef.current.contains(event.target as Node)
+      ) {
         setShowColorPicker(false);
       }
     };
@@ -67,12 +70,18 @@ export const TodoCard = ({
     };
   }, [showColorPicker]);
 
-  const getBackgroundClasses = () => {
+  const backgroundClasses = useMemo(() => {
     const colorValue = backgroundColor || initialData?.backgroundColor;
     const colorId = migrateColor(colorValue);
     const colorOption = getColorById(colorId);
+    console.log('backgroundClasses recalculated:', {
+      backgroundColor,
+      colorValue,
+      colorId,
+      colorOption,
+    });
     return `${colorOption.gradientClass} ${colorOption.borderClass} border-6 backdrop-blur-2xl`;
-  };
+  }, [backgroundColor, initialData?.backgroundColor]);
 
   const handleColorSelect = (color: string) => {
     updateBackgroundColor(color);
@@ -92,7 +101,7 @@ export const TodoCard = ({
   const cardContent = (
     <div
       data-testid="todoCard"
-      className={`p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 transition-all cursor-pointer w-full ${getBackgroundClasses()} ${
+      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 transition-all cursor-pointer w-full ${backgroundClasses} ${
         isBeingEdited ? 'invisible' : ''
       }`}
       onClick={
@@ -201,14 +210,24 @@ export const TodoCard = ({
                 }
               }
         }
-        className="text-gray-700 hover:text-gray-700/80 transition-colors ml-3.5 my-2 w-8 h-8 rounded hover:bg-white/10 cursor-pointer self-start"
+        className={`text-gray-700 hover:text-gray-700/80 transition-colors ml-3.5 my-2 w-8 h-8 rounded hover:bg-white/10 cursor-pointer self-start ${
+          isModal ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'
+        }`}
         title="Add task"
         aria-label="add toDo"
         disabled={isBeingEdited}
       >
-        <Icon name="add-todoitem" className="w-8 h-8 hover:opacity-80 transition-all" alt="Add task" />
+        <Icon
+          name="add-todoitem"
+          className="w-8 h-8 hover:opacity-80 transition-all"
+          alt="Add task"
+        />
       </button>
-      <div className="text-xs tracking-wide text-gray-700 w-full text-right">
+      <div
+        className={`text-xs tracking-wide text-gray-700 w-full text-right ${
+          isModal ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'
+        }`}
+      >
         <span>
           Edited{' '}
           {initialData?.updatedAt
@@ -222,7 +241,12 @@ export const TodoCard = ({
               })}
         </span>
       </div>
-      <div className="mt-1 grid grid-cols-9" role="toolbar">
+      <div
+        className={`mt-1 grid grid-cols-9 ${
+          isModal ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'
+        }`}
+        role="toolbar"
+      >
         <button
           onClick={
             isBeingEdited
@@ -238,11 +262,17 @@ export const TodoCard = ({
           title="Color palette"
           disabled={isBeingEdited}
         >
-          <Icon name="palette" className="w-4 h-4 hover:opacity-80 transition-all" alt="Color palette" />
+          <Icon
+            name="palette"
+            className="w-4 h-4 hover:opacity-80 transition-all"
+            alt="Color palette"
+          />
           {showColorPicker && (
             <ColorPicker
               ref={colorPickerRef}
-              selectedColor={migrateColor(backgroundColor || initialData?.backgroundColor)}
+              selectedColor={migrateColor(
+                backgroundColor || initialData?.backgroundColor
+              )}
               onColorSelect={handleColorSelect}
               onClose={() => setShowColorPicker(false)}
             />
@@ -274,13 +304,19 @@ export const TodoCard = ({
             isModal ? 'col-start-7' : 'col-start-9'
           }`}
           title={
-            isModal 
-              ? (initialData ? "Delete card" : "Discard changes and close")
-              : "Delete card"
+            isModal
+              ? initialData
+                ? 'Delete card'
+                : 'Discard changes and close'
+              : 'Delete card'
           }
           disabled={isBeingEdited}
         >
-          <Icon name="trash" className="w-4 h-4 hover:opacity-80 transition-all" alt="Delete card" />
+          <Icon
+            name="trash"
+            className="w-4 h-4 hover:opacity-80 transition-all"
+            alt="Delete card"
+          />
         </button>
 
         {isModal && (
@@ -312,7 +348,7 @@ export const TodoCard = ({
         onClick={handleBackdropClick}
       >
         <div
-          className="rounded-3xl shadow-lg w-full max-w-md bg-indigo-700"
+          className="rounded-3xl shadow-lg w-full max-w-md bg-white "
           onClick={(e) => e.stopPropagation()}
         >
           {cardContent}

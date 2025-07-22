@@ -13,15 +13,15 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(({
   return (
     <div 
       ref={ref}
-      className="absolute top-full right-0 mt-2 bg-black/80 backdrop-blur-md rounded-xl p-3 z-50 shadow-xl"
+      className="absolute top-full right-0 mt-2 bg-gray-900 rounded-xl p-3 z-50 shadow-xl w-max"
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="flex gap-2">
+      <div className="grid grid-cols-5 gap-2 w-max">
         {CARD_COLORS.map((colorOption) => (
           <button
             key={colorOption.id}
             onClick={(e) => handleColorClick(colorOption.id, e)}
-            className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${
+            className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 opacity-100 ${
               selectedColor === colorOption.id 
                 ? 'border-white shadow-lg' 
                 : 'border-gray-500 hover:border-gray-300'
