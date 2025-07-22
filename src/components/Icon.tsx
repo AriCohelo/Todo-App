@@ -1,14 +1,5 @@
 import React from 'react';
-
-type IconName = 'plus' | 'palette' | 'trash' | 'x' | 'grabber' | 'checkbox-checked' | 'checkbox-empty' | 'add-todoitem';
-
-interface IconProps {
-  name: IconName;
-  className?: string;
-  onClick?: (e: React.MouseEvent<HTMLImageElement>) => void;
-  title?: string;
-  alt?: string;
-}
+import type { IconProps } from '../types';
 
 export const Icon: React.FC<IconProps> = ({ name, className, onClick, title, alt }) => {
   return (

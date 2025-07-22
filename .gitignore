@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Development documentation
+CLAUDE.md
+ARCHITECTURE.md
+tasks/todo.md

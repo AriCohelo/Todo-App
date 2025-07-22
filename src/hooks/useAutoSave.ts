@@ -1,10 +1,5 @@
 import { useState, useEffect } from 'react';
-
-interface UseAutoSaveProps {
-  isModal: boolean;
-  hasUnsavedChanges: boolean;
-  handleSave: () => void;
-}
+import type { UseAutoSaveProps } from '../types';
 
 export const useAutoSave = ({ isModal, hasUnsavedChanges, handleSave }: UseAutoSaveProps) => {
   const [shouldAutoSave, setShouldAutoSave] = useState(false);

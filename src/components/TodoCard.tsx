@@ -6,6 +6,7 @@ import { useFocusManagement } from '../hooks/useFocusManagement';
 import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
 import { useAutoSave } from '../hooks/useAutoSave';
 import { useState, useEffect, useRef } from 'react';
+import { getColorById, migrateColor } from '../constants/colors';
 import type { TodoCardProps } from '../types';
 
 export const TodoCard = ({
@@ -66,19 +67,11 @@ export const TodoCard = ({
     };
   }, [showColorPicker]);
 
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
-
-  const getBackgroundStyle = () => {
-    const bgColor = backgroundColor || initialData?.backgroundColor || '#f87171';
-    return {
-      background: `linear-gradient(135deg, ${hexToRgba(bgColor, 0.4)} 0%, ${hexToRgba(bgColor, 0.1)} 100%) padding-box, linear-gradient(135deg, #FFFFFF 0%, #FFFFFF 77%, #4b5563 100%) border-box`,
-      border: '6px solid transparent',
-    };
+  const getBackgroundClasses = () => {
+    const colorValue = backgroundColor || initialData?.backgroundColor;
+    const colorId = migrateColor(colorValue);
+    const colorOption = getColorById(colorId);
+    return `${colorOption.gradientClass} ${colorOption.borderClass} border-6 backdrop-blur-2xl`;
   };
 
   const handleColorSelect = (color: string) => {
@@ -99,10 +92,9 @@ export const TodoCard = ({
   const cardContent = (
     <div
       data-testid="todoCard"
-      className={`p-6 rounded-3xl backdrop-blur-2xl flex flex-col relative min-h-0 shadow-xl opacity-75 hover:opacity-90 transition-all cursor-pointer w-full ${
+      className={`p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 transition-all cursor-pointer w-full ${getBackgroundClasses()} ${
         isBeingEdited ? 'invisible' : ''
       }`}
-      style={getBackgroundStyle()}
       onClick={
         isBeingEdited
           ? undefined
@@ -250,7 +242,7 @@ export const TodoCard = ({
           {showColorPicker && (
             <ColorPicker
               ref={colorPickerRef}
-              selectedColor={backgroundColor || initialData?.backgroundColor}
+              selectedColor={migrateColor(backgroundColor || initialData?.backgroundColor)}
               onColorSelect={handleColorSelect}
               onClose={() => setShowColorPicker(false)}
             />
@@ -328,7 +320,6 @@ export const TodoCard = ({
       </div>
     );
   }
-  3;
 
   return cardContent;
 };

@@ -1,28 +1,12 @@
 
 import React from 'react';
-
-const COLORS = [
-  "#77172e",
-  "#692b17", 
-  "#7c4a03",
-  "#264d3b",
-  "#0c625d",
-  "#256377",
-  "#284255",
-  "#472e5b",
-  "#4b443a"
-];
-
-interface ColorPickerProps {
-  selectedColor?: string;
-  onColorSelect: (color: string) => void;
-  onClose: () => void;
-}
+import { CARD_COLORS } from '../constants/colors';
+import type { ColorPickerProps } from '../types';
 
 export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(({ selectedColor, onColorSelect, onClose }, ref) => {
-  const handleColorClick = (color: string, e: React.MouseEvent) => {
+  const handleColorClick = (colorId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    onColorSelect(color);
+    onColorSelect(colorId);
     onClose();
   };
 
@@ -33,17 +17,17 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(({
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex gap-2">
-        {COLORS.map((color) => (
+        {CARD_COLORS.map((colorOption) => (
           <button
-            key={color}
-            onClick={(e) => handleColorClick(color, e)}
+            key={colorOption.id}
+            onClick={(e) => handleColorClick(colorOption.id, e)}
             className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${
-              selectedColor === color 
+              selectedColor === colorOption.id 
                 ? 'border-white shadow-lg' 
                 : 'border-gray-500 hover:border-gray-300'
             }`}
-            style={{ backgroundColor: color }}
-            title={`Select ${color}`}
+            style={{ backgroundColor: colorOption.hexColor }}
+            title={`Select ${colorOption.name}`}
           />
         ))}
       </div>

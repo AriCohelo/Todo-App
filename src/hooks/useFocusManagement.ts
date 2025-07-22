@@ -1,11 +1,5 @@
 import { useRef, useEffect } from 'react';
-import type { FocusTarget, Todo } from '../types';
-
-interface UseFocusManagementProps {
-  isModal: boolean;
-  focusTarget?: FocusTarget;
-  todos: Todo[];
-}
+import type { UseFocusManagementProps } from '../types';
 
 export const useFocusManagement = ({ isModal, focusTarget, todos }: UseFocusManagementProps) => {
   const titleInputRef = useRef<HTMLInputElement>(null);

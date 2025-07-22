@@ -1,9 +1,5 @@
 import { useEffect, useCallback } from 'react';
-
-interface UseKeyboardEventsProps {
-  isModal: boolean;
-  onClose?: () => void;
-}
+import type { UseKeyboardEventsProps } from '../types';
 
 export const useKeyboardEvents = ({ isModal, onClose }: UseKeyboardEventsProps) => {
   const handleEscKey = useCallback(

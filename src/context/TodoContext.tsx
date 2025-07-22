@@ -1,32 +1,7 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import type { TodoCardData, FocusTarget } from '../types';
-
-interface ModalState {
-  isOpen: boolean;
-  mode: 'create' | 'edit' | null;
-  editingCardId?: string;
-  focusTarget?: FocusTarget;
-}
-
-interface TodoContextType {
-  // State
-  todoCards: TodoCardData[];
-  modalState: ModalState;
-  
-  // Actions
-  createCard: (cardData: TodoCardData) => void;
-  updateCard: (cardData: TodoCardData) => void;
-  deleteCard: (cardId: string) => void;
-  openCreateModal: (focusTarget?: FocusTarget) => void;
-  openEditModal: (card: TodoCardData, focusTarget?: FocusTarget) => void;
-  closeModal: () => void;
-}
+import { createContext, useContext, useState } from 'react';
+import type { TodoCardData, FocusTarget, ModalState, TodoContextType, TodoProviderProps } from '../types';
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
-
-interface TodoProviderProps {
-  children: ReactNode;
-}
 
 export const TodoProvider = ({ children }: TodoProviderProps) => {
   const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);

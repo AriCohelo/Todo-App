@@ -1,7 +1,36 @@
+// =============================================================================
+// DOMAIN TYPES
+// =============================================================================
+
 export interface Todo {
   id: string;
   task: string;
   completed: boolean;
+}
+
+export interface TodoCardData {
+  id: string;
+  title: string;
+  todos: Todo[];
+  updatedAt: Date;
+  backgroundColor?: string; // Color ID from CARD_COLORS (e.g. 'rose', 'blue', etc.)
+}
+
+export type FocusTarget = 'title' | 'new-todo' | { type: 'todo'; index: number };
+
+// =============================================================================
+// COMPONENT PROPS
+// =============================================================================
+
+export interface TodoCardProps {
+  initialData?: TodoCardData;
+  onSave: (cardData: TodoCardData) => void;
+  onDelete: (cardId: string) => void;
+  isModal?: boolean;
+  onClose?: () => void;
+  focusTarget?: FocusTarget;
+  onCardClick?: (card: TodoCardData, focusTarget?: FocusTarget) => void;
+  isBeingEdited?: boolean;
 }
 
 export interface TodoItemProps {
@@ -15,25 +44,92 @@ export interface TodoItemProps {
   index: number;
 }
 
-export interface TodoCardData {
-  id: string;
-  title: string;
-  todos: Todo[];
-  updatedAt: Date;
-  backgroundColor?: string;
+export interface ColorPickerProps {
+  selectedColor?: string;
+  onColorSelect: (colorId: string) => void;
+  onClose: () => void;
 }
 
-export interface TodoCardProps {
+export type IconName = 'plus' | 'palette' | 'trash' | 'x' | 'grabber' | 'checkbox-checked' | 'checkbox-empty' | 'add-todoitem';
+
+export interface IconProps {
+  name: IconName;
+  className?: string;
+  onClick?: (e: React.MouseEvent<HTMLImageElement>) => void;
+  title?: string;
+  alt?: string;
+}
+
+// =============================================================================
+// HOOK PROPS
+// =============================================================================
+
+export interface UseFormStateProps {
   initialData?: TodoCardData;
   onSave: (cardData: TodoCardData) => void;
-  onDelete: (cardId: string) => void;
-  isModal?: boolean;
+  isModal: boolean;
   onClose?: () => void;
-  focusTarget?: FocusTarget;
-  onCardClick?: (card: TodoCardData, focusTarget?: FocusTarget) => void;
-  isBeingEdited?: boolean;
 }
 
-// TodoBoard and TodoTrigger no longer need props - they use context
+export interface UseFocusManagementProps {
+  isModal: boolean;
+  focusTarget?: FocusTarget;
+  todos: Todo[];
+}
 
-export type FocusTarget = 'title' | 'new-todo' | { type: 'todo'; index: number };
+export interface UseKeyboardEventsProps {
+  isModal: boolean;
+  onClose?: () => void;
+}
+
+export interface UseAutoSaveProps {
+  isModal: boolean;
+  hasUnsavedChanges: boolean;
+  handleSave: () => void;
+}
+
+export interface UseInputValueProps {
+  initialValue: string;
+  onSave: (value: string) => void;
+}
+
+// =============================================================================
+// CONTEXT TYPES
+// =============================================================================
+
+export interface ModalState {
+  isOpen: boolean;
+  mode: 'create' | 'edit' | null;
+  editingCardId?: string;
+  focusTarget?: FocusTarget;
+}
+
+export interface TodoContextType {
+  // State
+  todoCards: TodoCardData[];
+  modalState: ModalState;
+  
+  // Actions
+  createCard: (cardData: TodoCardData) => void;
+  updateCard: (cardData: TodoCardData) => void;
+  deleteCard: (cardId: string) => void;
+  openCreateModal: (focusTarget?: FocusTarget) => void;
+  openEditModal: (card: TodoCardData, focusTarget?: FocusTarget) => void;
+  closeModal: () => void;
+}
+
+export interface TodoProviderProps {
+  children: React.ReactNode;
+}
+
+// =============================================================================
+// UTILITY TYPES
+// =============================================================================
+
+export interface ColorOption {
+  id: string;
+  name: string;
+  hexColor: string; // For display purposes
+  gradientClass: string; // Tailwind gradient class
+  borderClass: string; // Border class for the card
+}

@@ -1,12 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Todo, TodoCardData } from '../types';
-
-interface UseFormStateProps {
-  initialData?: TodoCardData;
-  onSave: (cardData: TodoCardData) => void;
-  isModal: boolean;
-  onClose?: () => void;
-}
+import type { Todo, TodoCardData, UseFormStateProps } from '../types';
 
 export const useFormState = ({ initialData, onSave, isModal, onClose }: UseFormStateProps) => {
   const [title, setTitle] = useState(initialData?.title || '');

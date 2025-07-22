@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { KeyboardEvent, ChangeEvent } from 'react';
-
-interface UseInputValueProps {
-  initialValue: string;
-  onSave: (value: string) => void;
-}
+import type { UseInputValueProps } from '../types';
 
 export const useInputValue = ({ initialValue, onSave }: UseInputValueProps) => {
   const [value, setValue] = useState(initialValue);
