@@ -12,12 +12,19 @@ export const TodoItem = ({
   inputRef,
   onClick,
   index,
+  isBeingEdited = false,
+  autoSave,
 }: TodoItemProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const { value, handleChange, handleEnterKey, handleBlur } = useInputValue({
     initialValue: todo.task,
-    onSave: (value) => onEdit(todo.id, value),
+    onSave: (value) => {
+      if (!isBeingEdited) {
+        onEdit(todo.id, value);
+        autoSave?.();
+      }
+    },
   });
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -41,8 +48,9 @@ export const TodoItem = ({
     setDragOver(false);
     
     const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
-    if (draggedIndex !== index && onReorder) {
+    if (draggedIndex !== index && onReorder && !isBeingEdited) {
       onReorder(draggedIndex, index);
+      autoSave?.();
     }
   };
 
@@ -69,8 +77,11 @@ export const TodoItem = ({
       <div
         className="flex-shrink-0 w-3 h-3 cursor-pointer"
         onClick={(e) => {
-          e.stopPropagation();
-          onToggle(todo.id);
+          if (!isBeingEdited) {
+            e.stopPropagation();
+            onToggle(todo.id);
+            autoSave?.();
+          }
         }}
       >
         <Icon
@@ -89,11 +100,12 @@ export const TodoItem = ({
         }}
         type="text"
         value={value}
-        onChange={handleChange}
-        onKeyDown={handleEnterKey}
-        onBlur={handleBlur}
+        onChange={isBeingEdited ? undefined : handleChange}
+        onKeyDown={isBeingEdited ? undefined : handleEnterKey}
+        onBlur={isBeingEdited ? undefined : handleBlur}
+        readOnly={isBeingEdited}
         onClick={(e) => {
-          if (onClick) {
+          if (onClick && !isBeingEdited) {
             e.stopPropagation();
             onClick();
           }
@@ -105,11 +117,15 @@ export const TodoItem = ({
       />
       <button
         onClick={(e) => {
-          e.stopPropagation();
-          onDelete(todo.id);
+          if (!isBeingEdited) {
+            e.stopPropagation();
+            onDelete(todo.id);
+            autoSave?.();
+          }
         }}
         className="flex-shrink-0 text-gray-700 hover:text-red-600 transition-colors p-1 rounded hover:bg-white/10 cursor-pointer"
         title="Delete item"
+        disabled={isBeingEdited}
       >
         <Icon name="x" className="w-4 h-4 hover:opacity-80 transition-all" alt="Delete item" />
       </button>

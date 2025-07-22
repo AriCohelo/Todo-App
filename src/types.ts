@@ -42,6 +42,8 @@ export interface TodoItemProps {
   inputRef?: React.RefObject<HTMLInputElement> | ((ref: HTMLInputElement | null) => void);
   onClick?: () => void;
   index: number;
+  isBeingEdited?: boolean;
+  autoSave?: () => void;
 }
 
 export interface ColorPickerProps {

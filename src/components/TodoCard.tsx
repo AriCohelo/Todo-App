@@ -1,12 +1,10 @@
 import { TodoItem } from './TodoItem';
 import { Icon } from './Icon';
-import { ColorPicker } from './ColorPicker';
-import { useFormState } from '../hooks/useFormState';
-import { useFocusManagement } from '../hooks/useFocusManagement';
+import { CardToolbar } from './CardToolbar';
+import { useCardState } from '../hooks/useCardState';
+import { useCardRefs } from '../hooks/useCardRefs';
 import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
-import { useAutoSave } from '../hooks/useAutoSave';
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { getColorById, migrateColor } from '../constants/colors';
+import { getCardStyling } from '../utils/cardStyling';
 import type { TodoCardProps } from '../types';
 
 export const TodoCard = ({
@@ -19,89 +17,14 @@ export const TodoCard = ({
   onCardClick,
   isBeingEdited = false,
 }: TodoCardProps) => {
-  const {
-    title,
-    backgroundColor,
-    todos,
-    hasUnsavedChanges,
-    handleSave,
-    updateTitle,
-    updateBackgroundColor,
-    addTodo,
-    deleteTodo,
-    editTodo,
-    toggleTodo,
-    reorderTodos,
-  } = useFormState({ initialData, onSave, isModal, onClose });
-
-  const { titleInputRef, setTodoItemRef } = useFocusManagement({
-    isModal,
-    focusTarget,
-    todos,
-  });
-
+  const cardState = useCardState({ initialData, onSave, isModal, onClose });
+  const cardRefs = useCardRefs({ isModal, focusTarget, todos: cardState.todos });
   useKeyboardEvents({ isModal, onClose });
-
-  const { triggerAutoSave } = useAutoSave({
-    isModal,
-    hasUnsavedChanges,
-    handleSave,
-  });
-
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const colorPickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        colorPickerRef.current &&
-        !colorPickerRef.current.contains(event.target as Node)
-      ) {
-        setShowColorPicker(false);
-      }
-    };
-
-    if (showColorPicker) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showColorPicker]);
-
-  const backgroundClasses = useMemo(() => {
-    const colorValue = backgroundColor || initialData?.backgroundColor;
-    const colorId = migrateColor(colorValue);
-    const colorOption = getColorById(colorId);
-    console.log('backgroundClasses recalculated:', {
-      backgroundColor,
-      colorValue,
-      colorId,
-      colorOption,
-    });
-    return `${colorOption.gradientClass} ${colorOption.borderClass} border-6 backdrop-blur-2xl`;
-  }, [backgroundColor, initialData?.backgroundColor]);
-
-  const handleColorSelect = (color: string) => {
-    updateBackgroundColor(color);
-    if (!isModal) {
-      triggerAutoSave();
-    }
-  };
-
-  const handleBackdropClick = () => {
-    if (hasUnsavedChanges) {
-      handleSave();
-    } else {
-      if (onClose) onClose();
-    }
-  };
 
   const cardContent = (
     <div
       data-testid="todoCard"
-      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 transition-all cursor-pointer w-full ${backgroundClasses} ${
+      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 transition-all cursor-pointer w-full ${getCardStyling(cardState.backgroundColor || initialData?.backgroundColor)} ${
         isBeingEdited ? 'invisible' : ''
       }`}
       onClick={
@@ -115,12 +38,12 @@ export const TodoCard = ({
       }
     >
       <input
-        ref={titleInputRef}
+        ref={cardRefs.titleInputRef}
         type="text"
         placeholder="Enter a title..."
-        value={title}
+        value={cardState.title}
         onChange={
-          isBeingEdited ? undefined : (e) => updateTitle(e.target.value)
+          isBeingEdited ? undefined : (e) => cardState.updateTitle(e.target.value)
         }
         onClick={
           isBeingEdited
@@ -137,63 +60,25 @@ export const TodoCard = ({
         readOnly={isBeingEdited}
       />
       <div data-testid="todoItem-list" className="space-y-1 flex-1">
-        {todos.map((todo, index) => (
+        {cardState.todos.map((todo, index) => (
           <TodoItem
             key={todo.id}
             todo={todo}
             index={index}
             inputRef={(ref: HTMLInputElement | null) => {
-              setTodoItemRef(index, ref);
+              cardRefs.setTodoItemRef(index, ref);
             }}
-            onClick={
-              isBeingEdited
-                ? undefined
-                : () => {
-                    if (!isModal && onCardClick && initialData) {
-                      onCardClick(initialData, { type: 'todo', index });
-                    }
-                  }
-            }
-            onDelete={
-              isBeingEdited
-                ? () => {}
-                : (todoId) => {
-                    deleteTodo(todoId);
-                    if (!isModal) {
-                      triggerAutoSave();
-                    }
-                  }
-            }
-            onEdit={
-              isBeingEdited
-                ? () => {}
-                : (todoId, newTask) => {
-                    editTodo(todoId, newTask);
-                    if (!isModal) {
-                      triggerAutoSave();
-                    }
-                  }
-            }
-            onToggle={
-              isBeingEdited
-                ? () => {}
-                : (todoId) => {
-                    toggleTodo(todoId);
-                    if (!isModal) {
-                      triggerAutoSave();
-                    }
-                  }
-            }
-            onReorder={
-              isBeingEdited
-                ? undefined
-                : (fromIndex, toIndex) => {
-                    reorderTodos(fromIndex, toIndex);
-                    if (!isModal) {
-                      triggerAutoSave();
-                    }
-                  }
-            }
+            onClick={() => {
+              if (!isModal && onCardClick && initialData) {
+                onCardClick(initialData, { type: 'todo', index });
+              }
+            }}
+            onDelete={cardState.deleteTodo}
+            onEdit={cardState.editTodo}
+            onToggle={cardState.toggleTodo}
+            onReorder={cardState.reorderTodos}
+            isBeingEdited={isBeingEdited}
+            autoSave={!isModal ? cardState.triggerAutoSave : undefined}
           />
         ))}
       </div>
@@ -204,9 +89,9 @@ export const TodoCard = ({
             ? undefined
             : (e) => {
                 e.stopPropagation();
-                addTodo();
+                cardState.addTodo();
                 if (!isModal) {
-                  triggerAutoSave();
+                  cardState.triggerAutoSave();
                 }
               }
         }
@@ -241,102 +126,20 @@ export const TodoCard = ({
               })}
         </span>
       </div>
-      <div
-        className={`mt-1 grid grid-cols-9 ${
-          isModal ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'
-        }`}
-        role="toolbar"
-      >
-        <button
-          onClick={
-            isBeingEdited
-              ? undefined
-              : (e) => {
-                  e.stopPropagation();
-                  setShowColorPicker(!showColorPicker);
-                }
-          }
-          className={`text-gray-700 hover:text-gray-700/80 transition-colors justify-self-end cursor-pointer relative ${
-            isModal ? 'col-start-6' : 'col-start-8'
-          }`}
-          title="Color palette"
-          disabled={isBeingEdited}
-        >
-          <Icon
-            name="palette"
-            className="w-4 h-4 hover:opacity-80 transition-all"
-            alt="Color palette"
-          />
-          {showColorPicker && (
-            <ColorPicker
-              ref={colorPickerRef}
-              selectedColor={migrateColor(
-                backgroundColor || initialData?.backgroundColor
-              )}
-              onColorSelect={handleColorSelect}
-              onClose={() => setShowColorPicker(false)}
-            />
-          )}
-        </button>
-
-        <button
-          onClick={
-            isBeingEdited
-              ? undefined
-              : (e) => {
-                  e.stopPropagation();
-                  if (isModal) {
-                    if (initialData) {
-                      // EDIT MODE: Delete the actual card and close modal
-                      onDelete(initialData.id);
-                      if (onClose) onClose();
-                    } else {
-                      // CREATE MODE: Just close modal (discard all changes, don't create card)
-                      if (onClose) onClose();
-                    }
-                  } else {
-                    // BOARD VIEW: Delete card (unchanged behavior)
-                    onDelete(initialData?.id || '');
-                  }
-                }
-          }
-          className={`text-gray-700 hover:text-red-600 transition-colors justify-self-end cursor-pointer ${
-            isModal ? 'col-start-7' : 'col-start-9'
-          }`}
-          title={
-            isModal
-              ? initialData
-                ? 'Delete card'
-                : 'Discard changes and close'
-              : 'Delete card'
-          }
-          disabled={isBeingEdited}
-        >
-          <Icon
-            name="trash"
-            className="w-4 h-4 hover:opacity-80 transition-all"
-            alt="Delete card"
-          />
-        </button>
-
-        {isModal && (
-          <button
-            onClick={
-              isBeingEdited
-                ? undefined
-                : (e) => {
-                    e.stopPropagation();
-                    handleSave();
-                  }
-            }
-            className="text-gray-700 hover:text-gray-700/80 text-lg tracking-widest font-medium transition-colors justify-self-end cursor-pointer col-start-8 col-span-2"
-            title="Save changes"
-            disabled={isBeingEdited || !hasUnsavedChanges}
-          >
-            Save
-          </button>
-        )}
-      </div>
+      <CardToolbar
+        isModal={isModal}
+        isBeingEdited={isBeingEdited}
+        initialData={initialData}
+        backgroundColor={cardState.backgroundColor}
+        hasUnsavedChanges={cardState.hasUnsavedChanges}
+        onColorSelect={(color: string) => {
+          cardState.updateBackgroundColor(color);
+          if (!isModal) cardState.triggerAutoSave();
+        }}
+        onDelete={onDelete}
+        onClose={onClose}
+        onSave={cardState.handleSave}
+      />
     </div>
   );
 
@@ -345,7 +148,7 @@ export const TodoCard = ({
       <div
         data-testid="todoTrigger-modal"
         className="fixed inset-0 bg-indigo-900/30 flex items-center justify-center p-4"
-        onClick={handleBackdropClick}
+        onClick={() => cardState.hasUnsavedChanges ? cardState.handleSave() : onClose?.()}
       >
         <div
           className="rounded-3xl shadow-lg w-full max-w-md bg-white "
