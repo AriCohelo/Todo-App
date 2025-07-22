@@ -6,6 +6,7 @@ import { useCardRefs } from '../hooks/useCardRefs';
 import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
 import { getCardStyling } from '../utils/cardStyling';
 import type { TodoCardProps } from '../types';
+import { useState, useRef } from 'react';
 
 export const TodoCard = ({
   initialData,
@@ -21,10 +22,56 @@ export const TodoCard = ({
   const cardRefs = useCardRefs({ isModal, focusTarget, todos: cardState.todos });
   useKeyboardEvents({ isModal, onClose });
 
+  // Drag and drop state
+  const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
+  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
+  const dragLeaveTimeoutRef = useRef<number | null>(null);
+
+  const handleDragStart = (index: number) => {
+    setDraggedItemIndex(index);
+  };
+
+  const handleDragOver = (index: number) => {
+    if (draggedItemIndex !== null && draggedItemIndex !== index) {
+      // Clear any pending drag leave timeout
+      if (dragLeaveTimeoutRef.current) {
+        clearTimeout(dragLeaveTimeoutRef.current);
+        dragLeaveTimeoutRef.current = null;
+      }
+      setDropTargetIndex(index);
+    }
+  };
+
+  const handleDragLeave = () => {
+    // Use a small timeout to prevent flickering when moving between child elements
+    dragLeaveTimeoutRef.current = setTimeout(() => {
+      setDropTargetIndex(null);
+    }, 50);
+  };
+
+  const handleDrop = (fromIndex: number, toIndex: number) => {
+    setDraggedItemIndex(null);
+    setDropTargetIndex(null);
+    cardState.reorderTodos(fromIndex, toIndex);
+    if (!isModal) {
+      cardState.triggerAutoSave();
+    }
+  };
+
+  const handleDragEnd = () => {
+    // Clear any pending timeout
+    if (dragLeaveTimeoutRef.current) {
+      clearTimeout(dragLeaveTimeoutRef.current);
+      dragLeaveTimeoutRef.current = null;
+    }
+    setDraggedItemIndex(null);
+    setDropTargetIndex(null);
+  };
+
   const cardContent = (
     <div
       data-testid="todoCard"
-      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 transition-all cursor-pointer w-full ${getCardStyling(cardState.backgroundColor || initialData?.backgroundColor)} ${
+      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 ${isBeingEdited ? '' : 'transition-all'} cursor-pointer w-full ${getCardStyling(cardState.backgroundColor || initialData?.backgroundColor)} ${
         isBeingEdited ? 'invisible' : ''
       }`}
       onClick={
@@ -76,7 +123,13 @@ export const TodoCard = ({
             onDelete={cardState.deleteTodo}
             onEdit={cardState.editTodo}
             onToggle={cardState.toggleTodo}
-            onReorder={cardState.reorderTodos}
+            onReorder={handleDrop}
+            onDragStart={() => handleDragStart(index)}
+            onDragOver={() => handleDragOver(index)}
+            onDragLeave={handleDragLeave}
+            onDragEnd={handleDragEnd}
+            isBeingDragged={draggedItemIndex === index}
+            isDropTarget={dropTargetIndex === index && draggedItemIndex !== index}
             isBeingEdited={isBeingEdited}
             autoSave={!isModal ? cardState.triggerAutoSave : undefined}
           />

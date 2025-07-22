@@ -44,6 +44,12 @@ export interface TodoItemProps {
   index: number;
   isBeingEdited?: boolean;
   autoSave?: () => void;
+  onDragStart?: () => void;
+  onDragOver?: () => void;
+  onDragLeave?: () => void;
+  onDragEnd?: () => void;
+  isBeingDragged?: boolean;
+  isDropTarget?: boolean;
 }
 
 export interface ColorPickerProps {
