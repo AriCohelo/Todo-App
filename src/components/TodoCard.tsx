@@ -127,31 +127,6 @@ export const TodoCard = ({
         ))}
       </div>
 
-      <button
-        onClick={
-          isBeingEdited
-            ? undefined
-            : (e) => {
-                e.stopPropagation();
-                cardState.addTodo();
-                if (!isModal) {
-                  cardState.triggerAutoSave();
-                }
-              }
-        }
-        className={`text-gray-700 hover:text-gray-700/80 transition-colors ml-3.5 my-2 w-8 h-8 rounded hover:bg-white/10 cursor-pointer self-start ${
-          isModal ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'
-        }`}
-        title="Add task"
-        aria-label="add toDo"
-        disabled={isBeingEdited}
-      >
-        <Icon
-          name="add-todoitem"
-          className="w-8 h-8 hover:opacity-80 transition-all"
-          alt="Add task"
-        />
-      </button>
       <div
         className={`text-xs tracking-wide text-gray-700 w-full text-right ${
           isModal ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'
@@ -184,6 +159,12 @@ export const TodoCard = ({
         onClose={onClose}
         onSave={cardState.handleSave}
         onColorPickerToggle={setIsColorPickerOpen}
+        onAddTodo={() => {
+          cardState.addTodo();
+          if (!isModal) {
+            cardState.triggerAutoSave();
+          }
+        }}
       />
     </div>
   );

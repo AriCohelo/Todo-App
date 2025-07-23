@@ -71,6 +71,7 @@ export interface CardToolbarProps {
   onClose?: () => void;
   onSave: () => void;
   onColorPickerToggle?: (isOpen: boolean) => void;
+  onAddTodo: () => void;
 }
 
 export type IconName = 'plus' | 'palette' | 'trash' | 'x' | 'grabber' | 'checkbox-checked' | 'checkbox-empty' | 'add-todoitem';

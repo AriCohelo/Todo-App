@@ -267,7 +267,8 @@ describe('TodoCard', () => {
 
       const todoContainer = screen.getByTestId('todoItem-list');
       const todoInput = within(todoContainer).getByDisplayValue('');
-      await user.type(todoInput, 'New todo task{Enter}');
+      await user.type(todoInput, 'New todo task');
+      todoInput.blur();
 
       expect(saveButton).toBeEnabled();
     });

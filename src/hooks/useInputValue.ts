@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { KeyboardEvent, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import type { UseInputValueProps } from '../types';
 
 export const useInputValue = ({ initialValue, onSave }: UseInputValueProps) => {
@@ -15,12 +15,6 @@ export const useInputValue = ({ initialValue, onSave }: UseInputValueProps) => {
     onSave(e.target.value);
   };
 
-  const handleEnterKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      onSave(value);
-    }
-  };
-
   const handleBlur = () => {
     onSave(value);
   };
@@ -28,7 +22,6 @@ export const useInputValue = ({ initialValue, onSave }: UseInputValueProps) => {
   return {
     value,
     handleChange,
-    handleEnterKey,
     handleBlur,
   };
 };

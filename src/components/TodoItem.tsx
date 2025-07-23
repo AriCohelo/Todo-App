@@ -7,7 +7,6 @@ export const TodoItem = ({
   onDelete,
   onToggle,
   onEdit,
-  onReorder,
   inputRef,
   onClick,
   index,
@@ -22,7 +21,7 @@ export const TodoItem = ({
   draggedItemIndex = null,
   onDrop,
 }: TodoItemProps) => {
-  const { value, handleChange, handleEnterKey, handleBlur } = useInputValue({
+  const { value, handleChange, handleBlur } = useInputValue({
     initialValue: todo.task,
     onSave: (value) => {
       if (!isBeingEdited) {
@@ -78,7 +77,6 @@ export const TodoItem = ({
         type="text"
         value={value}
         onChange={isBeingEdited ? undefined : handleChange}
-        onKeyDown={isBeingEdited ? undefined : handleEnterKey}
         onBlur={isBeingEdited ? undefined : handleBlur}
         readOnly={isBeingEdited}
         onClick={(e) => {

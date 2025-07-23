@@ -41,14 +41,6 @@ describe('TodoItem', () => {
   });
 
   describe('interactions', () => {
-    it('edits task when Enter is pressed', async () => {
-      const input = screen.getByDisplayValue('Test Todo');
-      await user.type(input, ' updated{Enter}');
-      expect(handlers.onEdit).toHaveBeenCalledWith(
-        todo.id,
-        'Test Todo updated'
-      );
-    });
     it('edits task when input loses focus (blur)', async () => {
       const input = screen.getByDisplayValue('Test Todo');
 

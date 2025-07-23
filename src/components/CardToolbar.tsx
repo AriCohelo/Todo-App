@@ -15,6 +15,7 @@ export const CardToolbar = ({
   onClose,
   onSave,
   onColorPickerToggle,
+  onAddTodo,
 }: CardToolbarProps) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
 
@@ -50,6 +51,27 @@ export const CardToolbar = ({
       }`}
       role="toolbar"
     >
+      <button
+        onClick={
+          isBeingEdited
+            ? undefined
+            : (e) => {
+                e.stopPropagation();
+                onAddTodo();
+              }
+        }
+        className="text-gray-700 hover:text-gray-700/80 transition-colors justify-self-start cursor-pointer col-start-1"
+        title="Add task"
+        aria-label="add toDo"
+        disabled={isBeingEdited}
+      >
+        <Icon
+          name="add-todoitem"
+          className="w-8 h-8 hover:opacity-80 transition-all"
+          alt="Add task"
+        />
+      </button>
+
       <button
         onClick={
           isBeingEdited
