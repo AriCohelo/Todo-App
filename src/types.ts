@@ -58,6 +58,18 @@ export interface ColorPickerProps {
   onClose: () => void;
 }
 
+export interface CardToolbarProps {
+  isModal: boolean;
+  isBeingEdited: boolean;
+  initialData?: TodoCardData;
+  backgroundColor?: string;
+  hasUnsavedChanges: boolean;
+  onColorSelect: (color: string) => void;
+  onDelete: (cardId: string) => void;
+  onClose?: () => void;
+  onSave: () => void;
+}
+
 export type IconName = 'plus' | 'palette' | 'trash' | 'x' | 'grabber' | 'checkbox-checked' | 'checkbox-empty' | 'add-todoitem';
 
 export interface IconProps {
@@ -99,6 +111,19 @@ export interface UseAutoSaveProps {
 export interface UseInputValueProps {
   initialValue: string;
   onSave: (value: string) => void;
+}
+
+export interface UseCardStateProps {
+  initialData?: TodoCardData;
+  onSave: (cardData: TodoCardData) => void;
+  isModal: boolean;
+  onClose?: () => void;
+}
+
+export interface UseCardRefsProps {
+  isModal: boolean;
+  focusTarget?: FocusTarget;
+  todos: Todo[];
 }
 
 // =============================================================================

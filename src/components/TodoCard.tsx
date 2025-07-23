@@ -19,7 +19,11 @@ export const TodoCard = ({
   isBeingEdited = false,
 }: TodoCardProps) => {
   const cardState = useCardState({ initialData, onSave, isModal, onClose });
-  const cardRefs = useCardRefs({ isModal, focusTarget, todos: cardState.todos });
+  const cardRefs = useCardRefs({
+    isModal,
+    focusTarget,
+    todos: cardState.todos,
+  });
   useKeyboardEvents({ isModal, onClose });
 
   // Drag and drop state
@@ -71,9 +75,11 @@ export const TodoCard = ({
   const cardContent = (
     <div
       data-testid="todoCard"
-      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 ${isBeingEdited ? '' : 'transition-all'} cursor-pointer w-full ${getCardStyling(cardState.backgroundColor || initialData?.backgroundColor)} ${
-        isBeingEdited ? 'invisible' : ''
-      }`}
+      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 ${
+        isBeingEdited ? '' : 'transition-all'
+      } cursor-pointer w-full ${getCardStyling(
+        cardState.backgroundColor || initialData?.backgroundColor
+      )} ${isBeingEdited ? 'invisible' : ''}`}
       onClick={
         isBeingEdited
           ? undefined
@@ -90,7 +96,9 @@ export const TodoCard = ({
         placeholder="Enter a title..."
         value={cardState.title}
         onChange={
-          isBeingEdited ? undefined : (e) => cardState.updateTitle(e.target.value)
+          isBeingEdited
+            ? undefined
+            : (e) => cardState.updateTitle(e.target.value)
         }
         onClick={
           isBeingEdited
@@ -129,7 +137,9 @@ export const TodoCard = ({
             onDragLeave={handleDragLeave}
             onDragEnd={handleDragEnd}
             isBeingDragged={draggedItemIndex === index}
-            isDropTarget={dropTargetIndex === index && draggedItemIndex !== index}
+            isDropTarget={
+              dropTargetIndex === index && draggedItemIndex !== index
+            }
             isBeingEdited={isBeingEdited}
             autoSave={!isModal ? cardState.triggerAutoSave : undefined}
           />
@@ -200,8 +210,10 @@ export const TodoCard = ({
     return (
       <div
         data-testid="todoTrigger-modal"
-        className="fixed inset-0 bg-indigo-900/30 flex items-center justify-center p-4"
-        onClick={() => cardState.hasUnsavedChanges ? cardState.handleSave() : onClose?.()}
+        className="fixed inset-0 bg-gray-800/30 flex items-center justify-center p-4"
+        onClick={() =>
+          cardState.hasUnsavedChanges ? cardState.handleSave() : onClose?.()
+        }
       >
         <div
           className="rounded-3xl shadow-lg w-full max-w-md bg-white "

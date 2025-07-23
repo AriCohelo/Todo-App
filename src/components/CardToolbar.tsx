@@ -2,19 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Icon } from './Icon';
 import { ColorPicker } from './ColorPicker';
 import { migrateColor } from '../constants/colors';
-import type { TodoCardData } from '../types';
-
-interface CardToolbarProps {
-  isModal: boolean;
-  isBeingEdited: boolean;
-  initialData?: TodoCardData;
-  backgroundColor?: string;
-  hasUnsavedChanges: boolean;
-  onColorSelect: (color: string) => void;
-  onDelete: (cardId: string) => void;
-  onClose?: () => void;
-  onSave: () => void;
-}
+import type { CardToolbarProps } from '../types';
 
 export const CardToolbar = ({
   isModal,

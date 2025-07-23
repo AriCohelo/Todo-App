@@ -14,7 +14,7 @@ function AppContent() {
   } = useTodoContext();
 
   return (
-    <div className="min-h-screen p-16 app-background">
+    <div className="min-h-screen p-8 lg:p-16 app-background">
       <TodoTrigger />
 
       <TodoBoard />

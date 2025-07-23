@@ -1,16 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Todo, TodoCardData } from '../types';
-
-interface UseCardStateProps {
-  initialData?: TodoCardData;
-  onSave: (cardData: TodoCardData) => void;
-  isModal: boolean;
-  onClose?: () => void;
-}
+import type { Todo, TodoCardData, UseCardStateProps } from '../types';
+import { getRandomColor } from '../constants/colors';
 
 export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardStateProps) => {
   const [title, setTitle] = useState(initialData?.title || '');
-  const [backgroundColor, setBackgroundColor] = useState(initialData?.backgroundColor);
+  const [backgroundColor, setBackgroundColor] = useState(
+    initialData?.backgroundColor || getRandomColor()
+  );
   const [todos, setTodos] = useState<Todo[]>(
     initialData?.todos || [
       { id: crypto.randomUUID(), task: '', completed: false },

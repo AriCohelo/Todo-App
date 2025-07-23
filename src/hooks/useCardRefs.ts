@@ -1,11 +1,5 @@
 import { useRef, useEffect } from 'react';
-import type { Todo, FocusTarget } from '../types';
-
-interface UseCardRefsProps {
-  isModal: boolean;
-  focusTarget?: FocusTarget;
-  todos: Todo[];
-}
+import type { Todo, FocusTarget, UseCardRefsProps } from '../types';
 
 export const useCardRefs = ({ isModal, focusTarget, todos }: UseCardRefsProps) => {
   const titleInputRef = useRef<HTMLInputElement>(null);
