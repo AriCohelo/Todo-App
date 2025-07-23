@@ -20,20 +20,27 @@ export const useFocusManagement = ({ isModal, focusTarget, todos }: UseFocusMana
         } else if (focusTarget === 'new-todo') {
           // Focus on the last todo item (the new one)
           const lastIndex = todos.length - 1;
-          todoItemRefs.current[lastIndex]?.focus();
+          if (lastIndex >= 0 && todoItemRefs.current[lastIndex]) {
+            todoItemRefs.current[lastIndex]?.focus();
+          }
         } else if (
           typeof focusTarget === 'object' &&
           focusTarget.type === 'todo'
         ) {
           // Focus on specific todo item
-          todoItemRefs.current[focusTarget.index]?.focus();
+          const index = focusTarget.index;
+          if (index >= 0 && index < todoItemRefs.current.length && todoItemRefs.current[index]) {
+            todoItemRefs.current[index]?.focus();
+          }
         }
       }, 0);
     }
   }, [isModal, focusTarget, todos.length]);
 
   const setTodoItemRef = (index: number, ref: HTMLInputElement | null) => {
-    todoItemRefs.current[index] = ref;
+    if (index >= 0 && index < todos.length) {
+      todoItemRefs.current[index] = ref;
+    }
   };
 
   return {

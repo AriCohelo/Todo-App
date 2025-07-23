@@ -1,5 +1,4 @@
 import { TodoItem } from './TodoItem';
-import { Icon } from './Icon';
 import { CardToolbar } from './CardToolbar';
 import { useCardState } from '../hooks/useCardState';
 import { useCardRefs } from '../hooks/useCardRefs';

@@ -85,7 +85,8 @@ export const getColorByHex = (hexColor: string): ColorOption => {
 
 export const getRandomColor = (): string => {
   const randomIndex = Math.floor(Math.random() * CARD_COLORS.length);
-  return CARD_COLORS[randomIndex].id;
+  const color = CARD_COLORS[randomIndex];
+  return color ? color.id : DEFAULT_COLOR.id;
 };
 
 // Migration function to convert old hex values to new color IDs

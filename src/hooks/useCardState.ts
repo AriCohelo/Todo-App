@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Todo, TodoCardData, UseCardStateProps } from '../types';
 import { getRandomColor } from '../constants/colors';
+import { validateInput, isValidTitle, isValidContent } from '../utils/security';
 
 export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardStateProps) => {
   const [title, setTitle] = useState(initialData?.title || '');
@@ -53,8 +54,11 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
   };
 
   const updateTitle = (newTitle: string) => {
-    setTitle(newTitle);
-    setHasUnsavedChanges(true);
+    const sanitizedTitle = validateInput(newTitle, 100);
+    if (isValidTitle(sanitizedTitle) || sanitizedTitle === '') {
+      setTitle(sanitizedTitle);
+      setHasUnsavedChanges(true);
+    }
   };
 
   const updateBackgroundColor = (newColor: string) => {
@@ -84,10 +88,13 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
   };
 
   const editTodo = (todoId: string, newTask: string) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === todoId ? { ...t, task: newTask } : t))
-    );
-    setHasUnsavedChanges(true);
+    const sanitizedTask = validateInput(newTask, 1000);
+    if (isValidContent(sanitizedTask) || sanitizedTask === '') {
+      setTodos((prev) =>
+        prev.map((t) => (t.id === todoId ? { ...t, task: sanitizedTask } : t))
+      );
+      setHasUnsavedChanges(true);
+    }
   };
 
   const toggleTodo = (todoId: string) => {
