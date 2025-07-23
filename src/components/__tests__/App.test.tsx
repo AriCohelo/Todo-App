@@ -147,9 +147,9 @@ describe('App', () => {
         within(editModal).getByDisplayValue('Original Card')
       ).toBeInTheDocument();
 
-      // Card should be filtered out from TodoBoard while being edited
-      const invisibleCard = within(todoBoard).queryByDisplayValue('Original Card');
-      expect(invisibleCard).not.toBeInTheDocument();
+      // Card should be made invisible in TodoBoard while being edited
+      const editedCard = within(todoBoard).getByDisplayValue('Original Card');
+      expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
     });
 
     it('updates existing card when Save button is clicked in edit mode', async () => {
@@ -172,9 +172,9 @@ describe('App', () => {
       const cardElement = within(todoBoard).getByTestId('todoCard');
       await user.click(cardElement);
 
-      // Card should be filtered out from TodoBoard while being edited
-      const invisibleCard = within(todoBoard).queryByDisplayValue('Original Card');
-      expect(invisibleCard).not.toBeInTheDocument();
+      // Card should be made invisible in TodoBoard while being edited
+      const editedCard = within(todoBoard).getByDisplayValue('Original Card');
+      expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
 
       // Edit the title in the modal
       const editModal = screen.getByTestId('todoTrigger-modal');
@@ -228,9 +228,9 @@ describe('App', () => {
 
       expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
 
-      // Card should be filtered out from TodoBoard while being edited
-      const invisibleCard = within(todoBoard).queryByDisplayValue('Test Card');
-      expect(invisibleCard).not.toBeInTheDocument();
+      // Card should be made invisible in TodoBoard while being edited
+      const editedCard = within(todoBoard).getByDisplayValue('Test Card');
+      expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
 
       // Press ESC to close
       await user.keyboard('{Escape}');
@@ -265,9 +265,9 @@ describe('App', () => {
       const cardElement = within(todoBoard).getByTestId('todoCard');
       await user.click(cardElement);
 
-      // Card should be filtered out from TodoBoard while being edited
-      const invisibleCard = within(todoBoard).queryByDisplayValue('Test Card');
-      expect(invisibleCard).not.toBeInTheDocument();
+      // Card should be made invisible in TodoBoard while being edited
+      const editedCard = within(todoBoard).getByDisplayValue('Test Card');
+      expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
 
       // In edit modal, click + button to add new todo
       const editModal = screen.getByTestId('todoTrigger-modal');

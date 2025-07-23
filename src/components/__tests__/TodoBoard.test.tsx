@@ -1,12 +1,10 @@
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import { TodoBoard } from '../TodoBoard';
 import { TodoProvider } from '../../context/TodoContext';
-import type { TodoCardData } from '../../types';
 
 // Test wrapper component that provides context
-const TestTodoBoard = ({ initialCards = [] }: { initialCards?: TodoCardData[] }) => {
+const TestTodoBoard = () => {
   return (
     <TodoProvider>
       <TodoBoard />
@@ -15,27 +13,16 @@ const TestTodoBoard = ({ initialCards = [] }: { initialCards?: TodoCardData[] })
 };
 
 describe('TodoBoard', () => {
-  describe('rendering', () => {
-    it('renders no TodoCards when todoCards array is empty', () => {
-      render(<TestTodoBoard />);
-      expect(screen.queryByTestId('todoItem-list')).not.toBeInTheDocument();
-    });
-
-    it('renders TodoCards when todoCards array has data', () => {
-      // Since we can't easily inject initial data into context for tests,
-      // we'll test this functionality through the App.test.tsx integration tests
-      render(<TestTodoBoard />);
-      expect(screen.getByTestId('todoBoard')).toBeInTheDocument();
-    });
+  it('renders the TodoBoard component', () => {
+    render(<TestTodoBoard />);
+    expect(screen.getByTestId('todoBoard')).toBeInTheDocument();
   });
 
-  describe('interactions', () => {
-    it('renders the TodoBoard component', () => {
-      render(<TestTodoBoard />);
-      expect(screen.getByTestId('todoBoard')).toBeInTheDocument();
-    });
-
-    // Note: Detailed interaction tests are now in App.test.tsx
-    // since they require the full context setup with state management
+  it('renders empty board initially', () => {
+    render(<TestTodoBoard />);
+    expect(screen.queryByTestId('todoCard')).not.toBeInTheDocument();
   });
+
+  // Note: Full functionality testing is done in App.test.tsx integration tests
+  // since TodoBoard requires the complete context setup for meaningful testing
 });

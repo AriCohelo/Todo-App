@@ -1,4 +1,4 @@
-import { render, screen, within, cleanup } from '@testing-library/react';
+import { render, screen, within, cleanup, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TodoCard } from '../TodoCard';
 import type { TodoCardData } from '../../types';
@@ -268,7 +268,10 @@ describe('TodoCard', () => {
       const todoContainer = screen.getByTestId('todoItem-list');
       const todoInput = within(todoContainer).getByDisplayValue('');
       await user.type(todoInput, 'New todo task');
-      todoInput.blur();
+      
+      await act(async () => {
+        todoInput.blur();
+      });
 
       expect(saveButton).toBeEnabled();
     });
