@@ -4,9 +4,10 @@ import { CardToolbar } from './CardToolbar';
 import { useCardState } from '../hooks/useCardState';
 import { useCardRefs } from '../hooks/useCardRefs';
 import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
+import { useDragAndDrop } from '../hooks/useDragAndDrop';
 import { getCardStyling } from '../utils/cardStyling';
 import type { TodoCardProps } from '../types';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 
 export const TodoCard = ({
   initialData,
@@ -26,51 +27,27 @@ export const TodoCard = ({
   });
   useKeyboardEvents({ isModal, onClose });
 
-  // Drag and drop state
-  const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
-  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
-  const dragLeaveTimeoutRef = useRef<number | null>(null);
+  // Drag and drop functionality
+  const {
+    draggedItemIndex,
+    dropTargetIndex,
+    handleDragLeave,
+    createDragStartHandler,
+    createDragOverHandler,
+    createDropEventHandler,
+    createReorderHandler,
+    createDragEndHandler,
+  } = useDragAndDrop();
 
-  const handleDragStart = (index: number) => {
-    setDraggedItemIndex(index);
-  };
+  // ColorPicker state for z-index elevation
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
-  const handleDragOver = (index: number) => {
-    if (draggedItemIndex !== null && draggedItemIndex !== index) {
-      // Clear any pending drag leave timeout
-      if (dragLeaveTimeoutRef.current) {
-        clearTimeout(dragLeaveTimeoutRef.current);
-        dragLeaveTimeoutRef.current = null;
-      }
-      setDropTargetIndex(index);
-    }
-  };
-
-  const handleDragLeave = () => {
-    // Use a small timeout to prevent flickering when moving between child elements
-    dragLeaveTimeoutRef.current = setTimeout(() => {
-      setDropTargetIndex(null);
-    }, 50);
-  };
-
-  const handleDrop = (fromIndex: number, toIndex: number) => {
-    setDraggedItemIndex(null);
-    setDropTargetIndex(null);
+  const handleReorder = createReorderHandler((fromIndex: number, toIndex: number) => {
     cardState.reorderTodos(fromIndex, toIndex);
     if (!isModal) {
       cardState.triggerAutoSave();
     }
-  };
-
-  const handleDragEnd = () => {
-    // Clear any pending timeout
-    if (dragLeaveTimeoutRef.current) {
-      clearTimeout(dragLeaveTimeoutRef.current);
-      dragLeaveTimeoutRef.current = null;
-    }
-    setDraggedItemIndex(null);
-    setDropTargetIndex(null);
-  };
+  });
 
   const cardContent = (
     <div
@@ -79,7 +56,9 @@ export const TodoCard = ({
         isBeingEdited ? '' : 'transition-all'
       } cursor-pointer w-full ${getCardStyling(
         cardState.backgroundColor || initialData?.backgroundColor
-      )} ${isBeingEdited ? 'invisible' : ''}`}
+      )} ${isBeingEdited ? 'invisible' : ''} ${
+        isColorPickerOpen ? 'z-[10000]' : ''
+      }`}
       onClick={
         isBeingEdited
           ? undefined
@@ -131,15 +110,17 @@ export const TodoCard = ({
             onDelete={cardState.deleteTodo}
             onEdit={cardState.editTodo}
             onToggle={cardState.toggleTodo}
-            onReorder={handleDrop}
-            onDragStart={() => handleDragStart(index)}
-            onDragOver={() => handleDragOver(index)}
+            onReorder={handleReorder}
+            onDragStart={createDragStartHandler(index)}
+            onDragOver={createDragOverHandler(index)}
             onDragLeave={handleDragLeave}
-            onDragEnd={handleDragEnd}
+            onDrop={createDropEventHandler(index, handleReorder, !isModal ? cardState.triggerAutoSave : undefined, isBeingEdited)}
+            onDragEnd={createDragEndHandler()}
             isBeingDragged={draggedItemIndex === index}
             isDropTarget={
               dropTargetIndex === index && draggedItemIndex !== index
             }
+            draggedItemIndex={draggedItemIndex}
             isBeingEdited={isBeingEdited}
             autoSave={!isModal ? cardState.triggerAutoSave : undefined}
           />
@@ -202,6 +183,7 @@ export const TodoCard = ({
         onDelete={onDelete}
         onClose={onClose}
         onSave={cardState.handleSave}
+        onColorPickerToggle={setIsColorPickerOpen}
       />
     </div>
   );
@@ -216,7 +198,7 @@ export const TodoCard = ({
         }
       >
         <div
-          className="rounded-3xl shadow-lg w-full max-w-md bg-white "
+          className="rounded-3xl shadow-lg w-full max-w-md bg-gray-700 "
           onClick={(e) => e.stopPropagation()}
         >
           {cardContent}

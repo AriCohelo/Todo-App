@@ -44,12 +44,14 @@ export interface TodoItemProps {
   index: number;
   isBeingEdited?: boolean;
   autoSave?: () => void;
-  onDragStart?: () => void;
-  onDragOver?: () => void;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
   onDragLeave?: () => void;
+  onDrop?: (e: React.DragEvent) => void;
   onDragEnd?: () => void;
   isBeingDragged?: boolean;
   isDropTarget?: boolean;
+  draggedItemIndex?: number | null;
 }
 
 export interface ColorPickerProps {
@@ -68,6 +70,7 @@ export interface CardToolbarProps {
   onDelete: (cardId: string) => void;
   onClose?: () => void;
   onSave: () => void;
+  onColorPickerToggle?: (isOpen: boolean) => void;
 }
 
 export type IconName = 'plus' | 'palette' | 'trash' | 'x' | 'grabber' | 'checkbox-checked' | 'checkbox-empty' | 'add-todoitem';

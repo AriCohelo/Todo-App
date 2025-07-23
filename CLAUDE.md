@@ -57,6 +57,10 @@
 
 - I don't need co-autoring yuor name in commit messages, so dont add it.
 
+11. **English grammar correction**
+
+- If applies, on the beggining of every response correct my english grammar and ortography if applies1
+
 ## Memories and Reminders
 
 - Remember that Context API is a thing I never had use so later I would need to explain me what are we going to do in this session in where we are gonna fix the prop drilling

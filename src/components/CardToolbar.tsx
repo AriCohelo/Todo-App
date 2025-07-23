@@ -14,8 +14,14 @@ export const CardToolbar = ({
   onDelete,
   onClose,
   onSave,
+  onColorPickerToggle,
 }: CardToolbarProps) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
+
+  const toggleColorPicker = (isOpen: boolean) => {
+    setShowColorPicker(isOpen);
+    onColorPickerToggle?.(isOpen);
+  };
   const colorPickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,7 +30,7 @@ export const CardToolbar = ({
         colorPickerRef.current &&
         !colorPickerRef.current.contains(event.target as Node)
       ) {
-        setShowColorPicker(false);
+        toggleColorPicker(false);
       }
     };
 
@@ -50,7 +56,7 @@ export const CardToolbar = ({
             ? undefined
             : (e) => {
                 e.stopPropagation();
-                setShowColorPicker(!showColorPicker);
+                toggleColorPicker(!showColorPicker);
               }
         }
         className={`text-gray-700 hover:text-gray-700/80 transition-colors justify-self-end cursor-pointer relative ${
@@ -71,7 +77,7 @@ export const CardToolbar = ({
               backgroundColor || initialData?.backgroundColor
             )}
             onColorSelect={onColorSelect}
-            onClose={() => setShowColorPicker(false)}
+            onClose={() => toggleColorPicker(false)}
           />
         )}
       </button>

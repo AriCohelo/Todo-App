@@ -19,6 +19,8 @@ export const TodoItem = ({
   onDragEnd,
   isBeingDragged = false,
   isDropTarget = false,
+  draggedItemIndex = null,
+  onDrop,
 }: TodoItemProps) => {
   const { value, handleChange, handleEnterKey, handleBlur } = useInputValue({
     initialValue: todo.task,
@@ -30,49 +32,22 @@ export const TodoItem = ({
     },
   });
 
-  const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('text/plain', index.toString());
-    e.dataTransfer.effectAllowed = 'move';
-    onDragStart?.();
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    onDragOver?.();
-  };
-
-  const handleDragLeave = () => {
-    onDragLeave?.();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    
-    const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
-    if (draggedIndex !== index && onReorder && !isBeingEdited) {
-      onReorder(draggedIndex, index);
-      autoSave?.();
-    }
-  };
-
-  const handleDragEnd = () => {
-    onDragEnd?.();
-  };
 
   return (
     <div 
       className={`flex items-center gap-2 w-full ${isBeingEdited ? '' : 'transition-all duration-200'} ${
         isBeingDragged ? 'opacity-50' : ''
       } ${
-        isDropTarget ? 'mt-12 relative before:content-["Drop_here"] before:absolute before:-top-10 before:left-0 before:right-0 before:h-8 before:bg-gray-100/50 before:border-2 before:border-dashed before:border-gray-300 before:rounded-md before:flex before:items-center before:justify-center before:text-xs before:text-gray-400' : ''
+        isDropTarget && draggedItemIndex !== null && draggedItemIndex > index ? 'border-t-2 border-t-black' : ''
+      } ${
+        isDropTarget && draggedItemIndex !== null && draggedItemIndex < index ? 'border-b-2 border-b-black' : ''
       }`}
       draggable={true}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      onDragEnd={handleDragEnd}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
     >
       <Icon name="grabber" className={`w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80 ${isBeingEdited ? '' : 'transition-all'}`} alt="grab and drag todoItem" />
 
