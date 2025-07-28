@@ -30,7 +30,7 @@ describe('Security Utils', () => {
   describe('validateInput', () => {
     it('should sanitize and trim input', () => {
       const input = '  <script>alert("xss")</script>Hello  ';
-      const result = validateInput(input);
+      const result = validateInput(input, 1000, true);
       expect(result).toBe('Hello');
     });
 
@@ -47,8 +47,20 @@ describe('Security Utils', () => {
 
     it('should trim whitespace', () => {
       const input = '  Hello World  ';
-      const result = validateInput(input);
+      const result = validateInput(input, 1000, true);
       expect(result).toBe('Hello World');
+    });
+
+    it('should preserve whitespace when shouldTrim is false', () => {
+      const input = '  Hello World  ';
+      const result = validateInput(input, 1000, false);
+      expect(result).toBe('  Hello World  ');
+    });
+
+    it('should not trim by default', () => {
+      const input = '  Hello World  ';
+      const result = validateInput(input);
+      expect(result).toBe('  Hello World  ');
     });
   });
 

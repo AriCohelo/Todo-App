@@ -37,8 +37,8 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
   const handleSave = useCallback(() => {
     const cardData: TodoCardData = {
       id: initialData?.id || crypto.randomUUID(),
-      title: title,
-      todos: todos,
+      title: title.trim(), // Trim when saving
+      todos: todos.map(todo => ({ ...todo, task: todo.task.trim() })), // Trim tasks when saving
       updatedAt: new Date(),
       backgroundColor: backgroundColor,
     };
@@ -54,8 +54,8 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
   };
 
   const updateTitle = (newTitle: string) => {
-    const sanitizedTitle = validateInput(newTitle, 100);
-    if (isValidTitle(sanitizedTitle) || sanitizedTitle === '') {
+    const sanitizedTitle = validateInput(newTitle, 100, false); // Don't trim during typing
+    if (isValidTitle(sanitizedTitle.trim()) || sanitizedTitle === '') {
       setTitle(sanitizedTitle);
       setHasUnsavedChanges(true);
     }
@@ -88,7 +88,7 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
   };
 
   const editTodo = (todoId: string, newTask: string) => {
-    const sanitizedTask = validateInput(newTask, 1000);
+    const sanitizedTask = validateInput(newTask, 1000, false); // Don't trim during typing
     if (isValidContent(sanitizedTask) || sanitizedTask === '') {
       setTodos((prev) =>
         prev.map((t) => (t.id === todoId ? { ...t, task: sanitizedTask } : t))

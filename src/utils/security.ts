@@ -8,17 +8,17 @@ export const sanitizeHtml = (input: string): string => {
   });
 };
 
-export const validateInput = (input: string, maxLength: number = 1000): string => {
+export const validateInput = (input: string, maxLength: number = 1000, shouldTrim: boolean = false): string => {
   if (typeof input !== 'string') {
     return '';
   }
   
-  const trimmed = input.trim();
-  if (trimmed.length > maxLength) {
-    return trimmed.substring(0, maxLength);
+  const processedInput = shouldTrim ? input.trim() : input;
+  if (processedInput.length > maxLength) {
+    return processedInput.substring(0, maxLength);
   }
   
-  return sanitizeHtml(trimmed);
+  return sanitizeHtml(processedInput);
 };
 
 export const isValidTitle = (title: string): boolean => {
