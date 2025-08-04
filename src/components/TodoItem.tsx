@@ -9,17 +9,8 @@ export const TodoItem = ({
   onEdit,
   inputRef,
   onClick,
-  index,
   isBeingEdited = false,
   autoSave,
-  onDragStart,
-  onDragOver,
-  onDragLeave,
-  onDragEnd,
-  isBeingDragged = false,
-  isDropTarget = false,
-  draggedItemIndex = null,
-  onDrop,
 }: TodoItemProps) => {
   const { value, handleChange, handleBlur } = useInputValue({
     initialValue: todo.task,
@@ -34,21 +25,9 @@ export const TodoItem = ({
 
   return (
     <div 
-      className={`flex items-center gap-2 w-full ${isBeingEdited ? '' : 'transition-all duration-200'} ${
-        isBeingDragged ? 'opacity-50' : ''
-      } ${
-        isDropTarget && draggedItemIndex !== null && draggedItemIndex > index ? 'border-t-2 border-t-black' : ''
-      } ${
-        isDropTarget && draggedItemIndex !== null && draggedItemIndex < index ? 'border-b-2 border-b-black' : ''
-      }`}
-      draggable={true}
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
-      onDragEnd={onDragEnd}
+      className={`flex items-center gap-2 w-full ${isBeingEdited ? '' : 'transition-all duration-200'}`}
     >
-      <Icon name="grabber" className={`w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80 ${isBeingEdited ? '' : 'transition-all'}`} alt="grab and drag todoItem" />
+      <Icon name="grabber" className="w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80 transition-all" alt="grab and drag todoItem" />
 
       <div
         className="flex-shrink-0 w-3 h-3 cursor-pointer"

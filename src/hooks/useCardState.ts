@@ -3,7 +3,12 @@ import type { Todo, TodoCardData, UseCardStateProps } from '../types';
 import { getRandomColor } from '../constants/colors';
 import { validateInput, isValidTitle, isValidContent } from '../utils/security';
 
-export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardStateProps) => {
+export const useCardState = ({
+  initialData,
+  onSave,
+  isModal,
+  onClose,
+}: UseCardStateProps) => {
   const [title, setTitle] = useState(initialData?.title || '');
   const [backgroundColor, setBackgroundColor] = useState(
     initialData?.backgroundColor || getRandomColor()
@@ -20,7 +25,7 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
-      setBackgroundColor(initialData.backgroundColor);
+      setBackgroundColor(initialData.backgroundColor || '');
       setTodos(initialData.todos);
       setHasUnsavedChanges(false);
     }
@@ -38,7 +43,7 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
     const cardData: TodoCardData = {
       id: initialData?.id || crypto.randomUUID(),
       title: title.trim(), // Trim when saving
-      todos: todos.map(todo => ({ ...todo, task: todo.task.trim() })), // Trim tasks when saving
+      todos: todos.map((todo) => ({ ...todo, task: todo.task.trim() })), // Trim tasks when saving
       updatedAt: new Date(),
       backgroundColor: backgroundColor,
     };
@@ -62,7 +67,12 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
   };
 
   const updateBackgroundColor = (newColor: string) => {
-    console.log('updateBackgroundColor called with:', newColor, 'current backgroundColor:', backgroundColor);
+    console.log(
+      'updateBackgroundColor called with:',
+      newColor,
+      'current backgroundColor:',
+      backgroundColor
+    );
     setBackgroundColor(newColor);
     setHasUnsavedChanges(true);
   };
@@ -99,22 +109,11 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
 
   const toggleTodo = (todoId: string) => {
     setTodos((prev) =>
-      prev.map((t) =>
-        t.id === todoId ? { ...t, completed: !t.completed } : t
-      )
+      prev.map((t) => (t.id === todoId ? { ...t, completed: !t.completed } : t))
     );
     setHasUnsavedChanges(true);
   };
 
-  const reorderTodos = (fromIndex: number, toIndex: number) => {
-    setTodos((prev) => {
-      const newTodos = [...prev];
-      const [draggedTodo] = newTodos.splice(fromIndex, 1);
-      newTodos.splice(toIndex, 0, draggedTodo);
-      return newTodos;
-    });
-    setHasUnsavedChanges(true);
-  };
 
   return {
     // State
@@ -132,6 +131,5 @@ export const useCardState = ({ initialData, onSave, isModal, onClose }: UseCardS
     deleteTodo,
     editTodo,
     toggleTodo,
-    reorderTodos,
   };
 };

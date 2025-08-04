@@ -83,15 +83,6 @@ export const useFormState = ({ initialData, onSave, isModal, onClose }: UseFormS
     setHasUnsavedChanges(true);
   };
 
-  const reorderTodos = (fromIndex: number, toIndex: number) => {
-    setTodos((prev) => {
-      const newTodos = [...prev];
-      const [draggedTodo] = newTodos.splice(fromIndex, 1);
-      newTodos.splice(toIndex, 0, draggedTodo);
-      return newTodos;
-    });
-    setHasUnsavedChanges(true);
-  };
 
   return {
     title,
@@ -106,6 +97,5 @@ export const useFormState = ({ initialData, onSave, isModal, onClose }: UseFormS
     deleteTodo,
     editTodo,
     toggleTodo,
-    reorderTodos,
   };
 };

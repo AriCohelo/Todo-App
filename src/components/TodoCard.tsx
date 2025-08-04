@@ -3,7 +3,6 @@ import { CardToolbar } from './CardToolbar';
 import { useCardState } from '../hooks/useCardState';
 import { useCardRefs } from '../hooks/useCardRefs';
 import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
-import { useDragAndDrop } from '../hooks/useDragAndDrop';
 import { getCardStyling } from '../utils/cardStyling';
 import type { TodoCardProps } from '../types';
 import { useState } from 'react';
@@ -26,36 +25,21 @@ export const TodoCard = ({
   });
   useKeyboardEvents({ isModal, onClose });
 
-  // Drag and drop functionality
-  const {
-    draggedItemIndex,
-    dropTargetIndex,
-    handleDragLeave,
-    createDragStartHandler,
-    createDragOverHandler,
-    createDropEventHandler,
-    createReorderHandler,
-    createDragEndHandler,
-  } = useDragAndDrop();
 
   // ColorPicker state for z-index elevation
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
-  const handleReorder = createReorderHandler((fromIndex: number, toIndex: number) => {
-    cardState.reorderTodos(fromIndex, toIndex);
-    if (!isModal) {
-      cardState.triggerAutoSave();
-    }
-  });
 
   const cardContent = (
     <div
       data-testid="todoCard"
-      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 shadow-xl opacity-75 ${
-        isBeingEdited ? '' : 'transition-all'
-      } cursor-pointer w-full ${getCardStyling(
-        cardState.backgroundColor || initialData?.backgroundColor
-      )} ${isBeingEdited ? 'invisible' : ''} ${
+      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 opacity-75 
+                   shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] ${
+                     isBeingEdited ? '' : 'transition-all'
+                   } cursor-pointer w-full border-6 border-[#B7B7B7]
+                  ${getCardStyling(
+                    cardState.backgroundColor || initialData?.backgroundColor
+                  )} ${isBeingEdited ? 'invisible' : ''} ${
         isColorPickerOpen ? 'z-[10000]' : ''
       }`}
       onClick={
@@ -97,7 +81,6 @@ export const TodoCard = ({
           <TodoItem
             key={todo.id}
             todo={todo}
-            index={index}
             inputRef={(ref: HTMLInputElement | null) => {
               cardRefs.setTodoItemRef(index, ref);
             }}
@@ -109,17 +92,6 @@ export const TodoCard = ({
             onDelete={cardState.deleteTodo}
             onEdit={cardState.editTodo}
             onToggle={cardState.toggleTodo}
-            onReorder={handleReorder}
-            onDragStart={createDragStartHandler(index)}
-            onDragOver={createDragOverHandler(index)}
-            onDragLeave={handleDragLeave}
-            onDrop={createDropEventHandler(index, handleReorder, !isModal ? cardState.triggerAutoSave : undefined, isBeingEdited)}
-            onDragEnd={createDragEndHandler()}
-            isBeingDragged={draggedItemIndex === index}
-            isDropTarget={
-              dropTargetIndex === index && draggedItemIndex !== index
-            }
-            draggedItemIndex={draggedItemIndex}
             isBeingEdited={isBeingEdited}
             autoSave={!isModal ? cardState.triggerAutoSave : undefined}
           />
@@ -127,7 +99,7 @@ export const TodoCard = ({
       </div>
 
       <div
-        className={`text-xs tracking-wide text-gray-700 w-full text-right ${
+        className={`mt-8 text-xs tracking-wide text-gray-700 w-full text-right ${
           isModal ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'
         }`}
       >
@@ -172,13 +144,13 @@ export const TodoCard = ({
     return (
       <div
         data-testid="todoTrigger-modal"
-        className="fixed inset-0 bg-gray-800/30 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-gray-800/80 flex items-center justify-center p-4"
         onClick={() =>
           cardState.hasUnsavedChanges ? cardState.handleSave() : onClose?.()
         }
       >
         <div
-          className="rounded-3xl shadow-lg w-full max-w-md bg-gray-700 "
+          className="rounded-3xl shadow-lg w-full max-w-md app-background "
           onClick={(e) => e.stopPropagation()}
         >
           {cardContent}

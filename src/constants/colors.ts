@@ -5,64 +5,55 @@ export const CARD_COLORS: ColorOption[] = [
     id: 'rose',
     name: 'Rose',
     hexColor: '#77172e',
-    gradientClass: 'bg-gradient-to-br from-rose-300/80 to-rose-100/40',
-    borderClass: 'border-rose-300/80'
+    gradientClass: 'bg-gradient-to-br from-rose-300/80 to-rose-100/40'
   },
   {
     id: 'orange',
     name: 'Orange', 
     hexColor: '#692b17',
-    gradientClass: 'bg-gradient-to-br from-orange-300/80 to-orange-100/40',
-    borderClass: 'border-orange-300/80'
+    gradientClass: 'bg-gradient-to-br from-orange-300/80 to-orange-100/40'
   },
   {
     id: 'amber',
     name: 'Amber',
     hexColor: '#7c4a03',
-    gradientClass: 'bg-gradient-to-br from-amber-300/80 to-amber-100/40',
-    borderClass: 'border-amber-300/80'
+    gradientClass: 'bg-gradient-to-br from-amber-300/80 to-amber-100/40'
   },
   {
     id: 'emerald',
     name: 'Emerald',
     hexColor: '#264d3b',
-    gradientClass: 'bg-gradient-to-br from-emerald-300/80 to-emerald-100/40',
-    borderClass: 'border-emerald-300/80'
+    gradientClass: 'bg-gradient-to-br from-emerald-300/80 to-emerald-100/40'
   },
   {
     id: 'teal',
     name: 'Teal',
     hexColor: '#0c625d',
-    gradientClass: 'bg-gradient-to-br from-teal-300/80 to-teal-100/40',
-    borderClass: 'border-teal-300/80'
+    gradientClass: 'bg-gradient-to-br from-teal-300/80 to-teal-100/40'
   },
   {
     id: 'cyan',
     name: 'Cyan',
     hexColor: '#256377',
-    gradientClass: 'bg-gradient-to-br from-cyan-300/80 to-cyan-100/40',
-    borderClass: 'border-cyan-300/80'
+    gradientClass: 'bg-gradient-to-br from-cyan-300/80 to-cyan-100/40'
   },
   {
     id: 'slate',
     name: 'Slate',
     hexColor: '#284255',
-    gradientClass: 'bg-gradient-to-br from-slate-300/80 to-slate-100/40',
-    borderClass: 'border-slate-300/80'
+    gradientClass: 'bg-gradient-to-br from-slate-300/80 to-slate-100/40'
   },
   {
     id: 'violet',
     name: 'Violet',
     hexColor: '#472e5b',
-    gradientClass: 'bg-gradient-to-br from-violet-300/80 to-violet-100/40',
-    borderClass: 'border-violet-300/80'
+    gradientClass: 'bg-gradient-to-br from-violet-300/80 to-violet-100/40'
   },
   {
     id: 'stone',
     name: 'Stone',
     hexColor: '#4b443a',
-    gradientClass: 'bg-gradient-to-br from-stone-300/80 to-stone-100/40',
-    borderClass: 'border-stone-300/80'
+    gradientClass: 'bg-gradient-to-br from-stone-300/80 to-stone-100/40'
   }
 ];
 
@@ -71,8 +62,7 @@ export const DEFAULT_COLOR: ColorOption = {
   id: 'red',
   name: 'Red',
   hexColor: '#f87171',
-  gradientClass: 'bg-gradient-to-br from-red-300/80 to-red-100/40',
-  borderClass: 'border-red-300/80'
+  gradientClass: 'bg-gradient-to-br from-red-300/80 to-red-100/40'
 };
 
 export const getColorById = (id: string): ColorOption => {

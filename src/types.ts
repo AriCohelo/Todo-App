@@ -38,20 +38,10 @@ export interface TodoItemProps {
   onDelete: (id: string) => void;
   onToggle: (id: string) => void;
   onEdit: (id: string, newTask: string) => void;
-  onReorder?: (fromIndex: number, toIndex: number) => void;
   inputRef?: React.RefObject<HTMLInputElement> | ((ref: HTMLInputElement | null) => void);
   onClick?: () => void;
-  index: number;
   isBeingEdited?: boolean;
   autoSave?: () => void;
-  onDragStart?: (e: React.DragEvent) => void;
-  onDragOver?: (e: React.DragEvent) => void;
-  onDragLeave?: () => void;
-  onDrop?: (e: React.DragEvent) => void;
-  onDragEnd?: () => void;
-  isBeingDragged?: boolean;
-  isDropTarget?: boolean;
-  draggedItemIndex?: number | null;
 }
 
 export interface ColorPickerProps {
@@ -168,5 +158,5 @@ export interface ColorOption {
   name: string;
   hexColor: string; // For display purposes
   gradientClass: string; // Tailwind gradient class
-  borderClass: string; // Border class for the card
+  borderClass?: string; // Border class for the card (optional)
 }
