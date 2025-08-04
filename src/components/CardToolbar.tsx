@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Icon } from './Icon';
 import { ColorPicker } from './ColorPicker';
-import { migrateColor } from '../constants/colors';
 import type { CardToolbarProps } from '../types';
 
 export const CardToolbar = ({
@@ -95,9 +94,7 @@ export const CardToolbar = ({
         {showColorPicker && (
           <ColorPicker
             ref={colorPickerRef}
-            selectedColor={migrateColor(
-              backgroundColor || initialData?.backgroundColor
-            )}
+            selectedColor={backgroundColor || initialData?.backgroundColor || 'bg-gradient-to-br from-gray-300/80 to-gray-100/40'}
             onColorSelect={onColorSelect}
             onClose={() => toggleColorPicker(false)}
           />

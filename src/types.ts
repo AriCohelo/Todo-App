@@ -24,7 +24,7 @@ export type FocusTarget = 'title' | 'new-todo' | { type: 'todo'; index: number }
 
 export interface TodoCardProps {
   initialData?: TodoCardData;
-  onSave: (cardData: TodoCardData) => void;
+  onSave?: (cardData: TodoCardData) => void;
   onDelete: (cardId: string) => void;
   isModal?: boolean;
   onClose?: () => void;
@@ -78,12 +78,6 @@ export interface IconProps {
 // HOOK PROPS
 // =============================================================================
 
-export interface UseFormStateProps {
-  initialData?: TodoCardData;
-  onSave: (cardData: TodoCardData) => void;
-  isModal: boolean;
-  onClose?: () => void;
-}
 
 export interface UseFocusManagementProps {
   isModal: boolean;
@@ -107,12 +101,6 @@ export interface UseInputValueProps {
   onSave: (value: string) => void;
 }
 
-export interface UseCardStateProps {
-  initialData?: TodoCardData;
-  onSave: (cardData: TodoCardData) => void;
-  isModal: boolean;
-  onClose?: () => void;
-}
 
 export interface UseCardRefsProps {
   isModal: boolean;
@@ -153,10 +141,3 @@ export interface TodoProviderProps {
 // UTILITY TYPES
 // =============================================================================
 
-export interface ColorOption {
-  id: string;
-  name: string;
-  hexColor: string; // For display purposes
-  gradientClass: string; // Tailwind gradient class
-  borderClass?: string; // Border class for the card (optional)
-}

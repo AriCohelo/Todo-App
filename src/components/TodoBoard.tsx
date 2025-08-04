@@ -14,7 +14,6 @@ export const TodoBoard = () => {
         <div key={card.id} className="break-inside-avoid">
           <TodoCard
             initialData={card}
-            onSave={updateCard}
             onDelete={deleteCard}
             onCardClick={openEditModal}
             isBeingEdited={

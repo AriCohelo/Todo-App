@@ -1,11 +1,21 @@
 import { TodoItem } from './TodoItem';
 import { CardToolbar } from './CardToolbar';
-import { useCardState } from '../hooks/useCardState';
 import { useCardRefs } from '../hooks/useCardRefs';
 import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
-import { getCardStyling } from '../utils/cardStyling';
-import type { TodoCardProps } from '../types';
-import { useState } from 'react';
+import { useTodoContext } from '../context/TodoContext';
+import { validateInput, isValidTitle, isValidContent } from '../utils/security';
+import { 
+  addTodoToCard, 
+  deleteTodoFromCard, 
+  editTodoInCard, 
+  toggleTodoInCard, 
+  updateCardTitle, 
+  updateCardBackgroundColor,
+  createEmptyCard 
+} from '../utils/todoHelpers';
+import type { TodoCardProps, TodoCardData } from '../types';
+import { useState, useEffect } from 'react';
+import { getRandomColor } from '../constants/colors';
 
 export const TodoCard = ({
   initialData,
@@ -17,17 +27,137 @@ export const TodoCard = ({
   onCardClick,
   isBeingEdited = false,
 }: TodoCardProps) => {
-  const cardState = useCardState({ initialData, onSave, isModal, onClose });
+  const { updateCard } = useTodoContext();
+  
+  // ColorPicker state for z-index elevation
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+
+  // Modal state - only used when isModal=true
+  const [modalCard, setModalCard] = useState<TodoCardData>(() => 
+    initialData || createEmptyCard(getRandomColor())
+  );
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  // Fallback state for edge case: board mode without initialData (testing scenario)
+  const [fallbackTitle, setFallbackTitle] = useState('');
+
+  // Update modal state when initialData changes (for edit mode)
+  useEffect(() => {
+    if (isModal && initialData) {
+      setModalCard(initialData);
+      setHasUnsavedChanges(false);
+    }
+  }, [isModal, initialData]);
+
+  // Get current card data based on mode
+  const currentCard: TodoCardData = isModal 
+    ? modalCard 
+    : initialData || createEmptyCard(); // In board mode, initialData should always exist
+
   const cardRefs = useCardRefs({
     isModal,
     focusTarget,
-    todos: cardState.todos,
+    todos: currentCard.todos,
   });
   useKeyboardEvents({ isModal, onClose });
 
+  // Helper functions with proper modal/board separation
+  const handleSave = () => {
+    if (isModal && onSave) {
+      onSave(modalCard);
+      setHasUnsavedChanges(false);
+    }
+    if (isModal && onClose) {
+      onClose();
+    }
+  };
 
-  // ColorPicker state for z-index elevation
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+  const handleTitleChange = (newTitle: string) => {
+    const sanitizedTitle = validateInput(newTitle, 100, false);
+    if (isValidTitle(sanitizedTitle.trim()) || sanitizedTitle === '') {
+      if (isModal) {
+        // Modal: update local state
+        const updatedCard = updateCardTitle(modalCard, sanitizedTitle);
+        setModalCard(updatedCard);
+        setHasUnsavedChanges(true);
+      } else if (initialData) {
+        // Board: update Context immediately (normal case)
+        const updatedCard = updateCardTitle(initialData, sanitizedTitle);
+        updateCard(updatedCard);
+      } else {
+        // Board mode without initialData - fallback for testing
+        setFallbackTitle(sanitizedTitle);
+      }
+    }
+  };
+
+  const handleColorChange = (newColor: string) => {
+    if (isModal) {
+      // Modal: update local state
+      const updatedCard = updateCardBackgroundColor(modalCard, newColor);
+      setModalCard(updatedCard);
+      setHasUnsavedChanges(true);
+    } else if (initialData) {
+      // Board: update Context immediately
+      const updatedCard = updateCardBackgroundColor(initialData, newColor);
+      updateCard(updatedCard);
+    }
+  };
+
+  const handleAddTodo = () => {
+    if (isModal) {
+      // Modal: update local state
+      const updatedCard = addTodoToCard(modalCard);
+      setModalCard(updatedCard);
+      setHasUnsavedChanges(true);
+    } else if (initialData) {
+      // Board: update Context immediately
+      const updatedCard = addTodoToCard(initialData);
+      updateCard(updatedCard);
+    }
+  };
+
+  const handleDeleteTodo = (todoId: string) => {
+    if (isModal) {
+      // Modal: update local state
+      const updatedCard = deleteTodoFromCard(modalCard, todoId);
+      setModalCard(updatedCard);
+      setHasUnsavedChanges(true);
+    } else if (initialData) {
+      // Board: update Context immediately
+      const updatedCard = deleteTodoFromCard(initialData, todoId);
+      updateCard(updatedCard);
+    }
+  };
+
+  const handleEditTodo = (todoId: string, newTask: string) => {
+    const sanitizedTask = validateInput(newTask, 1000, false);
+    if (isValidContent(sanitizedTask) || sanitizedTask === '') {
+      if (isModal) {
+        // Modal: update local state
+        const updatedCard = editTodoInCard(modalCard, todoId, sanitizedTask);
+        setModalCard(updatedCard);
+        setHasUnsavedChanges(true);
+      } else if (initialData) {
+        // Board: update Context immediately
+        const updatedCard = editTodoInCard(initialData, todoId, sanitizedTask);
+        updateCard(updatedCard);
+      }
+    }
+  };
+
+  const handleToggleTodo = (todoId: string) => {
+    if (isModal) {
+      // Modal: update local state
+      const updatedCard = toggleTodoInCard(modalCard, todoId);
+      setModalCard(updatedCard);
+      setHasUnsavedChanges(true);
+    } else if (initialData) {
+      // Board: update Context immediately
+      const updatedCard = toggleTodoInCard(initialData, todoId);
+      updateCard(updatedCard);
+    }
+  };
 
 
   const cardContent = (
@@ -37,9 +167,7 @@ export const TodoCard = ({
                    shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] ${
                      isBeingEdited ? '' : 'transition-all'
                    } cursor-pointer w-full border-6 border-[#B7B7B7]
-                  ${getCardStyling(
-                    cardState.backgroundColor || initialData?.backgroundColor
-                  )} ${isBeingEdited ? 'invisible' : ''} ${
+                  ${currentCard.backgroundColor || 'bg-gradient-to-br from-gray-300/80 to-gray-100/40'} ${isBeingEdited ? 'invisible' : ''} ${
         isColorPickerOpen ? 'z-[10000]' : ''
       }`}
       onClick={
@@ -56,11 +184,11 @@ export const TodoCard = ({
         ref={cardRefs.titleInputRef}
         type="text"
         placeholder="Enter a title..."
-        value={cardState.title}
+        value={!isModal && !initialData ? fallbackTitle : currentCard.title}
         onChange={
           isBeingEdited
             ? undefined
-            : (e) => cardState.updateTitle(e.target.value)
+            : (e) => handleTitleChange(e.target.value)
         }
         onClick={
           isBeingEdited
@@ -77,7 +205,7 @@ export const TodoCard = ({
         readOnly={isBeingEdited}
       />
       <div data-testid="todoItem-list" className="space-y-1 flex-1">
-        {cardState.todos.map((todo, index) => (
+        {currentCard.todos.map((todo, index) => (
           <TodoItem
             key={todo.id}
             todo={todo}
@@ -89,11 +217,11 @@ export const TodoCard = ({
                 onCardClick(initialData, { type: 'todo', index });
               }
             }}
-            onDelete={cardState.deleteTodo}
-            onEdit={cardState.editTodo}
-            onToggle={cardState.toggleTodo}
+            onDelete={handleDeleteTodo}
+            onEdit={handleEditTodo}
+            onToggle={handleToggleTodo}
             isBeingEdited={isBeingEdited}
-            autoSave={!isModal ? cardState.triggerAutoSave : undefined}
+            autoSave={undefined}
           />
         ))}
       </div>
@@ -120,22 +248,14 @@ export const TodoCard = ({
         isModal={isModal}
         isBeingEdited={isBeingEdited}
         initialData={initialData}
-        backgroundColor={cardState.backgroundColor}
-        hasUnsavedChanges={cardState.hasUnsavedChanges}
-        onColorSelect={(color: string) => {
-          cardState.updateBackgroundColor(color);
-          if (!isModal) cardState.triggerAutoSave();
-        }}
+        backgroundColor={currentCard.backgroundColor}
+        hasUnsavedChanges={isModal ? hasUnsavedChanges : false}
+        onColorSelect={handleColorChange}
         onDelete={onDelete}
         onClose={onClose}
-        onSave={cardState.handleSave}
+        onSave={handleSave}
         onColorPickerToggle={setIsColorPickerOpen}
-        onAddTodo={() => {
-          cardState.addTodo();
-          if (!isModal) {
-            cardState.triggerAutoSave();
-          }
-        }}
+        onAddTodo={handleAddTodo}
       />
     </div>
   );
@@ -145,8 +265,8 @@ export const TodoCard = ({
       <div
         data-testid="todoTrigger-modal"
         className="fixed inset-0 bg-gray-800/80 flex items-center justify-center p-4"
-        onClick={() =>
-          cardState.hasUnsavedChanges ? cardState.handleSave() : onClose?.()
+        onClick={() => 
+          isModal && hasUnsavedChanges ? handleSave() : onClose?.()
         }
       >
         <div

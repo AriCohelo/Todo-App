@@ -1,15 +1,28 @@
 import { render, screen, within, cleanup, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TodoCard } from '../TodoCard';
-import type { TodoCardData } from '../../types';
+import { TodoProvider } from '../../context/TodoContext';
+import type { TodoCardData, TodoCardProps } from '../../types';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+const renderTodoCard = (props: Partial<TodoCardProps> = {}) => {
+  const defaultProps: TodoCardProps = {
+    onSave: vi.fn(),
+    onDelete: vi.fn(),
+    ...props
+  };
+  
+  return render(
+    <TodoProvider>
+      <TodoCard {...defaultProps} />
+    </TodoProvider>
+  );
+};
 
 describe('TodoCard', () => {
   describe('rendering', () => {
     beforeEach(() => {
-      render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} />
-      );
+      renderTodoCard();
     });
 
     it('renders a title field', () => {
@@ -29,9 +42,7 @@ describe('TodoCard', () => {
 
     it('renders add button in modal view', () => {
       cleanup();
-      render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
-      );
+      renderTodoCard({ isModal: true });
       const addButton = screen.getByRole('button', { name: 'add toDo' });
       expect(addButton).toBeInTheDocument();
     });
@@ -43,9 +54,7 @@ describe('TodoCard', () => {
 
     it('renders a save button only in modal mode', () => {
       cleanup();
-      render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
-      );
+      renderTodoCard({ isModal: true });
       const saveButton = screen.getByRole('button', { name: 'Save' });
       expect(saveButton).toBeInTheDocument();
     });
@@ -78,9 +87,7 @@ describe('TodoCard', () => {
       // Clean up any existing renders
       cleanup();
       
-      render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
-      );
+      renderTodoCard({ isModal: true });
       
       const container = screen.getByTestId('todoItem-list');
       const checkboxIcons = within(container).getAllByAltText('Uncompleted task');
@@ -98,13 +105,7 @@ describe('TodoCard', () => {
         updatedAt: new Date(),
       };
 
-      render(
-        <TodoCard
-          initialData={sampleData}
-          onSave={() => {}}
-          onDelete={() => {}}
-                  />
-      );
+      renderTodoCard({ initialData: sampleData });
 
       expect(screen.getByDisplayValue('First todo')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Second todo')).toBeInTheDocument();
@@ -118,13 +119,7 @@ describe('TodoCard', () => {
         updatedAt: new Date(),
       };
 
-      render(
-        <TodoCard
-          initialData={sampleData}
-          onSave={() => {}}
-          onDelete={() => {}}
-                  />
-      );
+      renderTodoCard({ initialData: sampleData });
 
       expect(screen.getByDisplayValue('Initial Title')).toBeInTheDocument();
     });
@@ -135,9 +130,7 @@ describe('TodoCard', () => {
       const user = userEvent.setup();
       const onSave = vi.fn();
 
-      render(
-        <TodoCard onSave={onSave} onDelete={() => {}} isModal={true} />
-      );
+      renderTodoCard({ onSave, isModal: true });
 
       // First enable the save button by interacting
       const titleInput = screen.getByTestId('todoCard-title-input');
@@ -165,9 +158,7 @@ describe('TodoCard', () => {
       const user = userEvent.setup();
       const onDelete = vi.fn();
 
-      render(
-        <TodoCard onSave={() => {}} onDelete={onDelete} />
-      );
+      renderTodoCard({ onDelete });
       const toolbar = screen.getByRole('toolbar');
       await user.click(within(toolbar).getByRole('button', { name: 'Delete card' }));
       expect(onDelete).toHaveBeenCalledWith('');
@@ -185,14 +176,7 @@ describe('TodoCard', () => {
         updatedAt: new Date(),
       };
 
-      render(
-        <TodoCard
-          initialData={sampleData}
-          onSave={() => {}}
-          onDelete={() => {}}
-          isModal={true}
-        />
-      );
+      renderTodoCard({ initialData: sampleData, isModal: true });
 
       // Should start with 1 todo
       const todoContainer = screen.getByTestId('todoItem-list');
@@ -212,9 +196,7 @@ describe('TodoCard', () => {
 
     it('updates title state when typing in title field', async () => {
       const user = userEvent.setup();
-      render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} />
-      );
+      renderTodoCard();
 
       const titleInput = screen.getByPlaceholderText(/enter a title/i);
       await user.type(titleInput, 'My New Title');
@@ -224,9 +206,7 @@ describe('TodoCard', () => {
 
     it('updates todo task when editing within the card', async () => {
       const user = userEvent.setup();
-      render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} />
-      );
+      renderTodoCard();
 
       const todoContainer = screen.getByTestId('todoItem-list');
       const todoInput = within(todoContainer).getByDisplayValue('');
@@ -238,9 +218,7 @@ describe('TodoCard', () => {
 
     it('disables save button initially and enables after user interaction', async () => {
       const user = userEvent.setup();
-      render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
-      );
+      renderTodoCard({ isModal: true });
 
       const saveButton = screen.getByRole('button', { name: 'Save' });
 
@@ -258,9 +236,7 @@ describe('TodoCard', () => {
 
     it('enables save button when editing todo items', async () => {
       const user = userEvent.setup();
-      render(
-        <TodoCard onSave={() => {}} onDelete={() => {}} isModal={true} />
-      );
+      renderTodoCard({ isModal: true });
 
       const saveButton = screen.getByRole('button', { name: 'Save' });
       expect(saveButton).toBeDisabled();
@@ -282,14 +258,7 @@ describe('TodoCard', () => {
       const user = userEvent.setup();
       const onClose = vi.fn();
 
-      render(
-        <TodoCard
-          isModal={true}
-          onClose={onClose}
-          onSave={() => {}}
-          onDelete={() => {}}
-                  />
-      );
+      renderTodoCard({ isModal: true, onClose });
 
       await user.keyboard('{Escape}');
       expect(onClose).toHaveBeenCalled();
@@ -299,14 +268,7 @@ describe('TodoCard', () => {
       const user = userEvent.setup();
       const onClose = vi.fn();
 
-      render(
-        <TodoCard
-          isModal={true}
-          onClose={onClose}
-          onSave={() => {}}
-          onDelete={() => {}}
-                  />
-      );
+      renderTodoCard({ isModal: true, onClose });
 
       const backdrop = screen.getByTestId('todoTrigger-modal');
       await user.click(backdrop);
@@ -318,14 +280,7 @@ describe('TodoCard', () => {
       const onClose = vi.fn();
       const onSave = vi.fn();
 
-      render(
-        <TodoCard
-          isModal={true}
-          onClose={onClose}
-          onSave={onSave}
-          onDelete={() => {}}
-                  />
-      );
+      renderTodoCard({ isModal: true, onClose, onSave });
 
       // Make changes
       const titleInput = screen.getByTestId('todoCard-title-input');

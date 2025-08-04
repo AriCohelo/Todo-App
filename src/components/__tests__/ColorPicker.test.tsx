@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ColorPicker } from '../ColorPicker';
-import { CARD_COLORS } from '../../constants/colors';
+import { CARD_COLORS, COLOR_NAMES } from '../../constants/colors';
 
 describe('ColorPicker', () => {
   const mockProps = {
@@ -20,24 +20,24 @@ describe('ColorPicker', () => {
       render(<ColorPicker {...mockProps} />);
       
       // Should render all colors from CARD_COLORS
-      CARD_COLORS.forEach((color) => {
-        const colorButton = screen.getByTitle(color.name);
+      CARD_COLORS.forEach((colorClass, index) => {
+        const colorButton = screen.getByTitle(COLOR_NAMES[index]);
         expect(colorButton).toBeInTheDocument();
-        expect(colorButton).toHaveStyle({ backgroundColor: color.hexColor });
+        expect(colorButton).toHaveClass(colorClass);
       });
     });
 
     it('highlights selected color with correct border style', () => {
-      render(<ColorPicker {...mockProps} selectedColor="emerald" />);
+      render(<ColorPicker {...mockProps} selectedColor="bg-gradient-to-br from-emerald-300/80 to-emerald-100/40" />);
       
-      const selectedButton = screen.getByTitle('Emerald');
+      const selectedButton = screen.getByTitle('emerald');
       expect(selectedButton).toHaveClass('border-white', 'shadow-lg');
     });
 
     it('applies default border style to non-selected colors', () => {
-      render(<ColorPicker {...mockProps} selectedColor="emerald" />);
+      render(<ColorPicker {...mockProps} selectedColor="bg-gradient-to-br from-emerald-300/80 to-emerald-100/40" />);
       
-      const nonSelectedButton = screen.getByTitle('Rose');
+      const nonSelectedButton = screen.getByTitle('rose');
       expect(nonSelectedButton).toHaveClass('border-gray-500');
       expect(nonSelectedButton).not.toHaveClass('border-white', 'shadow-lg');
     });
@@ -45,7 +45,7 @@ describe('ColorPicker', () => {
     it('renders in a grid layout with correct structure', () => {
       const { container } = render(<ColorPicker {...mockProps} />);
       
-      const grid = container.querySelector('.grid.grid-cols-5');
+      const grid = container.querySelector('.grid.grid-cols-3');
       expect(grid).toBeInTheDocument();
       
       // Should have correct number of color buttons
@@ -59,10 +59,10 @@ describe('ColorPicker', () => {
       const user = userEvent.setup();
       render(<ColorPicker {...mockProps} />);
 
-      const tealButton = screen.getByTitle('Teal');
+      const tealButton = screen.getByTitle('teal');
       await user.click(tealButton);
 
-      expect(mockProps.onColorSelect).toHaveBeenCalledWith('teal');
+      expect(mockProps.onColorSelect).toHaveBeenCalledWith('bg-gradient-to-br from-teal-300/80 to-teal-100/40');
       expect(mockProps.onClose).toHaveBeenCalled();
     });
 
@@ -76,10 +76,10 @@ describe('ColorPicker', () => {
         </div>
       );
 
-      const colorButton = screen.getByTitle('Orange');
+      const colorButton = screen.getByTitle('orange');
       await user.click(colorButton);
 
-      expect(mockProps.onColorSelect).toHaveBeenCalledWith('orange');
+      expect(mockProps.onColorSelect).toHaveBeenCalledWith('bg-gradient-to-br from-orange-300/80 to-orange-100/40');
       expect(parentClickHandler).not.toHaveBeenCalled();
     });
 
@@ -97,7 +97,7 @@ describe('ColorPicker', () => {
     it('has hover effects on color buttons', () => {
       render(<ColorPicker {...mockProps} />);
       
-      const colorButton = screen.getByTitle('Amber');
+      const colorButton = screen.getByTitle('amber');
       expect(colorButton).toHaveClass('hover:scale-110', 'hover:border-gray-300');
     });
   });
@@ -110,16 +110,16 @@ describe('ColorPicker', () => {
       expect(buttons).toHaveLength(CARD_COLORS.length);
       
       buttons.forEach((button, index) => {
-        expect(button).toHaveAttribute('title', CARD_COLORS[index].name);
+        expect(button).toHaveAttribute('title', COLOR_NAMES[index]);
       });
     });
 
     it('provides meaningful titles for screen readers', () => {
       render(<ColorPicker {...mockProps} />);
       
-      expect(screen.getByTitle('Rose')).toBeInTheDocument();
-      expect(screen.getByTitle('Orange')).toBeInTheDocument();
-      expect(screen.getByTitle('Violet')).toBeInTheDocument();
+      expect(screen.getByTitle('rose')).toBeInTheDocument();
+      expect(screen.getByTitle('orange')).toBeInTheDocument();
+      expect(screen.getByTitle('violet')).toBeInTheDocument();
     });
   });
 

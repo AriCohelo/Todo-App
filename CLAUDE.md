@@ -64,13 +64,8 @@
 ## Memories and Reminders
 
 - Remember that Context API is a thing I never had use so later I would need to explain me what are we going to do in this session in where we are gonna fix the prop drilling
-- Always read the claude.md
 - Never suggest commit messages including double quotes "
-- For drag and drop implementation, I added HTML5 drag and drop event handlers (onDragStart, onDragOver, onDrop) to the todo item components. The implementation involved:
-  - Creating drag start handler to set the dragged item's ID
-  - Preventing default behavior in drag over handler to allow dropping
-  - Implementing drop handler to reorder todos by updating the state
-  - Ensuring the drag and drop logic works with the existing state management approach
+
 - Color Picker Implementation Memory:
   - Used a state variable to manage the selected color
   - Created an input of type "color" to allow direct color selection
