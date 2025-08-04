@@ -12,14 +12,21 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     focusTarget: undefined,
   });
 
-  const createCard = (cardData: TodoCardData) => {
-    setTodoCards((prev) => [...prev, cardData]);
-  };
-
-  const updateCard = (cardData: TodoCardData) => {
-    setTodoCards((prev) =>
-      prev.map((card) => (card.id === cardData.id ? cardData : card))
-    );
+  const upsertCard = (cardData: TodoCardData) => {
+    setTodoCards((prev) => {
+      const existingIndex = prev.findIndex(card => card.id === cardData.id);
+      if (existingIndex >= 0) {
+        // Update existing card
+        return prev.map((card, index) => 
+          index === existingIndex 
+            ? { ...cardData, updatedAt: new Date() }
+            : card
+        );
+      } else {
+        // Create new card
+        return [...prev, { ...cardData, updatedAt: new Date() }];
+      }
+    });
   };
 
   const deleteCard = (cardId: string) => {
@@ -56,8 +63,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
   const value: TodoContextType = {
     todoCards,
     modalState,
-    createCard,
-    updateCard,
+    upsertCard,
     deleteCard,
     openCreateModal,
     openEditModal,

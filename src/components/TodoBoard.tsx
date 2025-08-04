@@ -2,7 +2,7 @@ import { TodoCard } from './TodoCard';
 import { useTodoContext } from '../context/TodoContext';
 
 export const TodoBoard = () => {
-  const { todoCards, modalState, updateCard, deleteCard, openEditModal } =
+  const { todoCards, modalState, deleteCard, openEditModal } =
     useTodoContext();
 
   return (

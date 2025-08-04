@@ -27,32 +27,36 @@ export const TodoCard = ({
   onCardClick,
   isBeingEdited = false,
 }: TodoCardProps) => {
-  const { updateCard } = useTodoContext();
+  const { upsertCard } = useTodoContext();
   
   // ColorPicker state for z-index elevation
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
-  // Modal state - only used when isModal=true
-  const [modalCard, setModalCard] = useState<TodoCardData>(() => 
+  // Working state - used for modal mode and board mode without initialData
+  const [workingCard, setWorkingCard] = useState<TodoCardData>(() => 
     initialData || createEmptyCard(getRandomColor())
   );
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Fallback state for edge case: board mode without initialData (testing scenario)
-  const [fallbackTitle, setFallbackTitle] = useState('');
-
-  // Update modal state when initialData changes (for edit mode)
+  // Update working card when initialData changes (edit mode)
   useEffect(() => {
-    if (isModal && initialData) {
-      setModalCard(initialData);
-      setHasUnsavedChanges(false);
+    if (initialData) {
+      setWorkingCard(initialData);
     }
-  }, [isModal, initialData]);
+  }, [initialData]);
 
   // Get current card data based on mode
-  const currentCard: TodoCardData = isModal 
-    ? modalCard 
-    : initialData || createEmptyCard(); // In board mode, initialData should always exist
+  const currentCard: TodoCardData = isModal ? workingCard : (initialData || workingCard);
+
+  // Track if modal has unsaved changes
+  const hasUnsavedChanges = isModal && (
+    !initialData ? 
+      // Create mode: has changes if title has content OR todos were modified (added/removed/edited)
+      workingCard.title.trim() !== '' || 
+      workingCard.todos.some(todo => todo.task.trim() !== '') ||
+      workingCard.todos.length > 1 : // More than the default 1 empty todo means user added todos
+      // Edit mode: compare with original
+      JSON.stringify(workingCard) !== JSON.stringify(initialData)
+  );
 
   const cardRefs = useCardRefs({
     isModal,
@@ -61,11 +65,14 @@ export const TodoCard = ({
   });
   useKeyboardEvents({ isModal, onClose });
 
-  // Helper functions with proper modal/board separation
+  // Simplified save function using Context directly
   const handleSave = () => {
     if (isModal && onSave) {
-      onSave(modalCard);
-      setHasUnsavedChanges(false);
+      onSave(workingCard);
+      // Reset working card to saved state for create mode
+      if (!initialData) {
+        setWorkingCard(createEmptyCard(getRandomColor()));
+      }
     }
     if (isModal && onClose) {
       onClose();
@@ -75,87 +82,96 @@ export const TodoCard = ({
   const handleTitleChange = (newTitle: string) => {
     const sanitizedTitle = validateInput(newTitle, 100, false);
     if (isValidTitle(sanitizedTitle.trim()) || sanitizedTitle === '') {
-      if (isModal) {
-        // Modal: update local state
-        const updatedCard = updateCardTitle(modalCard, sanitizedTitle);
-        setModalCard(updatedCard);
-        setHasUnsavedChanges(true);
-      } else if (initialData) {
-        // Board: update Context immediately (normal case)
-        const updatedCard = updateCardTitle(initialData, sanitizedTitle);
-        updateCard(updatedCard);
+      const updatedCard = updateCardTitle(currentCard, sanitizedTitle);
+      if (isModal || !initialData) {
+        // Modal or board without initialData: update working state
+        setWorkingCard(updatedCard);
+        if (!isModal) {
+          // Board without initialData: also sync to Context
+          upsertCard(updatedCard);
+        }
       } else {
-        // Board mode without initialData - fallback for testing
-        setFallbackTitle(sanitizedTitle);
+        // Board with initialData: update Context immediately
+        upsertCard(updatedCard);
       }
     }
   };
 
   const handleColorChange = (newColor: string) => {
-    if (isModal) {
-      // Modal: update local state
-      const updatedCard = updateCardBackgroundColor(modalCard, newColor);
-      setModalCard(updatedCard);
-      setHasUnsavedChanges(true);
-    } else if (initialData) {
-      // Board: update Context immediately
-      const updatedCard = updateCardBackgroundColor(initialData, newColor);
-      updateCard(updatedCard);
+    const updatedCard = updateCardBackgroundColor(currentCard, newColor);
+    if (isModal || !initialData) {
+      // Modal or board without initialData: update working state
+      setWorkingCard(updatedCard);
+      if (!isModal) {
+        // Board without initialData: also sync to Context
+        upsertCard(updatedCard);
+      }
+    } else {
+      // Board with initialData: update Context immediately
+      upsertCard(updatedCard);
     }
   };
 
   const handleAddTodo = () => {
-    if (isModal) {
-      // Modal: update local state
-      const updatedCard = addTodoToCard(modalCard);
-      setModalCard(updatedCard);
-      setHasUnsavedChanges(true);
-    } else if (initialData) {
-      // Board: update Context immediately
-      const updatedCard = addTodoToCard(initialData);
-      updateCard(updatedCard);
+    const updatedCard = addTodoToCard(currentCard);
+    if (isModal || !initialData) {
+      // Modal or board without initialData: update working state
+      setWorkingCard(updatedCard);
+      if (!isModal) {
+        // Board without initialData: also sync to Context
+        upsertCard(updatedCard);
+      }
+    } else {
+      // Board with initialData: update Context immediately
+      upsertCard(updatedCard);
     }
   };
 
   const handleDeleteTodo = (todoId: string) => {
-    if (isModal) {
-      // Modal: update local state
-      const updatedCard = deleteTodoFromCard(modalCard, todoId);
-      setModalCard(updatedCard);
-      setHasUnsavedChanges(true);
-    } else if (initialData) {
-      // Board: update Context immediately
-      const updatedCard = deleteTodoFromCard(initialData, todoId);
-      updateCard(updatedCard);
+    const updatedCard = deleteTodoFromCard(currentCard, todoId);
+    if (isModal || !initialData) {
+      // Modal or board without initialData: update working state
+      setWorkingCard(updatedCard);
+      if (!isModal) {
+        // Board without initialData: also sync to Context
+        upsertCard(updatedCard);
+      }
+    } else {
+      // Board with initialData: update Context immediately
+      upsertCard(updatedCard);
     }
   };
 
   const handleEditTodo = (todoId: string, newTask: string) => {
     const sanitizedTask = validateInput(newTask, 1000, false);
     if (isValidContent(sanitizedTask) || sanitizedTask === '') {
-      if (isModal) {
-        // Modal: update local state
-        const updatedCard = editTodoInCard(modalCard, todoId, sanitizedTask);
-        setModalCard(updatedCard);
-        setHasUnsavedChanges(true);
-      } else if (initialData) {
-        // Board: update Context immediately
-        const updatedCard = editTodoInCard(initialData, todoId, sanitizedTask);
-        updateCard(updatedCard);
+      const updatedCard = editTodoInCard(currentCard, todoId, sanitizedTask);
+      if (isModal || !initialData) {
+        // Modal or board without initialData: update working state
+        setWorkingCard(updatedCard);
+        if (!isModal) {
+          // Board without initialData: also sync to Context
+          upsertCard(updatedCard);
+        }
+      } else {
+        // Board with initialData: update Context immediately
+        upsertCard(updatedCard);
       }
     }
   };
 
   const handleToggleTodo = (todoId: string) => {
-    if (isModal) {
-      // Modal: update local state
-      const updatedCard = toggleTodoInCard(modalCard, todoId);
-      setModalCard(updatedCard);
-      setHasUnsavedChanges(true);
-    } else if (initialData) {
-      // Board: update Context immediately
-      const updatedCard = toggleTodoInCard(initialData, todoId);
-      updateCard(updatedCard);
+    const updatedCard = toggleTodoInCard(currentCard, todoId);
+    if (isModal || !initialData) {
+      // Modal or board without initialData: update working state
+      setWorkingCard(updatedCard);
+      if (!isModal) {
+        // Board without initialData: also sync to Context
+        upsertCard(updatedCard);
+      }
+    } else {
+      // Board with initialData: update Context immediately
+      upsertCard(updatedCard);
     }
   };
 
@@ -184,7 +200,7 @@ export const TodoCard = ({
         ref={cardRefs.titleInputRef}
         type="text"
         placeholder="Enter a title..."
-        value={!isModal && !initialData ? fallbackTitle : currentCard.title}
+        value={currentCard.title}
         onChange={
           isBeingEdited
             ? undefined
@@ -249,7 +265,7 @@ export const TodoCard = ({
         isBeingEdited={isBeingEdited}
         initialData={initialData}
         backgroundColor={currentCard.backgroundColor}
-        hasUnsavedChanges={isModal ? hasUnsavedChanges : false}
+        hasUnsavedChanges={hasUnsavedChanges || false}
         onColorSelect={handleColorChange}
         onDelete={onDelete}
         onClose={onClose}
@@ -266,7 +282,7 @@ export const TodoCard = ({
         data-testid="todoTrigger-modal"
         className="fixed inset-0 bg-gray-800/80 flex items-center justify-center p-4"
         onClick={() => 
-          isModal && hasUnsavedChanges ? handleSave() : onClose?.()
+          hasUnsavedChanges ? handleSave() : onClose?.()
         }
       >
         <div

@@ -79,11 +79,6 @@ export interface IconProps {
 // =============================================================================
 
 
-export interface UseFocusManagementProps {
-  isModal: boolean;
-  focusTarget?: FocusTarget;
-  todos: Todo[];
-}
 
 export interface UseKeyboardEventsProps {
   isModal: boolean;
@@ -125,8 +120,7 @@ export interface TodoContextType {
   modalState: ModalState;
   
   // Actions
-  createCard: (cardData: TodoCardData) => void;
-  updateCard: (cardData: TodoCardData) => void;
+  upsertCard: (cardData: TodoCardData) => void;
   deleteCard: (cardId: string) => void;
   openCreateModal: (focusTarget?: FocusTarget) => void;
   openEditModal: (card: TodoCardData, focusTarget?: FocusTarget) => void;

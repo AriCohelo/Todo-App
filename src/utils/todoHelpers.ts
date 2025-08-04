@@ -1,4 +1,4 @@
-import type { Todo, TodoCardData } from '../types';
+import type { TodoCardData } from '../types';
 
 export const addTodoToCard = (card: TodoCardData): TodoCardData => ({
   ...card,

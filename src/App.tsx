@@ -7,8 +7,7 @@ function AppContent() {
   const {
     todoCards,
     modalState,
-    createCard,
-    updateCard,
+    upsertCard,
     deleteCard,
     closeModal,
   } = useTodoContext();
@@ -28,7 +27,7 @@ function AppContent() {
               ? todoCards.find((card) => card.id === modalState.editingCardId)
               : undefined
           }
-          onSave={modalState.mode === 'create' ? createCard : updateCard}
+          onSave={upsertCard}
           onClose={closeModal}
           onDelete={deleteCard}
           focusTarget={modalState.focusTarget}
