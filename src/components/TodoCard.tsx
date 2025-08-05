@@ -32,10 +32,13 @@ export const TodoCard = ({
   // ColorPicker state for z-index elevation
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
-  // Working state - used for modal mode and board mode without initialData
-  const [workingCard, setWorkingCard] = useState<TodoCardData>(() => 
+  // Create initial card once for consistency
+  const [initialCard, setInitialCard] = useState<TodoCardData>(() => 
     initialData || createEmptyCard(getRandomColor())
   );
+  
+  // Working state - used for modal mode and board mode without initialData
+  const [workingCard, setWorkingCard] = useState<TodoCardData>(initialCard);
 
   // Update working card when initialData changes (edit mode)
   useEffect(() => {
@@ -50,10 +53,8 @@ export const TodoCard = ({
   // Track if modal has unsaved changes
   const hasUnsavedChanges = isModal && (
     !initialData ? 
-      // Create mode: has changes if title has content OR todos were modified (added/removed/edited)
-      workingCard.title.trim() !== '' || 
-      workingCard.todos.some(todo => todo.task.trim() !== '') ||
-      workingCard.todos.length > 1 : // More than the default 1 empty todo means user added todos
+      // Create mode: compare with initial card state
+      JSON.stringify(workingCard) !== JSON.stringify(initialCard) :
       // Edit mode: compare with original
       JSON.stringify(workingCard) !== JSON.stringify(initialData)
   );
@@ -71,7 +72,9 @@ export const TodoCard = ({
       onSave(workingCard);
       // Reset working card to saved state for create mode
       if (!initialData) {
-        setWorkingCard(createEmptyCard(getRandomColor()));
+        const newEmptyCard = createEmptyCard(getRandomColor());
+        setWorkingCard(newEmptyCard);
+        setInitialCard(newEmptyCard);
       }
     }
     if (isModal && onClose) {

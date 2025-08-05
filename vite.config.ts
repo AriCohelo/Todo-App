@@ -6,7 +6,7 @@ import sri from 'vite-plugin-sri';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), sri()],
-  base: 'https://AriCohelo.github.io/Todo-App',
+  base: '/',
   build: {
     rollupOptions: {
       output: {
