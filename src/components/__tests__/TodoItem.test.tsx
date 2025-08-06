@@ -20,7 +20,7 @@ describe('TodoItem', () => {
   };
 
   beforeEach(() => {
-    render(<TodoItem todo={todo} {...handlers} index={0} />);
+    render(<TodoItem todo={todo} {...handlers} />);
     vi.clearAllMocks();
   });
 
