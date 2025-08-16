@@ -1,5 +1,11 @@
 import { createContext, useContext, useState } from 'react';
-import type { TodoCardData, FocusTarget, ModalState, TodoContextType, TodoProviderProps } from '../types';
+import type {
+  TodoCardData,
+  FocusTarget,
+  ModalState,
+  TodoContextType,
+  TodoProviderProps,
+} from '../types';
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
@@ -14,16 +20,14 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 
   const upsertCard = (cardData: TodoCardData) => {
     setTodoCards((prev) => {
-      const existingIndex = prev.findIndex(card => card.id === cardData.id);
+      const existingIndex = prev.findIndex((card) => card.id === cardData.id);
       if (existingIndex >= 0) {
-        // Update existing card
-        return prev.map((card, index) => 
-          index === existingIndex 
+        return prev.map((card, index) =>
+          index === existingIndex
             ? { ...cardData, updatedAt: new Date() }
             : card
         );
       } else {
-        // Create new card
         return [...prev, { ...cardData, updatedAt: new Date() }];
       }
     });
@@ -33,12 +37,12 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     setTodoCards((prev) => prev.filter((card) => card.id !== cardId));
   };
 
-  const openCreateModal = (focusTarget?: FocusTarget) => {
+  const openCreateModal = () => {
     setModalState({
       isOpen: true,
       mode: 'create',
       editingCardId: undefined,
-      focusTarget: focusTarget || 'title',
+      focusTarget: 'title',
     });
   };
 
@@ -70,11 +74,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     closeModal,
   };
 
-  return (
-    <TodoContext.Provider value={value}>
-      {children}
-    </TodoContext.Provider>
-  );
+  return <TodoContext.Provider value={value}>{children}</TodoContext.Provider>;
 };
 
 export const useTodoContext = () => {

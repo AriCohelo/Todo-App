@@ -41,7 +41,6 @@ export interface TodoItemProps {
   inputRef?: React.RefObject<HTMLInputElement> | ((ref: HTMLInputElement | null) => void);
   onClick?: () => void;
   isBeingEdited?: boolean;
-  autoSave?: () => void;
 }
 
 export interface ColorPickerProps {
@@ -85,11 +84,6 @@ export interface UseKeyboardEventsProps {
   onClose?: () => void;
 }
 
-export interface UseAutoSaveProps {
-  isModal: boolean;
-  hasUnsavedChanges: boolean;
-  handleSave: () => void;
-}
 
 export interface UseInputValueProps {
   initialValue: string;
@@ -101,6 +95,12 @@ export interface UseCardRefsProps {
   isModal: boolean;
   focusTarget?: FocusTarget;
   todos: Todo[];
+}
+
+export interface UseTodoCardSaveProps {
+  isModal: boolean;
+  initialData: TodoCardData | undefined;
+  upsertCard: (card: TodoCardData) => void;
 }
 
 // =============================================================================

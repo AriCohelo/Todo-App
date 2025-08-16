@@ -10,14 +10,12 @@ export const TodoItem = ({
   inputRef,
   onClick,
   isBeingEdited = false,
-  autoSave,
 }: TodoItemProps) => {
   const { value, handleChange, handleBlur } = useInputValue({
     initialValue: todo.task,
     onSave: (value) => {
       if (!isBeingEdited) {
         onEdit(todo.id, value);
-        autoSave?.();
       }
     },
   });
@@ -35,7 +33,6 @@ export const TodoItem = ({
           if (!isBeingEdited) {
             e.stopPropagation();
             onToggle(todo.id);
-            autoSave?.();
           }
         }}
       >
@@ -74,7 +71,6 @@ export const TodoItem = ({
           if (!isBeingEdited) {
             e.stopPropagation();
             onDelete(todo.id);
-            autoSave?.();
           }
         }}
         className={`flex-shrink-0 text-gray-700 hover:text-red-600 ${isBeingEdited ? '' : 'transition-colors'} p-1 rounded hover:bg-white/10 cursor-pointer`}
