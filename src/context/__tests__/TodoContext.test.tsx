@@ -104,11 +104,11 @@ describe('TodoContext', () => {
 
       const { result } = renderHook(() => useTodoContext(), { wrapper });
 
-      const initialCard = { ...mockCard };
+      const newCard = { ...mockCard };
       const updatedCard = { ...mockCard, title: 'Updated Title' };
 
       act(() => {
-        result.current.upsertCard(initialCard);
+        result.current.upsertCard(newCard);
       });
 
       act(() => {

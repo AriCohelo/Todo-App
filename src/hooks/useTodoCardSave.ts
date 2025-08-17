@@ -8,11 +8,9 @@ export const useTodoCardSave = ({
   initialData,
   upsertCard,
 }: UseTodoCardSaveProps) => {
-  const [initialCard, setInitialCard] = useState<TodoCardData>(() =>
-    createEmptyCard(getRandomColor())
-  );
+  const [newCard] = useState<TodoCardData>(() => createEmptyCard(getRandomColor()));
 
-  const [workingCard, setWorkingCard] = useState<TodoCardData>(initialCard);
+  const [workingCard, setWorkingCard] = useState<TodoCardData>(newCard);
 
   useEffect(() => {
     if (initialData) {
@@ -23,12 +21,10 @@ export const useTodoCardSave = ({
   useEffect(() => {
     return () => {
       if (isModal) {
-        const newEmptyCard = createEmptyCard(getRandomColor());
-        setWorkingCard(newEmptyCard);
-        setInitialCard(newEmptyCard);
+        setWorkingCard(newCard);
       }
     };
-  }, [isModal]);
+  }, [isModal, newCard]);
 
   const currentCard: TodoCardData = isModal
     ? workingCard
@@ -37,7 +33,7 @@ export const useTodoCardSave = ({
   const hasUnsavedChanges =
     isModal &&
     (!initialData
-      ? JSON.stringify(workingCard) !== JSON.stringify(initialCard)
+      ? JSON.stringify(workingCard) !== JSON.stringify(newCard)
       : JSON.stringify(workingCard) !== JSON.stringify(initialData));
 
   const updateCard = (updatedCard: TodoCardData) => {

@@ -3,18 +3,18 @@ import { useState } from 'react';
 
 // Simplified version of the hook logic
 const testHook = () => {
-  const initialCard = { id: '1', title: '', todos: [], backgroundColor: 'blue' };
-  const [workingCard, setWorkingCard] = useState(initialCard);
+  const newCard = { id: '1', title: '', todos: [], backgroundColor: 'blue' };
+  const [workingCard, setWorkingCard] = useState(newCard);
   
-  const hasUnsavedChanges = JSON.stringify(workingCard) !== JSON.stringify(initialCard);
+  const hasUnsavedChanges = JSON.stringify(workingCard) !== JSON.stringify(newCard);
   
   console.log('Initial state:', { workingCard, hasUnsavedChanges });
   
   // Simulate title change
-  const newCard = { ...workingCard, title: 'Test' };
-  setWorkingCard(newCard);
+  const changedCard = { ...workingCard, title: 'Test' };
+  setWorkingCard(changedCard);
   
-  console.log('After change:', { workingCard: newCard, hasUnsavedChanges: JSON.stringify(newCard) !== JSON.stringify(initialCard) });
+  console.log('After change:', { workingCard: changedCard, hasUnsavedChanges: JSON.stringify(changedCard) !== JSON.stringify(newCard) });
 };
 
 testHook();
