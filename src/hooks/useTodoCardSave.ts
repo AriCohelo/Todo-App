@@ -3,11 +3,15 @@ import type { TodoCardData, UseTodoCardSaveProps } from '../types';
 import { createEmptyCard } from '../utils/todoHelpers';
 import { getRandomColor } from '../constants/colors';
 
-export const useTodoCardSave = ({ isModal, initialData, upsertCard }: UseTodoCardSaveProps) => {
-  const [initialCard, setInitialCard] = useState<TodoCardData>(() => 
-    initialData || createEmptyCard(getRandomColor())
+export const useTodoCardSave = ({
+  isModal,
+  initialData,
+  upsertCard,
+}: UseTodoCardSaveProps) => {
+  const [initialCard, setInitialCard] = useState<TodoCardData>(() =>
+    createEmptyCard(getRandomColor())
   );
-  
+
   const [workingCard, setWorkingCard] = useState<TodoCardData>(initialCard);
 
   useEffect(() => {
@@ -16,34 +20,32 @@ export const useTodoCardSave = ({ isModal, initialData, upsertCard }: UseTodoCar
     }
   }, [initialData]);
 
-  const currentCard: TodoCardData = isModal ? workingCard : (initialData || workingCard);
-
-  const hasUnsavedChanges = isModal && (
-    !initialData ? 
-      JSON.stringify(workingCard) !== JSON.stringify(initialCard) :
-      JSON.stringify(workingCard) !== JSON.stringify(initialData)
-  );
-
-  const updateCard = (updatedCard: TodoCardData) => {
-    if (isModal || !initialData) {
-      setWorkingCard(updatedCard);
-      if (!isModal) {
-        upsertCard(updatedCard);
-      }
-    } else {
-      upsertCard(updatedCard);
-    }
-  };
-
-  const saveChanges = (onSave?: (card: TodoCardData) => void) => {
-    if (isModal && onSave) {
-      onSave(workingCard);
-      if (!initialData) {
+  useEffect(() => {
+    return () => {
+      if (isModal) {
         const newEmptyCard = createEmptyCard(getRandomColor());
         setWorkingCard(newEmptyCard);
         setInitialCard(newEmptyCard);
       }
-    }
+    };
+  }, [isModal]);
+
+  const currentCard: TodoCardData = isModal
+    ? workingCard
+    : initialData || workingCard;
+
+  const hasUnsavedChanges =
+    isModal &&
+    (!initialData
+      ? JSON.stringify(workingCard) !== JSON.stringify(initialCard)
+      : JSON.stringify(workingCard) !== JSON.stringify(initialData));
+
+  const updateCard = (updatedCard: TodoCardData) => {
+    isModal ? setWorkingCard(updatedCard) : upsertCard(updatedCard);
+  };
+
+  const saveChanges = (onSave: (card: TodoCardData) => void) => {
+    onSave(workingCard);
   };
 
   return {

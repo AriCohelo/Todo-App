@@ -1,6 +1,6 @@
 import type { TodoCardData } from '../types';
 
-export const addTodoToCard = (card: TodoCardData): TodoCardData => ({
+export const addTodoItem = (card: TodoCardData): TodoCardData => ({
   ...card,
   todos: [...card.todos, { 
     id: crypto.randomUUID(), 
@@ -10,13 +10,13 @@ export const addTodoToCard = (card: TodoCardData): TodoCardData => ({
   updatedAt: new Date()
 });
 
-export const deleteTodoFromCard = (card: TodoCardData, todoId: string): TodoCardData => ({
+export const deleteTodoItem = (card: TodoCardData, todoId: string): TodoCardData => ({
   ...card,
   todos: card.todos.filter(todo => todo.id !== todoId),
   updatedAt: new Date()
 });
 
-export const editTodoInCard = (card: TodoCardData, todoId: string, newTask: string): TodoCardData => ({
+export const editTodoItem = (card: TodoCardData, todoId: string, newTask: string): TodoCardData => ({
   ...card,
   todos: card.todos.map(todo =>
     todo.id === todoId ? { ...todo, task: newTask } : todo
@@ -24,7 +24,7 @@ export const editTodoInCard = (card: TodoCardData, todoId: string, newTask: stri
   updatedAt: new Date()
 });
 
-export const toggleTodoInCard = (card: TodoCardData, todoId: string): TodoCardData => ({
+export const toggleTodoItem = (card: TodoCardData, todoId: string): TodoCardData => ({
   ...card,
   todos: card.todos.map(todo =>
     todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
@@ -44,7 +44,7 @@ export const updateCardBackgroundColor = (card: TodoCardData, backgroundColor: s
   updatedAt: new Date()
 });
 
-export const createEmptyCard = (backgroundColor?: string): TodoCardData => ({
+export const createEmptyCard = (backgroundColor: string): TodoCardData => ({
   id: crypto.randomUUID(),
   title: '',
   todos: [{ 
@@ -52,6 +52,6 @@ export const createEmptyCard = (backgroundColor?: string): TodoCardData => ({
     task: '', 
     completed: false 
   }],
-  backgroundColor: backgroundColor || 'bg-gradient-to-br from-gray-300/80 to-gray-100/40',
+  backgroundColor,
   updatedAt: new Date()
 });

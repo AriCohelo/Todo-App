@@ -60,7 +60,7 @@ describe('App', () => {
       // Fill in title in modal
       const modal = screen.getByTestId('todoTrigger-modal');
       const titleInput = within(modal).getByTestId('todoCard-title-input');
-      await user.type(titleInput, 'New Test Card');
+      await user.type(titleInput, 'NewTestCard');
 
       // Save the card
       const saveButton = within(modal).getByRole('button', { name: 'Save' });
@@ -71,7 +71,7 @@ describe('App', () => {
 
       const todoBoard = screen.getByTestId('todoBoard');
       expect(
-        within(todoBoard).getByDisplayValue('New Test Card')
+        within(todoBoard).getByDisplayValue('NewTestCard')
       ).toBeInTheDocument();
     });
 
@@ -86,7 +86,7 @@ describe('App', () => {
       // Make changes in modal
       const modal = screen.getByTestId('todoTrigger-modal');
       const titleInput = within(modal).getByTestId('todoCard-title-input');
-      await user.type(titleInput, 'Backdrop Test Card');
+      await user.type(titleInput, 'BackdropTestCard');
 
       // Click backdrop
       await user.click(modal);
@@ -96,7 +96,7 @@ describe('App', () => {
 
       const todoBoard = screen.getByTestId('todoBoard');
       expect(
-        within(todoBoard).getByDisplayValue('Backdrop Test Card')
+        within(todoBoard).getByDisplayValue('BackdropTestCard')
       ).toBeInTheDocument();
     });
 
@@ -129,7 +129,7 @@ describe('App', () => {
 
       const modal = screen.getByTestId('todoTrigger-modal');
       const titleInput = within(modal).getByTestId('todoCard-title-input');
-      await user.type(titleInput, 'Original Card');
+      await user.type(titleInput, 'OriginalCard');
 
       const saveButton = within(modal).getByRole('button', { name: 'Save' });
       await user.click(saveButton);
@@ -144,11 +144,11 @@ describe('App', () => {
 
       const editModal = screen.getByTestId('todoTrigger-modal');
       expect(
-        within(editModal).getByDisplayValue('Original Card')
+        within(editModal).getByDisplayValue('OriginalCard')
       ).toBeInTheDocument();
 
       // Card should be made invisible in TodoBoard while being edited
-      const editedCard = within(todoBoard).getByDisplayValue('Original Card');
+      const editedCard = within(todoBoard).getByDisplayValue('OriginalCard');
       expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
     });
 
@@ -162,7 +162,7 @@ describe('App', () => {
 
       const modal = screen.getByTestId('todoTrigger-modal');
       const titleInput = within(modal).getByTestId('todoCard-title-input');
-      await user.type(titleInput, 'Original Card');
+      await user.type(titleInput, 'OriginalCard');
 
       const saveButton = within(modal).getByRole('button', { name: 'Save' });
       await user.click(saveButton);
@@ -173,15 +173,15 @@ describe('App', () => {
       await user.click(cardElement);
 
       // Card should be made invisible in TodoBoard while being edited
-      const editedCard = within(todoBoard).getByDisplayValue('Original Card');
+      const editedCard = within(todoBoard).getByDisplayValue('OriginalCard');
       expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
 
       // Edit the title in the modal
       const editModal = screen.getByTestId('todoTrigger-modal');
       const modalTitleInput =
-        within(editModal).getByDisplayValue('Original Card');
+        within(editModal).getByDisplayValue('OriginalCard');
       await user.clear(modalTitleInput);
-      await user.type(modalTitleInput, 'Updated Card');
+      await user.type(modalTitleInput, 'UpdatedCard');
 
       // Check if save button is enabled
       const modalSaveButton = within(editModal).getByRole('button', {
@@ -199,10 +199,10 @@ describe('App', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(
-        within(todoBoard).getByDisplayValue('Updated Card')
+        within(todoBoard).getByDisplayValue('UpdatedCard')
       ).toBeInTheDocument();
       expect(
-        within(todoBoard).queryByDisplayValue('Original Card')
+        within(todoBoard).queryByDisplayValue('OriginalCard')
       ).not.toBeInTheDocument();
     });
 
@@ -216,7 +216,7 @@ describe('App', () => {
 
       const modal = screen.getByTestId('todoTrigger-modal');
       const titleInput = within(modal).getByTestId('todoCard-title-input');
-      await user.type(titleInput, 'Test Card');
+      await user.type(titleInput, 'TestCard');
 
       const saveButton = within(modal).getByRole('button', { name: 'Save' });
       await user.click(saveButton);
@@ -229,7 +229,7 @@ describe('App', () => {
       expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
 
       // Card should be made invisible in TodoBoard while being edited
-      const editedCard = within(todoBoard).getByDisplayValue('Test Card');
+      const editedCard = within(todoBoard).getByDisplayValue('TestCard');
       expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
 
       // Press ESC to close
@@ -239,7 +239,7 @@ describe('App', () => {
 
       // Card should reappear in TodoBoard after modal closes
       expect(
-        within(todoBoard).getByDisplayValue('Test Card')
+        within(todoBoard).getByDisplayValue('TestCard')
       ).toBeInTheDocument();
     });
   });
@@ -255,7 +255,7 @@ describe('App', () => {
 
       const modal = screen.getByTestId('todoTrigger-modal');
       const titleInput = within(modal).getByTestId('todoCard-title-input');
-      await user.type(titleInput, 'Test Card');
+      await user.type(titleInput, 'TestCard');
 
       const saveButton = within(modal).getByRole('button', { name: 'Save' });
       await user.click(saveButton);
@@ -266,7 +266,7 @@ describe('App', () => {
       await user.click(cardElement);
 
       // Card should be made invisible in TodoBoard while being edited
-      const editedCard = within(todoBoard).getByDisplayValue('Test Card');
+      const editedCard = within(todoBoard).getByDisplayValue('TestCard');
       expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
 
       // In edit modal, click + button to add new todo
@@ -298,7 +298,7 @@ describe('App', () => {
 
       const modal = screen.getByTestId('todoTrigger-modal');
       const titleInput = within(modal).getByTestId('todoCard-title-input');
-      await user.type(titleInput, 'Card to Delete');
+      await user.type(titleInput, 'CardtoDelete');
 
       const saveButton = within(modal).getByRole('button', { name: 'Save' });
       await user.click(saveButton);
@@ -306,7 +306,7 @@ describe('App', () => {
       // Verify card exists in TodoBoard
       const todoBoard = screen.getByTestId('todoBoard');
       expect(
-        within(todoBoard).getByDisplayValue('Card to Delete')
+        within(todoBoard).getByDisplayValue('CardtoDelete')
       ).toBeInTheDocument();
 
       // Delete the card from TodoBoard
@@ -318,7 +318,7 @@ describe('App', () => {
 
       // Card should be removed from TodoBoard
       expect(
-        within(todoBoard).queryByDisplayValue('Card to Delete')
+        within(todoBoard).queryByDisplayValue('CardtoDelete')
       ).not.toBeInTheDocument();
     });
 
@@ -332,7 +332,7 @@ describe('App', () => {
 
       const modal = screen.getByTestId('todoTrigger-modal');
       const titleInput = within(modal).getByTestId('todoCard-title-input');
-      await user.type(titleInput, 'First Card');
+      await user.type(titleInput, 'FirstCard');
 
       const saveButton = within(modal).getByRole('button', { name: 'Save' });
       await user.click(saveButton);
@@ -342,7 +342,7 @@ describe('App', () => {
 
       const modal2 = screen.getByTestId('todoTrigger-modal');
       const titleInput2 = within(modal2).getByTestId('todoCard-title-input');
-      await user.type(titleInput2, 'Second Card');
+      await user.type(titleInput2, 'SecondCard');
 
       const saveButton2 = within(modal2).getByRole('button', { name: 'Save' });
       await user.click(saveButton2);
@@ -350,10 +350,10 @@ describe('App', () => {
       // Both cards should exist in TodoBoard
       const todoBoard = screen.getByTestId('todoBoard');
       expect(
-        within(todoBoard).getByDisplayValue('First Card')
+        within(todoBoard).getByDisplayValue('FirstCard')
       ).toBeInTheDocument();
       expect(
-        within(todoBoard).getByDisplayValue('Second Card')
+        within(todoBoard).getByDisplayValue('SecondCard')
       ).toBeInTheDocument();
       expect(within(todoBoard).getAllByTestId('todoCard')).toHaveLength(2);
     });

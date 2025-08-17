@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-  addTodoToCard,
-  deleteTodoFromCard,
-  editTodoInCard,
-  toggleTodoInCard,
+  addTodoItem,
+  deleteTodoItem,
+  editTodoItem,
+  toggleTodoItem,
   updateCardTitle,
   updateCardBackgroundColor,
   createEmptyCard
@@ -37,9 +37,9 @@ describe('todoHelpers', () => {
     mockUUID.mockReturnValue('new-uuid');
   });
 
-  describe('addTodoToCard', () => {
+  describe('addTodoItem', () => {
     it('adds new empty todo and updates timestamp', () => {
-      const result = addTodoToCard(baseTodoCard);
+      const result = addTodoItem(baseTodoCard);
 
       expect(result.todos).toHaveLength(3);
       expect(result.todos[2]).toEqual({
@@ -52,7 +52,7 @@ describe('todoHelpers', () => {
 
     it('works with empty todos array', () => {
       const emptyCard = { ...baseTodoCard, todos: [] };
-      const result = addTodoToCard(emptyCard);
+      const result = addTodoItem(emptyCard);
 
       expect(result.todos).toHaveLength(1);
       expect(result.todos[0]).toEqual({
@@ -63,9 +63,9 @@ describe('todoHelpers', () => {
     });
   });
 
-  describe('deleteTodoFromCard', () => {
+  describe('deleteTodoItem', () => {
     it('removes todo with matching ID and updates timestamp', () => {
-      const result = deleteTodoFromCard(baseTodoCard, 'todo-1');
+      const result = deleteTodoItem(baseTodoCard, 'todo-1');
 
       expect(result.todos).toHaveLength(1);
       expect(result.todos[0]).toEqual(baseTodoCard.todos[1]);
@@ -73,16 +73,16 @@ describe('todoHelpers', () => {
     });
 
     it('returns unchanged todos when ID does not exist', () => {
-      const result = deleteTodoFromCard(baseTodoCard, 'non-existent-id');
+      const result = deleteTodoItem(baseTodoCard, 'non-existent-id');
 
       expect(result.todos).toEqual(baseTodoCard.todos);
     });
   });
 
-  describe('editTodoInCard', () => {
+  describe('editTodoItem', () => {
     it('updates task for todo with matching ID and updates timestamp', () => {
       const newTask = 'Updated Task 1';
-      const result = editTodoInCard(baseTodoCard, 'todo-1', newTask);
+      const result = editTodoItem(baseTodoCard, 'todo-1', newTask);
 
       expect(result.todos[0].task).toBe(newTask);
       expect(result.todos[0].completed).toBe(false);
@@ -90,24 +90,24 @@ describe('todoHelpers', () => {
     });
 
     it('returns unchanged todos when ID does not exist', () => {
-      const result = editTodoInCard(baseTodoCard, 'non-existent-id', 'New Task');
+      const result = editTodoItem(baseTodoCard, 'non-existent-id', 'New Task');
 
       expect(result.todos).toEqual(baseTodoCard.todos);
     });
   });
 
-  describe('toggleTodoInCard', () => {
+  describe('toggleTodoItem', () => {
     it('toggles completed status and updates timestamp', () => {
-      const result1 = toggleTodoInCard(baseTodoCard, 'todo-1');
+      const result1 = toggleTodoItem(baseTodoCard, 'todo-1');
       expect(result1.todos[0].completed).toBe(true);
       expect(result1.updatedAt).toEqual(mockDate);
 
-      const result2 = toggleTodoInCard(baseTodoCard, 'todo-2');
+      const result2 = toggleTodoItem(baseTodoCard, 'todo-2');
       expect(result2.todos[1].completed).toBe(false);
     });
 
     it('returns unchanged todos when ID does not exist', () => {
-      const result = toggleTodoInCard(baseTodoCard, 'non-existent-id');
+      const result = toggleTodoItem(baseTodoCard, 'non-existent-id');
 
       expect(result.todos).toEqual(baseTodoCard.todos);
     });
@@ -139,7 +139,7 @@ describe('todoHelpers', () => {
         .mockReturnValueOnce('card-uuid')
         .mockReturnValueOnce('todo-uuid');
 
-      const result = createEmptyCard();
+      const result = createEmptyCard('bg-test-color');
 
       expect(result.id).toBe('card-uuid');
       expect(result.title).toBe('');
@@ -152,13 +152,10 @@ describe('todoHelpers', () => {
       expect(result.updatedAt).toEqual(mockDate);
     });
 
-    it('uses provided background color or default', () => {
+    it('uses provided background color', () => {
       const customColor = 'bg-purple-500';
-      const customResult = createEmptyCard(customColor);
-      expect(customResult.backgroundColor).toBe(customColor);
-
-      const defaultResult = createEmptyCard();
-      expect(defaultResult.backgroundColor).toBe('bg-gradient-to-br from-gray-300/80 to-gray-100/40');
+      const result = createEmptyCard(customColor);
+      expect(result.backgroundColor).toBe(customColor);
     });
   });
 
@@ -167,10 +164,10 @@ describe('todoHelpers', () => {
       const originalCard = { ...baseTodoCard };
       const originalTodos = [...baseTodoCard.todos];
 
-      addTodoToCard(baseTodoCard);
-      deleteTodoFromCard(baseTodoCard, 'todo-1');
-      editTodoInCard(baseTodoCard, 'todo-1', 'New Task');
-      toggleTodoInCard(baseTodoCard, 'todo-1');
+      addTodoItem(baseTodoCard);
+      deleteTodoItem(baseTodoCard, 'todo-1');
+      editTodoItem(baseTodoCard, 'todo-1', 'New Task');
+      toggleTodoItem(baseTodoCard, 'todo-1');
       updateCardTitle(baseTodoCard, 'New Title');
       updateCardBackgroundColor(baseTodoCard, 'bg-new-500');
 

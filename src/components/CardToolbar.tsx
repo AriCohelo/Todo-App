@@ -94,7 +94,7 @@ export const CardToolbar = ({
         {showColorPicker && (
           <ColorPicker
             ref={colorPickerRef}
-            selectedColor={backgroundColor || initialData?.backgroundColor || 'bg-gradient-to-br from-gray-300/80 to-gray-100/40'}
+            selectedColor={backgroundColor}
             onColorSelect={onColorSelect}
             onClose={() => toggleColorPicker(false)}
           />

@@ -235,17 +235,16 @@ describe('TodoContext', () => {
 
         const { result } = renderHook(() => useTodoContext(), { wrapper });
 
-        const customFocusTarget: FocusTarget = { type: 'todo', index: 0 };
 
         act(() => {
-          result.current.openCreateModal(customFocusTarget);
+          result.current.openCreateModal();
         });
 
         expect(result.current.modalState).toEqual({
           isOpen: true,
           mode: 'create',
           editingCardId: undefined,
-          focusTarget: customFocusTarget,
+          focusTarget: 'title',
         });
       });
     });

@@ -13,10 +13,13 @@ export interface TodoCardData {
   title: string;
   todos: Todo[];
   updatedAt: Date;
-  backgroundColor?: string; // Color ID from CARD_COLORS (e.g. 'rose', 'blue', etc.)
+  backgroundColor: string;
 }
 
-export type FocusTarget = 'title' | 'new-todo' | { type: 'todo'; index: number };
+export type FocusTarget =
+  | 'title'
+  | 'new-todo'
+  | { type: 'todo'; index: number };
 
 // =============================================================================
 // COMPONENT PROPS
@@ -38,7 +41,9 @@ export interface TodoItemProps {
   onDelete: (id: string) => void;
   onToggle: (id: string) => void;
   onEdit: (id: string, newTask: string) => void;
-  inputRef?: React.RefObject<HTMLInputElement> | ((ref: HTMLInputElement | null) => void);
+  inputRef?:
+    | React.RefObject<HTMLInputElement>
+    | ((ref: HTMLInputElement | null) => void);
   onClick?: () => void;
   isBeingEdited?: boolean;
 }
@@ -53,7 +58,7 @@ export interface CardToolbarProps {
   isModal: boolean;
   isBeingEdited: boolean;
   initialData?: TodoCardData;
-  backgroundColor?: string;
+  backgroundColor: string;
   hasUnsavedChanges: boolean;
   onColorSelect: (color: string) => void;
   onDelete: (cardId: string) => void;
@@ -63,7 +68,15 @@ export interface CardToolbarProps {
   onAddTodo: () => void;
 }
 
-export type IconName = 'plus' | 'palette' | 'trash' | 'x' | 'grabber' | 'checkbox-checked' | 'checkbox-empty' | 'add-todoitem';
+export type IconName =
+  | 'plus'
+  | 'palette'
+  | 'trash'
+  | 'x'
+  | 'grabber'
+  | 'checkbox-checked'
+  | 'checkbox-empty'
+  | 'add-todoitem';
 
 export interface IconProps {
   name: IconName;
@@ -77,19 +90,15 @@ export interface IconProps {
 // HOOK PROPS
 // =============================================================================
 
-
-
 export interface UseKeyboardEventsProps {
   isModal: boolean;
   onClose?: () => void;
 }
 
-
 export interface UseInputValueProps {
   initialValue: string;
   onSave: (value: string) => void;
 }
-
 
 export interface UseCardRefsProps {
   isModal: boolean;
@@ -118,7 +127,7 @@ export interface TodoContextType {
   // State
   todoCards: TodoCardData[];
   modalState: ModalState;
-  
+
   // Actions
   upsertCard: (cardData: TodoCardData) => void;
   deleteCard: (cardId: string) => void;
@@ -134,4 +143,3 @@ export interface TodoProviderProps {
 // =============================================================================
 // UTILITY TYPES
 // =============================================================================
-

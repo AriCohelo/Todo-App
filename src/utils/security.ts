@@ -8,7 +8,7 @@ export const sanitizeHtml = (input: string): string => {
   });
 };
 
-export const validateInput = (input: string, maxLength: number = 1000, shouldTrim: boolean = false): string => {
+export const validateInput = (input: string, maxLength: number = 1000, shouldTrim: boolean = true): string => {
   if (typeof input !== 'string') {
     return '';
   }

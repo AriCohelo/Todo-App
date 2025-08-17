@@ -57,10 +57,10 @@ describe('Security Utils', () => {
       expect(result).toBe('  Hello World  ');
     });
 
-    it('should not trim by default', () => {
+    it('should trim by default', () => {
       const input = '  Hello World  ';
       const result = validateInput(input);
-      expect(result).toBe('  Hello World  ');
+      expect(result).toBe('Hello World');
     });
   });
 

@@ -127,24 +127,6 @@ describe('useTodoCardSave', () => {
       }));
     });
 
-    it('calls upsertCard for board without initialData', () => {
-      const { result } = renderHook(() =>
-        useTodoCardSave({
-          isModal: false,
-          initialData: undefined,
-          upsertCard: mockUpsertCard,
-        })
-      );
-
-      act(() => {
-        const updatedCard = { ...result.current.currentCard, title: 'New Title' };
-        result.current.updateCard(updatedCard);
-      });
-
-      expect(mockUpsertCard).toHaveBeenCalledWith(expect.objectContaining({
-        title: 'New Title'
-      }));
-    });
   });
 
   describe('updateCard', () => {

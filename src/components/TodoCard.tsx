@@ -6,10 +6,10 @@ import { useTodoContext } from '../context/TodoContext';
 import { useTodoCardSave } from '../hooks/useTodoCardSave';
 import { validateInput, isValidTitle, isValidContent } from '../utils/security';
 import {
-  addTodoToCard,
-  deleteTodoFromCard,
-  editTodoInCard,
-  toggleTodoInCard,
+  addTodoItem,
+  deleteTodoItem,
+  editTodoItem,
+  toggleTodoItem,
   updateCardTitle,
   updateCardBackgroundColor,
 } from '../utils/todoHelpers';
@@ -45,15 +45,17 @@ export const TodoCard = ({
   useKeyboardEvents({ isModal, onClose });
 
   const handleSave = () => {
-    saveChanges(onSave);
+    if (onSave) {
+      saveChanges(onSave);
+    }
     if (isModal && onClose) {
       onClose();
     }
   };
 
   const handleTitleChange = (newTitle: string) => {
-    const sanitizedTitle = validateInput(newTitle, 100, false);
-    if (isValidTitle(sanitizedTitle.trim()) || sanitizedTitle === '') {
+    const sanitizedTitle = validateInput(newTitle, 100);
+    if (isValidTitle(sanitizedTitle) || sanitizedTitle === '') {
       updateCard(updateCardTitle(currentCard, sanitizedTitle));
     }
   };
@@ -63,22 +65,22 @@ export const TodoCard = ({
   };
 
   const handleAddTodo = () => {
-    updateCard(addTodoToCard(currentCard));
+    updateCard(addTodoItem(currentCard));
   };
 
   const handleDeleteTodo = (todoId: string) => {
-    updateCard(deleteTodoFromCard(currentCard, todoId));
+    updateCard(deleteTodoItem(currentCard, todoId));
   };
 
   const handleEditTodo = (todoId: string, newTask: string) => {
-    const sanitizedTask = validateInput(newTask, 1000, false);
+    const sanitizedTask = validateInput(newTask, 1000, false); // Look at it when impmlementing indentation
     if (isValidContent(sanitizedTask) || sanitizedTask === '') {
-      updateCard(editTodoInCard(currentCard, todoId, sanitizedTask));
+      updateCard(editTodoItem(currentCard, todoId, sanitizedTask));
     }
   };
 
   const handleToggleTodo = (todoId: string) => {
-    updateCard(toggleTodoInCard(currentCard, todoId));
+    updateCard(toggleTodoItem(currentCard, todoId));
   };
 
   const cardContent = (
