@@ -20,7 +20,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
             : card
         );
       } else {
-        return [...prev, { ...cardData, updatedAt: new Date() }];
+        return [{ ...cardData, updatedAt: new Date() }, ...prev];
       }
     });
   };

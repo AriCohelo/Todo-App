@@ -21,7 +21,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
             <button
               key={colorClass}
               onClick={(e) => handleColorClick(colorClass, e)}
-              className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 cursor-pointer ${colorClass} ${
+              className={`w-8 h-8 rounded-full border-2  hover:scale-110 cursor-pointer ${colorClass} ${
                 selectedColor === colorClass
                   ? 'border-white shadow-lg'
                   : 'border-gray-500 hover:border-gray-300'

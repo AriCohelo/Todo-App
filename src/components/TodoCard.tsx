@@ -101,7 +101,7 @@ export const TodoCard = ({
         isModal ? 'opacity-100' : 'opacity-75'
       }
                    shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
-                   transition-all cursor-pointer w-full border-6 border-[#B7B7B7]
+                    cursor-pointer w-full border-6 border-[#B7B7B7]
                   ${
                     currentCard.backgroundColor ||
                     'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
@@ -149,7 +149,7 @@ export const TodoCard = ({
 
       <div
         className={`mt-8 text-xs tracking-wide text-gray-700 w-full text-right ${
-          isModal ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'
+          isModal ? '' : 'opacity-0 group-hover:opacity-100 '
         }`}
       >
         <span>

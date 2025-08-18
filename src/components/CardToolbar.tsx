@@ -46,7 +46,7 @@ export const CardToolbar = ({
   return (
     <div
       className={`mt-1 grid grid-cols-9 ${
-        isModal ? '' : 'opacity-0 group-hover:opacity-100 transition-opacity'
+        isModal ? '' : 'opacity-0 group-hover:opacity-100 '
       }`}
       role="toolbar"
     >
@@ -59,14 +59,14 @@ export const CardToolbar = ({
                 onAddTodo();
               }
         }
-        className="text-gray-700 hover:text-gray-700/80 transition-colors justify-self-start cursor-pointer col-start-1"
+        className="text-gray-700 hover:text-gray-700/80  justify-self-start cursor-pointer col-start-1"
         title="Add task"
         aria-label="add toDo"
         disabled={isBeingEdited}
       >
         <Icon
           name="add-todoitem"
-          className="w-8 h-8 hover:opacity-80 transition-all"
+          className="w-8 h-8 hover:opacity-80 "
           alt="Add task"
         />
       </button>
@@ -80,7 +80,7 @@ export const CardToolbar = ({
                 toggleColorPicker(!showColorPicker);
               }
         }
-        className={`text-gray-700 hover:text-gray-700/80 transition-colors justify-self-end cursor-pointer relative ${
+        className={`text-gray-700 hover:text-gray-700/80  justify-self-end cursor-pointer relative ${
           isModal ? 'col-start-6' : 'col-start-8'
         }`}
         title="Color palette"
@@ -88,7 +88,7 @@ export const CardToolbar = ({
       >
         <Icon
           name="palette"
-          className="w-4 h-4 hover:opacity-80 transition-all"
+          className="w-4 h-4 hover:opacity-80 "
           alt="Color palette"
         />
         {showColorPicker && (
@@ -119,7 +119,7 @@ export const CardToolbar = ({
                 }
               }
         }
-        className={`text-gray-700 hover:text-red-600 transition-colors justify-self-end cursor-pointer ${
+        className={`text-gray-700 hover:text-red-600  justify-self-end cursor-pointer ${
           isModal ? 'col-start-7' : 'col-start-9'
         }`}
         title={
@@ -133,7 +133,7 @@ export const CardToolbar = ({
       >
         <Icon
           name="trash"
-          className="w-4 h-4 hover:opacity-80 transition-all"
+          className="w-4 h-4 hover:opacity-80 "
           alt="Delete card"
         />
       </button>
@@ -148,7 +148,7 @@ export const CardToolbar = ({
                   onSave();
                 }
           }
-          className="text-gray-700 hover:text-gray-700/80 text-lg tracking-widest font-medium transition-colors justify-self-end cursor-pointer col-start-8 col-span-2"
+          className="text-gray-700 hover:text-gray-700/80 text-lg tracking-widest font-medium  justify-self-end cursor-pointer col-start-8 col-span-2"
           title="Save changes"
           disabled={isBeingEdited || !hasUnsavedChanges}
         >
