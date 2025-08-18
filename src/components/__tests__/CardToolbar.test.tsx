@@ -26,6 +26,7 @@ describe('CardToolbar', () => {
     isModal: false,
     isBeingEdited: false,
     hasUnsavedChanges: false,
+    backgroundColor: 'blue',
     onColorSelect: vi.fn(),
     onDelete: vi.fn(),
     onClose: vi.fn(),

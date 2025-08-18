@@ -1,7 +1,7 @@
 import { render, renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TodoProvider, useTodoContext } from '../TodoContext';
-import type { TodoCardData, FocusTarget } from '../../types';
+import type { TodoCardData } from '../../types';
 
 // Mock crypto.randomUUID for consistent testing
 const mockUUID = vi.fn();
@@ -37,12 +37,6 @@ describe('TodoContext', () => {
       const { result } = renderHook(() => useTodoContext(), { wrapper });
 
       expect(result.current.todoCards).toEqual([]);
-      expect(result.current.modalState).toEqual({
-        isOpen: false,
-        mode: null,
-        editingCardId: undefined,
-        focusTarget: undefined,
-      });
     });
   });
 
@@ -61,12 +55,8 @@ describe('TodoContext', () => {
       const { result } = renderHook(() => useTodoContext(), { wrapper });
 
       expect(result.current).toHaveProperty('todoCards');
-      expect(result.current).toHaveProperty('modalState');
       expect(result.current).toHaveProperty('upsertCard');
       expect(result.current).toHaveProperty('deleteCard');
-      expect(result.current).toHaveProperty('openCreateModal');
-      expect(result.current).toHaveProperty('openEditModal');
-      expect(result.current).toHaveProperty('closeModal');
     });
   });
 
@@ -207,135 +197,6 @@ describe('TodoContext', () => {
     });
   });
 
-  describe('modal state management', () => {
-    describe('openCreateModal', () => {
-      it('sets correct state for create mode with default focus', () => {
-        const wrapper = ({ children }: { children: React.ReactNode }) => (
-          <TodoProvider>{children}</TodoProvider>
-        );
-
-        const { result } = renderHook(() => useTodoContext(), { wrapper });
-
-        act(() => {
-          result.current.openCreateModal();
-        });
-
-        expect(result.current.modalState).toEqual({
-          isOpen: true,
-          mode: 'create',
-          editingCardId: undefined,
-          focusTarget: 'title',
-        });
-      });
-
-      it('sets correct state for create mode with custom focus target', () => {
-        const wrapper = ({ children }: { children: React.ReactNode }) => (
-          <TodoProvider>{children}</TodoProvider>
-        );
-
-        const { result } = renderHook(() => useTodoContext(), { wrapper });
-
-
-        act(() => {
-          result.current.openCreateModal();
-        });
-
-        expect(result.current.modalState).toEqual({
-          isOpen: true,
-          mode: 'create',
-          editingCardId: undefined,
-          focusTarget: 'title',
-        });
-      });
-    });
-
-    describe('openEditModal', () => {
-      const mockCard: TodoCardData = {
-        id: 'edit-card-id',
-        title: 'Edit Card',
-        todos: [],
-        backgroundColor: 'bg-green-500',
-        updatedAt: new Date()
-      };
-
-      it('sets correct state for edit mode with default focus', () => {
-        const wrapper = ({ children }: { children: React.ReactNode }) => (
-          <TodoProvider>{children}</TodoProvider>
-        );
-
-        const { result } = renderHook(() => useTodoContext(), { wrapper });
-
-        act(() => {
-          result.current.openEditModal(mockCard);
-        });
-
-        expect(result.current.modalState).toEqual({
-          isOpen: true,
-          mode: 'edit',
-          editingCardId: 'edit-card-id',
-          focusTarget: 'title',
-        });
-      });
-
-      it('sets correct state for edit mode with custom focus target', () => {
-        const wrapper = ({ children }: { children: React.ReactNode }) => (
-          <TodoProvider>{children}</TodoProvider>
-        );
-
-        const { result } = renderHook(() => useTodoContext(), { wrapper });
-
-        const customFocusTarget: FocusTarget = 'new-todo';
-
-        act(() => {
-          result.current.openEditModal(mockCard, customFocusTarget);
-        });
-
-        expect(result.current.modalState).toEqual({
-          isOpen: true,
-          mode: 'edit',
-          editingCardId: 'edit-card-id',
-          focusTarget: customFocusTarget,
-        });
-      });
-    });
-
-    describe('closeModal', () => {
-      it('resets modal state to initial values', () => {
-        const wrapper = ({ children }: { children: React.ReactNode }) => (
-          <TodoProvider>{children}</TodoProvider>
-        );
-
-        const { result } = renderHook(() => useTodoContext(), { wrapper });
-
-        const mockCard: TodoCardData = {
-          id: 'test-card',
-          title: 'Test',
-          todos: [],
-          backgroundColor: 'bg-blue-500',
-          updatedAt: new Date()
-        };
-
-        // First open a modal
-        act(() => {
-          result.current.openEditModal(mockCard, { type: 'todo', index: 1 });
-        });
-
-        expect(result.current.modalState.isOpen).toBe(true);
-
-        // Then close it
-        act(() => {
-          result.current.closeModal();
-        });
-
-        expect(result.current.modalState).toEqual({
-          isOpen: false,
-          mode: null,
-          editingCardId: undefined,
-          focusTarget: undefined,
-        });
-      });
-    });
-  });
 
   describe('integration scenarios', () => {
     it('handles complex sequence of operations correctly', () => {
@@ -369,29 +230,13 @@ describe('TodoContext', () => {
 
       expect(result.current.todoCards).toHaveLength(2);
 
-      // Open edit modal for card1
-      act(() => {
-        result.current.openEditModal(card1, { type: 'todo', index: 0 });
-      });
-
-      expect(result.current.modalState.mode).toBe('edit');
-      expect(result.current.modalState.editingCardId).toBe('integration-card-1');
-
-      // Update card1 while modal is open
+      // Update card1
       const updatedCard1 = { ...card1, title: 'Updated Integration Card 1' };
       act(() => {
         result.current.upsertCard(updatedCard1);
       });
 
       expect(result.current.todoCards[0].title).toBe('Updated Integration Card 1');
-      expect(result.current.modalState.isOpen).toBe(true); // Modal should still be open
-
-      // Close modal
-      act(() => {
-        result.current.closeModal();
-      });
-
-      expect(result.current.modalState.isOpen).toBe(false);
 
       // Delete card2
       act(() => {

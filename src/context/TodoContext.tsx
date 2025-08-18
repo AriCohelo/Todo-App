@@ -1,8 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import type {
   TodoCardData,
-  FocusTarget,
-  ModalState,
   TodoContextType,
   TodoProviderProps,
 } from '../types';
@@ -11,12 +9,6 @@ const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 export const TodoProvider = ({ children }: TodoProviderProps) => {
   const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);
-  const [modalState, setModalState] = useState<ModalState>({
-    isOpen: false,
-    mode: null,
-    editingCardId: undefined,
-    focusTarget: undefined,
-  });
 
   const upsertCard = (cardData: TodoCardData) => {
     setTodoCards((prev) => {
@@ -37,41 +29,11 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     setTodoCards((prev) => prev.filter((card) => card.id !== cardId));
   };
 
-  const openCreateModal = () => {
-    setModalState({
-      isOpen: true,
-      mode: 'create',
-      editingCardId: undefined,
-      focusTarget: 'title',
-    });
-  };
-
-  const openEditModal = (card: TodoCardData, focusTarget?: FocusTarget) => {
-    setModalState({
-      isOpen: true,
-      mode: 'edit',
-      editingCardId: card.id,
-      focusTarget: focusTarget || 'title',
-    });
-  };
-
-  const closeModal = () => {
-    setModalState({
-      isOpen: false,
-      mode: null,
-      editingCardId: undefined,
-      focusTarget: undefined,
-    });
-  };
 
   const value: TodoContextType = {
     todoCards,
-    modalState,
     upsertCard,
     deleteCard,
-    openCreateModal,
-    openEditModal,
-    closeModal,
   };
 
   return <TodoContext.Provider value={value}>{children}</TodoContext.Provider>;

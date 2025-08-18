@@ -1,7 +1,8 @@
-import { useTodoContext } from '../context/TodoContext';
+interface TodoTriggerProps {
+  onOpenCreate: () => void;
+}
 
-export const TodoTrigger = () => {
-  const { openCreateModal } = useTodoContext();
+export const TodoTrigger = ({ onOpenCreate }: TodoTriggerProps) => {
   return (
     <div data-testid="todoTrigger" className="flex justify-center mb-16 ">
       <div className="relative w-full max-w-2xl">
@@ -10,7 +11,7 @@ export const TodoTrigger = () => {
             placeholder="Take a note..."
             className="flex-1 p-4 bg-transparent text-zinc-300 placeholder-zinc-500 outline-none rounded-l-lg"
             data-testid="todoTrigger-input"
-            onClick={() => openCreateModal('title')}
+            onClick={onOpenCreate}
             readOnly
           />
         </div>

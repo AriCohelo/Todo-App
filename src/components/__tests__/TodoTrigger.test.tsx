@@ -1,24 +1,25 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { TodoTrigger } from '../TodoTrigger';
-import { TodoProvider, useTodoContext } from '../../context/TodoContext';
-import React from 'react';
+import { TodoProvider } from '../../context/TodoContext';
 
 // Test wrapper component that provides context
 const TestTodoTrigger = () => {
+  const mockOnOpenCreate = vi.fn();
   return (
     <TodoProvider>
-      <TodoTrigger />
+      <TodoTrigger onOpenCreate={mockOnOpenCreate} />
     </TodoProvider>
   );
 };
 
 // Simplified approach - just test with actual context since mocking is complex
 const TestTodoTriggerSimple = () => {
+  const mockOnOpenCreate = vi.fn();
   return (
     <TodoProvider>
-      <TodoTrigger />
+      <TodoTrigger onOpenCreate={mockOnOpenCreate} />
     </TodoProvider>
   );
 };

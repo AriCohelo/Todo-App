@@ -179,7 +179,7 @@ describe('useKeyboardEvents', () => {
 
     it('does nothing when onClose is null', () => {
       const { result } = renderHook(() =>
-        useKeyboardEvents({ isModal: true, onClose: null })
+        useKeyboardEvents({ isModal: true, onClose: undefined })
       );
 
       const escKeyEvent = new KeyboardEvent('keydown', { key: 'Escape' });

@@ -292,12 +292,12 @@ describe('useCardRefs', () => {
         const todoFocusSpy = vi.spyOn(mockTodoInput, 'focus');
 
         const { result, rerender } = renderHook(
-          ({ focusTarget }) => useCardRefs({
+          ({ focusTarget }: { focusTarget?: import('../../types').FocusTarget }) => useCardRefs({
             isModal: true,
             focusTarget,
             todos: mockTodos
           }),
-          { initialProps: { focusTarget: 'title' as const } }
+          { initialProps: { focusTarget: 'title' as import('../../types').FocusTarget } }
         );
 
         // Set up refs
@@ -316,7 +316,7 @@ describe('useCardRefs', () => {
         // Change focus target
         titleFocusSpy.mockClear();
 
-        rerender({ focusTarget: { type: 'todo', index: 0 } });
+        rerender({ focusTarget: { type: 'todo', index: 0 } as const });
 
         act(() => {
           vi.runAllTimers();
@@ -407,15 +407,14 @@ describe('useCardRefs', () => {
       const mockTitleInput = document.createElement('input');
       const mockTodoInput = document.createElement('input');
       const titleFocusSpy = vi.spyOn(mockTitleInput, 'focus');
-      const todoFocusSpy = vi.spyOn(mockTodoInput, 'focus');
 
       const { result, rerender } = renderHook(
-        ({ focusTarget }) => useCardRefs({
+        ({ focusTarget }: { focusTarget?: import('../../types').FocusTarget }) => useCardRefs({
           isModal: true,
           focusTarget,
           todos: mockTodos
         }),
-        { initialProps: { focusTarget: 'title' as const } }
+        { initialProps: { focusTarget: 'title' as import('../../types').FocusTarget } }
       );
 
       result.current.titleInputRef.current = mockTitleInput;
@@ -424,7 +423,7 @@ describe('useCardRefs', () => {
       });
 
       // Change focus target rapidly before timers run
-      rerender({ focusTarget: { type: 'todo', index: 0 } });
+      rerender({ focusTarget: { type: 'todo', index: 0 } as const });
       rerender({ focusTarget: 'title' });
 
       act(() => {

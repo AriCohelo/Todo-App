@@ -14,7 +14,7 @@ import {
   updateCardBackgroundColor,
 } from '../utils/todoHelpers';
 import type { TodoCardProps } from '../types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export const TodoCard = ({
   initialData,
@@ -22,9 +22,9 @@ export const TodoCard = ({
   onDelete,
   isModal = false,
   onClose,
-  focusTarget,
+  onBackdropClick,
+  focusTarget: externalFocusTarget,
   onCardClick,
-  isBeingEdited = false,
 }: TodoCardProps) => {
   const { upsertCard } = useTodoContext();
 
@@ -39,16 +39,27 @@ export const TodoCard = ({
 
   const cardRefs = useCardRefs({
     isModal,
-    focusTarget,
+    focusTarget: externalFocusTarget,
     todos: currentCard.todos,
   });
-  useKeyboardEvents({ isModal, onClose });
+
+  useKeyboardEvents({
+    isModal,
+    onClose,
+  });
+
+  // Update parent ref with current card state for backdrop click auto-save
+  useEffect(() => {
+    if (onBackdropClick) {
+      onBackdropClick(currentCard);
+    }
+  }, [currentCard, onBackdropClick]);
 
   const handleSave = () => {
     if (onSave) {
       saveChanges(onSave);
     }
-    if (isModal && onClose) {
+    if (onClose) {
       onClose();
     }
   };
@@ -86,47 +97,35 @@ export const TodoCard = ({
   const cardContent = (
     <div
       data-testid="todoCard"
-      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 opacity-75 
-                   shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] ${
-                     isBeingEdited ? '' : 'transition-all'
-                   } cursor-pointer w-full border-6 border-[#B7B7B7]
+      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 ${
+        isModal ? 'opacity-100' : 'opacity-75'
+      }
+                   shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
+                   transition-all cursor-pointer w-full border-6 border-[#B7B7B7]
                   ${
                     currentCard.backgroundColor ||
                     'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
-                  } ${isBeingEdited ? 'invisible' : ''} ${
-        isColorPickerOpen ? 'z-[10000]' : ''
-      }`}
-      onClick={
-        isBeingEdited
-          ? undefined
-          : () => {
-              if (!isModal && onCardClick && initialData) {
-                onCardClick(initialData, 'title');
-              }
-            }
-      }
+                  } ${isColorPickerOpen ? 'z-[10000]' : ''}`}
+      onClick={() => {
+        if (!isModal && onCardClick) {
+          onCardClick('title');
+        }
+      }}
     >
       <input
         ref={cardRefs.titleInputRef}
         type="text"
         placeholder="Enter a title..."
         value={currentCard.title}
-        onChange={
-          isBeingEdited ? undefined : (e) => handleTitleChange(e.target.value)
-        }
-        onClick={
-          isBeingEdited
-            ? undefined
-            : (e) => {
-                if (!isModal && onCardClick && initialData) {
-                  e.stopPropagation();
-                  onCardClick(initialData, 'title');
-                }
-              }
-        }
+        onChange={(e) => handleTitleChange(e.target.value)}
+        onClick={(e) => {
+          if (!isModal && onCardClick) {
+            e.stopPropagation();
+            onCardClick('title');
+          }
+        }}
         className="w-full bg-transparent border-none outline-none font-semibold text-2xl tracking-widest text-gray-700 placeholder-gray-700/60 mb-2"
         data-testid="todoCard-title-input"
-        readOnly={isBeingEdited}
       />
       <div data-testid="todoItem-list" className="space-y-1 flex-1">
         {currentCard.todos.map((todo, index) => (
@@ -137,14 +136,13 @@ export const TodoCard = ({
               cardRefs.setTodoItemRef(index, ref);
             }}
             onClick={() => {
-              if (!isModal && onCardClick && initialData) {
-                onCardClick(initialData, { type: 'todo', index });
+              if (!isModal && onCardClick) {
+                onCardClick({ type: 'todo', index });
               }
             }}
             onDelete={handleDeleteTodo}
             onEdit={handleEditTodo}
             onToggle={handleToggleTodo}
-            isBeingEdited={isBeingEdited}
           />
         ))}
       </div>
@@ -169,7 +167,7 @@ export const TodoCard = ({
       </div>
       <CardToolbar
         isModal={isModal}
-        isBeingEdited={isBeingEdited}
+        isBeingEdited={false}
         initialData={initialData}
         backgroundColor={currentCard.backgroundColor}
         hasUnsavedChanges={hasUnsavedChanges || false}
@@ -182,23 +180,6 @@ export const TodoCard = ({
       />
     </div>
   );
-
-  if (isModal) {
-    return (
-      <div
-        data-testid="todoTrigger-modal"
-        className="fixed inset-0 bg-gray-800/80 flex items-center justify-center p-4"
-        onClick={() => (hasUnsavedChanges ? handleSave() : onClose?.())}
-      >
-        <div
-          className="rounded-3xl shadow-lg w-full max-w-md app-background "
-          onClick={(e) => e.stopPropagation()}
-        >
-          {cardContent}
-        </div>
-      </div>
-    );
-  }
 
   return cardContent;
 };

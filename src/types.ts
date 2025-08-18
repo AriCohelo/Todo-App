@@ -31,9 +31,9 @@ export interface TodoCardProps {
   onDelete: (cardId: string) => void;
   isModal?: boolean;
   onClose?: () => void;
+  onBackdropClick?: (cardData: TodoCardData) => void;
   focusTarget?: FocusTarget;
-  onCardClick?: (card: TodoCardData, focusTarget?: FocusTarget) => void;
-  isBeingEdited?: boolean;
+  onCardClick?: (focusTarget?: FocusTarget) => void;
 }
 
 export interface TodoItemProps {
@@ -116,24 +116,13 @@ export interface UseTodoCardSaveProps {
 // CONTEXT TYPES
 // =============================================================================
 
-export interface ModalState {
-  isOpen: boolean;
-  mode: 'create' | 'edit' | null;
-  editingCardId?: string;
-  focusTarget?: FocusTarget;
-}
-
 export interface TodoContextType {
   // State
   todoCards: TodoCardData[];
-  modalState: ModalState;
 
   // Actions
   upsertCard: (cardData: TodoCardData) => void;
   deleteCard: (cardId: string) => void;
-  openCreateModal: (focusTarget?: FocusTarget) => void;
-  openEditModal: (card: TodoCardData, focusTarget?: FocusTarget) => void;
-  closeModal: () => void;
 }
 
 export interface TodoProviderProps {

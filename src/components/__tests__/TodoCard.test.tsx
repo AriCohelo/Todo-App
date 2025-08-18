@@ -102,6 +102,7 @@ describe('TodoCard', () => {
           { id: '1', task: 'First todo', completed: false },
           { id: '2', task: 'Second todo', completed: true },
         ],
+        backgroundColor: 'blue',
         updatedAt: new Date(),
       };
 
@@ -116,6 +117,7 @@ describe('TodoCard', () => {
         id: '1',
         title: 'Initial Title',
         todos: [{ id: '1', task: 'Sample todo', completed: false }],
+        backgroundColor: 'green',
         updatedAt: new Date(),
       };
 
@@ -173,6 +175,7 @@ describe('TodoCard', () => {
         todos: [
           { id: '1', task: 'First todo', completed: false },
         ],
+        backgroundColor: 'red',
         updatedAt: new Date(),
       };
 
