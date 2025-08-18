@@ -48,7 +48,6 @@ export const TodoCard = ({
     onClose,
   });
 
-  // Update parent ref with current card state for backdrop click auto-save
   useEffect(() => {
     if (onBackdropClick) {
       onBackdropClick(currentCard);

@@ -8,16 +8,18 @@ export const useTodoCardSave = ({
   initialData,
   upsertCard,
 }: UseTodoCardSaveProps) => {
+  // For modal mode: create draft state
   const [newCard] = useState<TodoCardData>(() => createEmptyCard(getRandomColor()));
-
   const [workingCard, setWorkingCard] = useState<TodoCardData>(newCard);
 
+  // Initialize workingCard with initialData when provided (modal mode)
   useEffect(() => {
-    if (initialData) {
+    if (isModal && initialData) {
       setWorkingCard(initialData);
     }
-  }, [initialData]);
+  }, [isModal, initialData]);
 
+  // Reset workingCard on modal cleanup
   useEffect(() => {
     return () => {
       if (isModal) {
@@ -26,28 +28,44 @@ export const useTodoCardSave = ({
     };
   }, [isModal, newCard]);
 
-  const currentCard: TodoCardData = isModal
-    ? workingCard
-    : initialData || workingCard;
-
-  const hasUnsavedChanges =
-    isModal &&
-    (!initialData
+  // Simplified logic: clear separation between modal and board modes
+  if (isModal) {
+    // MODAL MODE: Use draft state with explicit save
+    const hasUnsavedChanges = !initialData
       ? JSON.stringify(workingCard) !== JSON.stringify(newCard)
-      : JSON.stringify(workingCard) !== JSON.stringify(initialData));
+      : JSON.stringify(workingCard) !== JSON.stringify(initialData);
 
-  const updateCard = (updatedCard: TodoCardData) => {
-    isModal ? setWorkingCard(updatedCard) : upsertCard(updatedCard);
-  };
+    const updateCard = (updatedCard: TodoCardData) => {
+      setWorkingCard(updatedCard);
+    };
 
-  const saveChanges = (onSave: (card: TodoCardData) => void) => {
-    onSave(workingCard);
-  };
+    const saveChanges = (onSave: (card: TodoCardData) => void) => {
+      onSave(workingCard);
+    };
 
-  return {
-    currentCard,
-    hasUnsavedChanges,
-    updateCard,
-    saveChanges,
-  };
+    return {
+      currentCard: workingCard,
+      hasUnsavedChanges,
+      updateCard,
+      saveChanges,
+    };
+  } else {
+    // BOARD MODE: Direct state with immediate persistence
+    const currentCard = initialData || newCard;
+
+    const updateCard = (updatedCard: TodoCardData) => {
+      upsertCard(updatedCard);
+    };
+
+    const saveChanges = () => {
+      // No-op in board mode since changes are immediately persisted
+    };
+
+    return {
+      currentCard,
+      hasUnsavedChanges: false,
+      updateCard,
+      saveChanges,
+    };
+  }
 };

@@ -127,6 +127,45 @@ describe('useTodoCardSave', () => {
       }));
     });
 
+    it('always returns hasUnsavedChanges as false in board mode', () => {
+      const testCard = createEmptyCard(getRandomColor());
+      
+      const { result } = renderHook(() =>
+        useTodoCardSave({
+          isModal: false,
+          initialData: testCard,
+          upsertCard: mockUpsertCard,
+        })
+      );
+
+      expect(result.current.hasUnsavedChanges).toBe(false);
+
+      act(() => {
+        const updatedCard = { ...result.current.currentCard, title: 'Updated Title' };
+        result.current.updateCard(updatedCard);
+      });
+
+      expect(result.current.hasUnsavedChanges).toBe(false);
+    });
+
+    it('saveChanges is a no-op in board mode', () => {
+      const testCard = createEmptyCard(getRandomColor());
+      
+      const { result } = renderHook(() =>
+        useTodoCardSave({
+          isModal: false,
+          initialData: testCard,
+          upsertCard: mockUpsertCard,
+        })
+      );
+
+      act(() => {
+        result.current.saveChanges(mockOnSave);
+      });
+
+      expect(mockOnSave).not.toHaveBeenCalled();
+    });
+
   });
 
   describe('updateCard', () => {
