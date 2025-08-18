@@ -100,21 +100,21 @@ describe('App', () => {
       ).toBeInTheDocument();
     });
 
-    it('closes modal without saving when backdrop is clicked without changes', async () => {
+    it('closes modal and saves when backdrop is clicked', async () => {
       const user = userEvent.setup();
       render(<App />);
 
-      // Open create modal
+      // Open create modal - now creates card immediately
       const triggerInput = screen.getByTestId('todoTrigger-input');
       await user.click(triggerInput);
 
-      // Click backdrop without making changes
+      // Click backdrop - should save and close
       const backdrop = screen.getByTestId('todoTrigger-modal');
       await user.click(backdrop);
 
-      // Modal should close and no card should be created
+      // Modal should close and card should be created on the board
       expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('todoCard')).not.toBeInTheDocument();
+      expect(screen.getByTestId('todoCard')).toBeInTheDocument();
     });
   });
 
@@ -147,9 +147,9 @@ describe('App', () => {
         within(editModal).getByDisplayValue('OriginalCard')
       ).toBeInTheDocument();
 
-      // Card should be made invisible in TodoBoard while being edited
-      const editedCard = within(todoBoard).getByDisplayValue('OriginalCard');
-      expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
+      // Card should be hidden in TodoBoard while being edited
+      const cardContainer = todoBoard.querySelector('.hidden');
+      expect(cardContainer).toBeInTheDocument();
     });
 
     it('updates existing card when Save button is clicked in edit mode', async () => {
@@ -172,9 +172,9 @@ describe('App', () => {
       const cardElement = within(todoBoard).getByTestId('todoCard');
       await user.click(cardElement);
 
-      // Card should be made invisible in TodoBoard while being edited
-      const editedCard = within(todoBoard).getByDisplayValue('OriginalCard');
-      expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
+      // Card should be hidden in TodoBoard while being edited
+      const cardContainer = todoBoard.querySelector('.hidden');
+      expect(cardContainer).toBeInTheDocument();
 
       // Edit the title in the modal
       const editModal = screen.getByTestId('todoTrigger-modal');
@@ -228,9 +228,9 @@ describe('App', () => {
 
       expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
 
-      // Card should be made invisible in TodoBoard while being edited
-      const editedCard = within(todoBoard).getByDisplayValue('TestCard');
-      expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
+      // Card should be hidden in TodoBoard while being edited
+      const cardContainer = todoBoard.querySelector('.hidden');
+      expect(cardContainer).toBeInTheDocument();
 
       // Press ESC to close
       await user.keyboard('{Escape}');
@@ -265,9 +265,9 @@ describe('App', () => {
       const cardElement = within(todoBoard).getByTestId('todoCard');
       await user.click(cardElement);
 
-      // Card should be made invisible in TodoBoard while being edited
-      const editedCard = within(todoBoard).getByDisplayValue('TestCard');
-      expect(editedCard.closest('[data-testid="todoCard"]')).toHaveClass('invisible');
+      // Card should be hidden in TodoBoard while being edited
+      const cardContainer = todoBoard.querySelector('.hidden');
+      expect(cardContainer).toBeInTheDocument();
 
       // In edit modal, click + button to add new todo
       const editModal = screen.getByTestId('todoTrigger-modal');

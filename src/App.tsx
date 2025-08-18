@@ -5,15 +5,23 @@ import { TodoCard } from './components/TodoCard';
 import { useModalState } from './hooks/useModalState';
 import type { TodoCardData } from './types';
 import { useRef } from 'react';
+import { createEmptyCard } from './utils/todoHelpers';
+import { getRandomColor } from './constants/colors';
 
 function AppContent() {
   const { todoCards, upsertCard, deleteCard } = useTodoContext();
-  const { modalState, openCreateModal, openEditModal, closeModal } = useModalState();
+  const { modalState, openEditModal, closeModal } = useModalState();
   const currentCardRef = useRef<TodoCardData | null>(null);
 
-  const modalCard = modalState.mode === 'edit' && modalState.cardId 
+  const modalCard = modalState.cardId 
     ? todoCards.find(card => card.id === modalState.cardId)
     : undefined;
+
+  const handleCreateCard = () => {
+    const newCard = createEmptyCard(getRandomColor());
+    upsertCard(newCard);
+    openEditModal(newCard.id, 'title');
+  };
 
   const handleSaveAndClose = (card: TodoCardData) => {
     upsertCard(card);
@@ -34,10 +42,10 @@ function AppContent() {
 
   return (
     <div className="min-h-screen p-8 lg:p-16 app-background">
-      <TodoTrigger onOpenCreate={openCreateModal} />
+      <TodoTrigger onOpenCreate={handleCreateCard} />
       <TodoBoard 
         onOpenEdit={(cardId, focusTarget) => openEditModal(cardId, focusTarget)} 
-        editingCardId={modalState.mode === 'edit' ? modalState.cardId : undefined}
+        editingCardId={modalState.cardId}
       />
 
       {modalState.isOpen && (
@@ -51,7 +59,7 @@ function AppContent() {
             onClick={(e) => e.stopPropagation()}
           >
             <TodoCard
-              key={modalState.cardId || 'create'}
+              key={modalState.cardId}
               isModal={true}
               initialData={modalCard}
               onSave={upsertCard}

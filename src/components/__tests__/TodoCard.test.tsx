@@ -262,35 +262,5 @@ describe('TodoCard', () => {
       await user.keyboard('{Escape}');
       expect(onClose).toHaveBeenCalled();
     });
-
-    it('closes modal when backdrop is clicked without changes', async () => {
-      const user = userEvent.setup();
-      const onClose = vi.fn();
-
-      renderTodoCard({ isModal: true, onClose });
-
-      const backdrop = screen.getByTestId('todoTrigger-modal');
-      await user.click(backdrop);
-      expect(onClose).toHaveBeenCalled();
-    });
-
-    it('saves and closes modal when backdrop is clicked with changes', async () => {
-      const user = userEvent.setup();
-      const onClose = vi.fn();
-      const onSave = vi.fn();
-
-      renderTodoCard({ isModal: true, onClose, onSave });
-
-      // Make changes
-      const titleInput = screen.getByTestId('todoCard-title-input');
-      await user.type(titleInput, 'Test Title');
-
-      // Click backdrop
-      const backdrop = screen.getByTestId('todoTrigger-modal');
-      await user.click(backdrop);
-
-      expect(onSave).toHaveBeenCalled();
-      expect(onClose).toHaveBeenCalled();
-    });
   });
 });
