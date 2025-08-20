@@ -3,7 +3,7 @@ import { CardToolbar } from './CardToolbar';
 import { useCardRefs } from '../hooks/useCardRefs';
 import { useKeyboardEvents } from '../hooks/useKeyboardEvents';
 import { useTodoContext } from '../context/TodoContext';
-import { useModalCardEdit } from '../hooks/useTodoCardSave';
+import { useTodoCardSave } from '../hooks/useTodoCardSave';
 import { validateInput, isValidTitle, isValidContent } from '../utils/security';
 import {
   addTodoItem,
@@ -12,11 +12,9 @@ import {
   toggleTodoItem,
   updateCardTitle,
   updateCardBackgroundColor,
-  createEmptyCard,
 } from '../utils/todoHelpers';
-import { getRandomColor } from '../constants/colors';
 import type { TodoCardProps } from '../types';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 export const TodoCard = ({
   initialData,
@@ -32,26 +30,12 @@ export const TodoCard = ({
 
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
-  // Modal mode: use hook for state management
-  // Board mode: use direct calls to upsertCard
-  const modalHook = isModal ? useModalCardEdit({ initialData }) : null;
-  
-  // For board mode without initialData, create a fallback card (mainly for tests)
-  const fallbackCard = useMemo(() => createEmptyCard(getRandomColor()), []);
-  
-  const currentCard = isModal 
-    ? modalHook!.currentCard 
-    : initialData || fallbackCard;
-    
-  const hasUnsavedChanges = isModal ? modalHook!.hasUnsavedChanges : false;
-  
-  const updateCard = isModal 
-    ? modalHook!.updateCard 
-    : (updatedCard: TodoCardData) => upsertCard(updatedCard);
-    
-  const saveChanges = isModal 
-    ? modalHook!.saveChanges 
-    : () => {};
+  const { currentCard, hasUnsavedChanges, updateCard, saveChanges } =
+    useTodoCardSave({
+      isModal,
+      initialData,
+      upsertCard,
+    });
 
   const cardRefs = useCardRefs({
     isModal,

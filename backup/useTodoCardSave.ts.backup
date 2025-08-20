@@ -1,0 +1,65 @@
+import { useState, useEffect } from 'react';
+import type { TodoCardData, UseTodoCardSaveProps } from '../types';
+import { createEmptyCard } from '../utils/todoHelpers';
+import { getRandomColor } from '../constants/colors';
+
+export const useTodoCardSave = ({
+  isModal,
+  initialData,
+  upsertCard,
+}: UseTodoCardSaveProps) => {
+  const [newCard] = useState<TodoCardData>(() =>
+    createEmptyCard(getRandomColor())
+  );
+  const [workingCard, setWorkingCard] = useState<TodoCardData>(newCard);
+
+  useEffect(() => {
+    if (isModal && initialData) {
+      setWorkingCard(initialData);
+    }
+  }, [isModal, initialData]);
+
+  useEffect(() => {
+    return () => {
+      if (isModal) {
+        setWorkingCard(newCard);
+      }
+    };
+  }, [isModal, newCard]);
+
+  if (isModal) {
+    const hasUnsavedChanges = !initialData
+      ? JSON.stringify(workingCard) !== JSON.stringify(newCard)
+      : JSON.stringify(workingCard) !== JSON.stringify(initialData);
+
+    const updateCard = (updatedCard: TodoCardData) => {
+      setWorkingCard(updatedCard);
+    };
+
+    const saveChanges = (onSave: (card: TodoCardData) => void) => {
+      onSave(workingCard);
+    };
+
+    return {
+      currentCard: workingCard,
+      hasUnsavedChanges,
+      updateCard,
+      saveChanges,
+    };
+  } else {
+    const currentCard = initialData || newCard;
+
+    const updateCard = (updatedCard: TodoCardData) => {
+      upsertCard(updatedCard);
+    };
+
+    const saveChanges = () => {};
+
+    return {
+      currentCard,
+      hasUnsavedChanges: false,
+      updateCard,
+      saveChanges,
+    };
+  }
+};

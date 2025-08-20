@@ -1,10 +1,11 @@
 import { renderHook, act } from '@testing-library/react';
-import { useModalCardEdit } from '../useTodoCardSave';
+import { useTodoCardSave } from '../useTodoCardSave';
 import { createEmptyCard } from '../../utils/todoHelpers';
 import { getRandomColor } from '../../constants/colors';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-describe('useModalCardEdit', () => {
+describe('useTodoCardSave', () => {
+  const mockUpsertCard = vi.fn();
   const mockOnSave = vi.fn();
 
   beforeEach(() => {
@@ -14,8 +15,10 @@ describe('useModalCardEdit', () => {
   describe('initialization', () => {
     it('creates empty card when no initialData provided', () => {
       const { result } = renderHook(() =>
-        useModalCardEdit({
+        useTodoCardSave({
+          isModal: false,
           initialData: undefined,
+          upsertCard: mockUpsertCard,
         })
       );
 
@@ -30,8 +33,10 @@ describe('useModalCardEdit', () => {
       testCard.title = 'Test Card';
 
       const { result } = renderHook(() =>
-        useModalCardEdit({
+        useTodoCardSave({
+          isModal: false,
           initialData: testCard,
+          upsertCard: mockUpsertCard,
         })
       );
 
@@ -39,11 +44,13 @@ describe('useModalCardEdit', () => {
     });
   });
 
-  describe('unsaved changes tracking', () => {
+  describe('modal mode', () => {
     it('tracks unsaved changes in create mode', () => {
       const { result } = renderHook(() =>
-        useModalCardEdit({
+        useTodoCardSave({
+          isModal: true,
           initialData: undefined,
+          upsertCard: mockUpsertCard,
         })
       );
 
@@ -57,30 +64,29 @@ describe('useModalCardEdit', () => {
       expect(result.current.hasUnsavedChanges).toBe(true);
     });
 
-    it('tracks unsaved changes in edit mode', () => {
-      const testCard = createEmptyCard(getRandomColor());
-      testCard.title = 'Original Title';
-
+    it('does not call upsertCard immediately in modal mode', () => {
       const { result } = renderHook(() =>
-        useModalCardEdit({
-          initialData: testCard,
+        useTodoCardSave({
+          isModal: true,
+          initialData: undefined,
+          upsertCard: mockUpsertCard,
         })
       );
-
-      expect(result.current.hasUnsavedChanges).toBe(false);
 
       act(() => {
         const updatedCard = { ...result.current.currentCard, title: 'New Title' };
         result.current.updateCard(updatedCard);
       });
 
-      expect(result.current.hasUnsavedChanges).toBe(true);
+      expect(mockUpsertCard).not.toHaveBeenCalled();
     });
 
     it('calls onSave when saveChanges is called', () => {
       const { result } = renderHook(() =>
-        useModalCardEdit({
+        useTodoCardSave({
+          isModal: true,
           initialData: undefined,
+          upsertCard: mockUpsertCard,
         })
       );
 
@@ -99,12 +105,76 @@ describe('useModalCardEdit', () => {
     });
   });
 
+  describe('board mode', () => {
+    it('calls upsertCard immediately when initialData exists', () => {
+      const testCard = createEmptyCard(getRandomColor());
+      
+      const { result } = renderHook(() =>
+        useTodoCardSave({
+          isModal: false,
+          initialData: testCard,
+          upsertCard: mockUpsertCard,
+        })
+      );
+
+      act(() => {
+        const updatedCard = { ...result.current.currentCard, title: 'Updated Title' };
+        result.current.updateCard(updatedCard);
+      });
+
+      expect(mockUpsertCard).toHaveBeenCalledWith(expect.objectContaining({
+        title: 'Updated Title'
+      }));
+    });
+
+    it('always returns hasUnsavedChanges as false in board mode', () => {
+      const testCard = createEmptyCard(getRandomColor());
+      
+      const { result } = renderHook(() =>
+        useTodoCardSave({
+          isModal: false,
+          initialData: testCard,
+          upsertCard: mockUpsertCard,
+        })
+      );
+
+      expect(result.current.hasUnsavedChanges).toBe(false);
+
+      act(() => {
+        const updatedCard = { ...result.current.currentCard, title: 'Updated Title' };
+        result.current.updateCard(updatedCard);
+      });
+
+      expect(result.current.hasUnsavedChanges).toBe(false);
+    });
+
+    it('saveChanges is a no-op in board mode', () => {
+      const testCard = createEmptyCard(getRandomColor());
+      
+      const { result } = renderHook(() =>
+        useTodoCardSave({
+          isModal: false,
+          initialData: testCard,
+          upsertCard: mockUpsertCard,
+        })
+      );
+
+      act(() => {
+        result.current.saveChanges(mockOnSave);
+      });
+
+      expect(mockOnSave).not.toHaveBeenCalled();
+    });
+
+  });
 
   describe('updateCard', () => {
     it('updates working state correctly', () => {
       const { result } = renderHook(() =>
-        useModalCardEdit({
+        useTodoCardSave({
+          isModal: true,
           initialData: undefined,
+          upsertCard: mockUpsertCard,
         })
       );
 

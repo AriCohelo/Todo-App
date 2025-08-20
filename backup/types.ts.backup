@@ -106,8 +106,10 @@ export interface UseCardRefsProps {
   todos: Todo[];
 }
 
-export interface UseModalCardEditProps {
+export interface UseTodoCardSaveProps {
+  isModal: boolean;
   initialData: TodoCardData | undefined;
+  upsertCard: (card: TodoCardData) => void;
 }
 
 // =============================================================================

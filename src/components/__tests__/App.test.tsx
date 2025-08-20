@@ -147,8 +147,8 @@ describe('App', () => {
         within(editModal).getByDisplayValue('OriginalCard')
       ).toBeInTheDocument();
 
-      // Card should be hidden in TodoBoard while being edited
-      const cardContainer = todoBoard.querySelector('.hidden');
+      // Card should be invisible in TodoBoard while being edited
+      const cardContainer = todoBoard.querySelector('.invisible');
       expect(cardContainer).toBeInTheDocument();
     });
 
@@ -172,8 +172,8 @@ describe('App', () => {
       const cardElement = within(todoBoard).getByTestId('todoCard');
       await user.click(cardElement);
 
-      // Card should be hidden in TodoBoard while being edited
-      const cardContainer = todoBoard.querySelector('.hidden');
+      // Card should be invisible in TodoBoard while being edited
+      const cardContainer = todoBoard.querySelector('.invisible');
       expect(cardContainer).toBeInTheDocument();
 
       // Edit the title in the modal
@@ -228,8 +228,8 @@ describe('App', () => {
 
       expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
 
-      // Card should be hidden in TodoBoard while being edited
-      const cardContainer = todoBoard.querySelector('.hidden');
+      // Card should be invisible in TodoBoard while being edited
+      const cardContainer = todoBoard.querySelector('.invisible');
       expect(cardContainer).toBeInTheDocument();
 
       // Press ESC to close
@@ -265,8 +265,8 @@ describe('App', () => {
       const cardElement = within(todoBoard).getByTestId('todoCard');
       await user.click(cardElement);
 
-      // Card should be hidden in TodoBoard while being edited
-      const cardContainer = todoBoard.querySelector('.hidden');
+      // Card should be invisible in TodoBoard while being edited
+      const cardContainer = todoBoard.querySelector('.invisible');
       expect(cardContainer).toBeInTheDocument();
 
       // In edit modal, click + button to add new todo

@@ -143,8 +143,8 @@ describe('TodoBoard', () => {
       
       const card = screen.getByTestId('todoCard');
       
-      // Card container should have hidden class when being edited
-      expect(card.parentElement).toHaveClass('hidden');
+      // Card container should have invisible class when being edited
+      expect(card.parentElement).toHaveClass('invisible');
     });
 
     it('handles card deletion', async () => {
@@ -220,16 +220,25 @@ describe('TodoBoard', () => {
   });
 
   describe('card state management', () => {
-    it('correctly identifies which card is being edited', () => {
+    it('correctly identifies which card is being edited', async () => {
       render(<TestTodoBoardWithCards cards={[mockTodoCard1, mockTodoCard2]} editingCardId="test-card-1" />);
       
-      const cards = screen.getAllByTestId('todoCard');
+      // Wait for cards to be rendered
+      const cards = await screen.findAllByTestId('todoCard');
+      expect(cards).toHaveLength(2);
       
-      // First card should be marked as being edited (hidden via parent container)
-      expect(cards[0].parentElement).toHaveClass('hidden');
+      // Find the card with title "Test Card 1" (which has id "test-card-1")
+      const card1 = cards.find(card => within(card).queryByDisplayValue('Test Card 1'));
+      const card2 = cards.find(card => within(card).queryByDisplayValue('Test Card 2'));
       
-      // Second card should not be marked as being edited
-      expect(cards[1].parentElement).not.toHaveClass('hidden');
+      expect(card1).toBeDefined();
+      expect(card2).toBeDefined();
+      
+      // Card1 should be marked as being edited (invisible via parent container)
+      expect(card1!.parentElement).toHaveClass('invisible');
+      
+      // Card2 should not be marked as being edited
+      expect(card2!.parentElement).not.toHaveClass('invisible');
     });
 
     it('handles multiple cards with different states', () => {
@@ -280,13 +289,13 @@ describe('TodoBoard', () => {
       const card = screen.getByTestId('todoCard');
       
       // Initially not being edited
-      expect(card.parentElement).not.toHaveClass('hidden');
+      expect(card.parentElement).not.toHaveClass('invisible');
       
       // Re-render with editing state
       rerender(<TestTodoBoardWithCards cards={[mockTodoCard1]} editingCardId="test-card-1" />);
       
       // Now should be marked as being edited
-      expect(card.parentElement).toHaveClass('hidden');
+      expect(card.parentElement).toHaveClass('invisible');
     });
 
     it('calls context methods correctly', async () => {
