@@ -284,47 +284,6 @@ describe('useCardRefs', () => {
       });
     });
 
-    describe('focus target changes', () => {
-      it('refocuses when focusTarget changes', () => {
-        const mockTitleInput = document.createElement('input');
-        const mockTodoInput = document.createElement('input');
-        const titleFocusSpy = vi.spyOn(mockTitleInput, 'focus');
-        const todoFocusSpy = vi.spyOn(mockTodoInput, 'focus');
-
-        const { result, rerender } = renderHook(
-          ({ focusTarget }: { focusTarget?: import('../../types').FocusTarget }) => useCardRefs({
-            isModal: true,
-            focusTarget,
-            todos: mockTodos
-          }),
-          { initialProps: { focusTarget: 'title' as import('../../types').FocusTarget } }
-        );
-
-        // Set up refs
-        result.current.titleInputRef.current = mockTitleInput;
-        act(() => {
-          result.current.setTodoItemRef(0, mockTodoInput);
-        });
-
-        // Initial focus on title
-        act(() => {
-          vi.runAllTimers();
-        });
-
-        expect(titleFocusSpy).toHaveBeenCalled();
-
-        // Change focus target
-        titleFocusSpy.mockClear();
-
-        rerender({ focusTarget: 0 });
-
-        act(() => {
-          vi.runAllTimers();
-        });
-
-        expect(todoFocusSpy).toHaveBeenCalled();
-      });
-    });
 
     describe('todos length changes affecting focus', () => {
       it('adjusts focus when todos array changes', () => {

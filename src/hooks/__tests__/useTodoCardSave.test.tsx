@@ -3,12 +3,12 @@ import { renderHook, act } from '@testing-library/react';
 import { useModalCardEdit } from '../useTodoCardSave';
 import { createEmptyCard } from '../../utils/todoHelpers';
 import { getRandomColor } from '../../constants/colors';
-import { TodoProvider, useTodoContext } from '../../context/TodoContext';
+import { CardProvider, useCardContext } from '../../context/CardContext';
 import { describe, it, expect } from 'vitest';
 
 describe('useModalCardEdit', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <TodoProvider>{children}</TodoProvider>
+    <CardProvider>{children}</CardProvider>
   );
 
   describe('initialization', () => {
@@ -32,7 +32,7 @@ describe('useModalCardEdit', () => {
       // Create a wrapper that pre-loads the card into context
       const WrapperWithCard = ({ children }: { children: React.ReactNode }) => {
         const TestComponent = () => {
-          const { upsertCard } = useTodoContext();
+          const { upsertCard } = useCardContext();
           React.useEffect(() => {
             upsertCard(testCard);
           }, []);
@@ -40,9 +40,9 @@ describe('useModalCardEdit', () => {
         };
 
         return (
-          <TodoProvider>
+          <CardProvider>
             <TestComponent />
-          </TodoProvider>
+          </CardProvider>
         );
       };
 
@@ -82,7 +82,7 @@ describe('useModalCardEdit', () => {
       // Create a wrapper that pre-loads the card into context
       const WrapperWithCard = ({ children }: { children: React.ReactNode }) => {
         const TestComponent = () => {
-          const { upsertCard } = useTodoContext();
+          const { upsertCard } = useCardContext();
           React.useEffect(() => {
             upsertCard(testCard);
           }, []);
@@ -90,9 +90,9 @@ describe('useModalCardEdit', () => {
         };
 
         return (
-          <TodoProvider>
+          <CardProvider>
             <TestComponent />
-          </TodoProvider>
+          </CardProvider>
         );
       };
 
