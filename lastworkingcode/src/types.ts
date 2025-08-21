@@ -28,7 +28,7 @@ export type FocusTarget =
 export interface TodoCardProps {
   cardId?: string;
   onSave?: (cardData: TodoCardData) => void;
-  onDelete?: (cardId: string) => void;
+  onDelete: (cardId: string) => void;
   isModal?: boolean;
   onClose?: () => void;
   onBackdropClick?: (cardData: TodoCardData) => void;
@@ -100,7 +100,7 @@ export interface UseCardRefsProps {
 // CONTEXT TYPES
 // =============================================================================
 
-export interface CardContextType {
+export interface TodoContextType {
   // State
   todoCards: TodoCardData[];
 

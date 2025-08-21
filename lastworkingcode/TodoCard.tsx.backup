@@ -28,20 +28,26 @@ export const TodoCard = ({
   const { upsertCard, deleteCard, todoCards } = useCardContext();
   const { closeEdit } = useModal();
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+  const [localCard, setLocalCard] = useState<TodoCardData | null>(null);
+  const currentCardRef = useRef<TodoCardData | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const todoInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const contextTodoCard = cardId ? todoCards.find(card => card.id === cardId) : null;
-  const [draftTodoCard, setDraftTodoCard] = useState<TodoCardData | null>(null);
+  const cardFromContext = cardId ? todoCards.find(card => card.id === cardId) : null;
+  const fallbackCard = cardFromContext || createEmptyCard(getRandomColor());
   
-  const currentCard = isModal && draftTodoCard ? draftTodoCard : (contextTodoCard || createEmptyCard(getRandomColor()));
+  const currentCard = isModal ? (localCard || fallbackCard) : fallbackCard;
+  const isEditing = isModal;
 
   useEffect(() => {
-    if (isModal && contextTodoCard) {
-      setDraftTodoCard({ ...contextTodoCard });
+    if (isModal && cardFromContext) {
+      setLocalCard({ ...cardFromContext });
     }
-  }, [isModal, contextTodoCard]);
+  }, [isModal, cardFromContext]);
 
+  useEffect(() => {
+    currentCardRef.current = currentCard;
+  }, [currentCard]);
 
   useEffect(() => {
     if (isModal) {
@@ -67,23 +73,23 @@ export const TodoCard = ({
 
   const updateCard = (updatedCard: TodoCardData) => {
     if (isModal) {
-      setDraftTodoCard(updatedCard);
+      setLocalCard(updatedCard);
     } else {
       upsertCard(updatedCard);
     }
   };
 
   const handleClose = () => {
-    if (draftTodoCard) {
-      upsertCard(draftTodoCard);
+    if (localCard) {
+      upsertCard(localCard);
     }
     if (onClose) onClose();
     if (closeEdit) closeEdit();
   };
 
   const handleSave = () => {
-    if (draftTodoCard) {
-      upsertCard(draftTodoCard);
+    if (localCard) {
+      upsertCard(localCard);
     }
     if (onSave) onSave(currentCard);
     if (onClose) onClose();
@@ -141,7 +147,7 @@ export const TodoCard = ({
       } ${isColorPickerOpen ? 'z-[10000]' : ''}`}
       onClick={!isModal && onCardClick ? handleClick(() => onCardClick('title')) : undefined}
     >
-      {isModal ? (
+      {isEditing ? (
         <input
           ref={titleInputRef}
           type="text"
@@ -168,9 +174,9 @@ export const TodoCard = ({
               inputRef={(ref: HTMLInputElement | null) => {
                 todoInputRefs.current[index] = ref;
               }}
-              onDelete={isModal ? handleDeleteTodo : () => {}}
-              onEdit={isModal ? handleEditTodo : () => {}}
-              onToggle={isModal ? handleToggleTodo : () => {}}
+              onDelete={isEditing ? handleDeleteTodo : () => {}}
+              onEdit={isEditing ? handleEditTodo : () => {}}
+              onToggle={isEditing ? handleToggleTodo : () => {}}
             />
           </div>
         ))}
@@ -181,8 +187,8 @@ export const TodoCard = ({
       }`}>
         <span>
           Edited{' '}
-          {draftTodoCard?.updatedAt
-            ? new Date(draftTodoCard.updatedAt).toLocaleDateString('en-US', {
+          {currentCard?.updatedAt
+            ? new Date(currentCard.updatedAt).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
               })
@@ -198,7 +204,7 @@ export const TodoCard = ({
         isBeingEdited={false}
         initialData={currentCard}
         backgroundColor={currentCard.backgroundColor}
-        hasUnsavedChanges={isModal && draftTodoCard !== null}
+        hasUnsavedChanges={isModal && localCard !== null}
         onColorSelect={handleColorChange}
         onDelete={handleDeleteCard}
         onClose={handleClose}
@@ -211,8 +217,8 @@ export const TodoCard = ({
 
   if (isModal) {
     const handleBackdropClick = () => {
-      if (draftTodoCard) {
-        upsertCard(draftTodoCard);
+      if (currentCardRef.current) {
+        upsertCard(currentCardRef.current);
       }
       handleClose();
     };

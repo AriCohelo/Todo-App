@@ -19,9 +19,12 @@ export const CardToolbar = ({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
 
-  const handleClick = (action: () => void) => (e: React.MouseEvent) => {
-    e.stopPropagation();
-    action();
+  const handleButtonClick = (action: () => void) => {
+    if (isBeingEdited) return undefined;
+    return (e: React.MouseEvent) => {
+      e.stopPropagation();
+      action();
+    };
   };
 
   useEffect(() => {
@@ -49,7 +52,7 @@ export const CardToolbar = ({
       role="toolbar"
     >
       <button
-        onClick={!isBeingEdited ? handleClick(() => onAddTodo()) : undefined}
+        onClick={handleButtonClick(() => onAddTodo())}
         className="text-gray-700 hover:text-gray-700/80  justify-self-start cursor-pointer col-start-1"
         title="Add task"
         aria-label="add toDo"
@@ -63,11 +66,11 @@ export const CardToolbar = ({
       </button>
 
       <button
-        onClick={!isBeingEdited ? handleClick(() => {
+        onClick={handleButtonClick(() => {
           const newState = !showColorPicker;
           setShowColorPicker(newState);
           onColorPickerToggle?.(newState);
-        }) : undefined}
+        })}
         className={`text-gray-700 hover:text-gray-700/80  justify-self-end cursor-pointer relative ${
           isModal ? 'col-start-6' : 'col-start-8'
         }`}
@@ -93,7 +96,7 @@ export const CardToolbar = ({
       </button>
 
       <button
-        onClick={!isBeingEdited ? handleClick(() => {
+        onClick={handleButtonClick(() => {
           if (isModal) {
             if (initialData) {
               onDelete(initialData.id);
@@ -104,7 +107,7 @@ export const CardToolbar = ({
           } else {
             onDelete(initialData?.id || '');
           }
-        }) : undefined}
+        })}
         className={`text-gray-700 hover:text-red-600  justify-self-end cursor-pointer ${
           isModal ? 'col-start-7' : 'col-start-9'
         }`}
@@ -126,7 +129,7 @@ export const CardToolbar = ({
 
       {isModal && (
         <button
-          onClick={!isBeingEdited && hasUnsavedChanges ? handleClick(() => onSave()) : undefined}
+          onClick={handleButtonClick(() => onSave())}
           className="text-gray-700 hover:text-gray-700/80 text-lg tracking-widest font-medium  justify-self-end cursor-pointer col-start-8 col-span-2"
           title="Save changes"
           disabled={isBeingEdited || !hasUnsavedChanges}

@@ -2,12 +2,11 @@ import { createContext, useContext, useState } from 'react';
 import type {
   TodoCardData,
   TodoContextType,
-  TodoProviderProps,
 } from '../types';
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
-export const TodoProvider = ({ children }: TodoProviderProps) => {
+export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
   const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);
 
   const upsertCard = (cardData: TodoCardData) => {

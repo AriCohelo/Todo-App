@@ -1,5 +1,5 @@
 import { TodoCard } from './TodoCard';
-import { useCardContext } from '../context/CardContext';
+import { useTodoContext } from '../context/TodoContext';
 import { useModal } from '../context/ModalContext';
 
 interface TodoBoardProps {
@@ -10,7 +10,7 @@ interface TodoBoardProps {
 }
 
 export const TodoBoard = ({ onOpenEdit }: TodoBoardProps) => {
-  const { todoCards } = useCardContext();
+  const { todoCards, deleteCard } = useTodoContext();
   const { isEditing } = useModal();
 
   return (
@@ -27,6 +27,7 @@ export const TodoBoard = ({ onOpenEdit }: TodoBoardProps) => {
         >
           <TodoCard
             cardId={card.id}
+            onDelete={deleteCard}
             onCardClick={(focusTarget) => onOpenEdit(card, focusTarget)}
           />
         </div>
