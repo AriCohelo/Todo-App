@@ -41,12 +41,12 @@ describe('ModalContext', () => {
       const { result } = renderHook(() => useModal(), { wrapper });
 
       act(() => {
-        result.current.openEdit('card-1', 'todo');
+        result.current.openEdit('card-1', 0);
       });
 
       expect(result.current.editingCardId).toEqual({
         cardId: 'card-1',
-        focusTarget: 'todo'
+        focusTarget: 0
       });
     });
   });
@@ -108,7 +108,7 @@ describe('ModalContext', () => {
     it('can set editing state directly', () => {
       const { result } = renderHook(() => useModal(), { wrapper });
 
-      const modalState = { cardId: 'card-1', focusTarget: 'todo' as const };
+      const modalState = { cardId: 'card-1', focusTarget: 0 as const };
 
       act(() => {
         result.current.setEditingCardId(modalState);

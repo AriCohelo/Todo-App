@@ -25,15 +25,15 @@ export type FocusTarget =
 // COMPONENT PROPS
 // =============================================================================
 
-export interface TodoCardProps {
-  cardId?: string;
-  onSave?: (cardData: TodoCardData) => void;
-  onDelete?: (cardId: string) => void;
-  isModal?: boolean;
+export interface TodoCardDisplayProps {
+  cardId: string;
+  onCardClick?: (focusTarget: FocusTarget) => void;
+}
+
+export interface TodoCardEditorProps {
+  cardId: string;
   onClose?: () => void;
-  onBackdropClick?: (cardData: TodoCardData) => void;
   focusTarget?: FocusTarget;
-  onCardClick?: (focusTarget?: FocusTarget) => void;
 }
 
 export interface TodoItemProps {

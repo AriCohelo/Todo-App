@@ -2,7 +2,7 @@ import { CardProvider, useCardContext } from './context/CardContext';
 import { ModalProvider, useModal } from './context/ModalContext';
 import { TodoTrigger } from './components/TodoTrigger';
 import { TodoBoard } from './components/TodoBoard';
-import { TodoCard } from './components/TodoCard';
+import { TodoCardEditor } from './components/TodoCardEditor';
 import type { TodoCardData, FocusTarget } from './types';
 import { createEmptyCard } from './utils/todoHelpers';
 import { getRandomColor } from './constants/colors';
@@ -26,9 +26,8 @@ function AppContent() {
       <TodoTrigger onOpenCreate={handleCreateCard} />
       <TodoBoard onOpenEdit={handleOpenEdit} />
       {editingCardId && (
-        <TodoCard
+        <TodoCardEditor
           cardId={editingCardId.cardId}
-          isModal={true}
           onClose={closeEdit}
           focusTarget={editingCardId.focusTarget}
         />

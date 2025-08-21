@@ -66,17 +66,17 @@ describe('TodoBoard', () => {
       render(<TestTodoBoard />);
       const board = screen.getByTestId('todoBoard');
       expect(board).toBeInTheDocument();
-      expect(screen.queryByTestId('todoCard')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('todoCardDisplay')).not.toBeInTheDocument();
     });
 
     it('renders single card correctly', () => {
       render(<TestTodoBoardWithCards cards={[mockTodoCard1]} />);
-      expect(screen.getByTestId('todoCard')).toBeInTheDocument();
+      expect(screen.getByTestId('todoCardDisplay')).toBeInTheDocument();
     });
 
     it('renders multiple cards', () => {
       render(<TestTodoBoardWithCards cards={[mockTodoCard1, mockTodoCard2]} />);
-      const cards = screen.getAllByTestId('todoCard');
+      const cards = screen.getAllByTestId('todoCardDisplay');
       expect(cards).toHaveLength(2);
     });
 
@@ -93,7 +93,7 @@ describe('TodoBoard', () => {
       const user = userEvent.setup();
       render(<TestTodoBoardWithCards cards={[mockTodoCard1]} />);
       
-      const card = screen.getByTestId('todoCard');
+      const card = screen.getByTestId('todoCardDisplay');
       await user.click(card);
       
       expect(card).toBeInTheDocument();
@@ -103,13 +103,13 @@ describe('TodoBoard', () => {
       const user = userEvent.setup();
       render(<TestTodoBoardWithCards cards={[mockTodoCard1, mockTodoCard2]} />);
       
-      let cards = screen.getAllByTestId('todoCard');
+      let cards = screen.getAllByTestId('todoCardDisplay');
       expect(cards).toHaveLength(2);
 
       const deleteButton = within(cards[0]).getByTitle('Delete card');
       await user.click(deleteButton);
       
-      cards = screen.getAllByTestId('todoCard');
+      cards = screen.getAllByTestId('todoCardDisplay');
       expect(cards).toHaveLength(1);
     });
   });

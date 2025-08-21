@@ -1,4 +1,4 @@
-import { TodoCard } from './TodoCard';
+import { TodoCardDisplay } from './TodoCardDisplay';
 import { useCardContext } from '../context/CardContext';
 import { useModal } from '../context/ModalContext';
 
@@ -25,7 +25,7 @@ export const TodoBoard = ({ onOpenEdit }: TodoBoardProps) => {
             isEditing(card.id) ? 'invisible' : ''
           }`}
         >
-          <TodoCard
+          <TodoCardDisplay
             cardId={card.id}
             onCardClick={(focusTarget) => onOpenEdit(card, focusTarget)}
           />

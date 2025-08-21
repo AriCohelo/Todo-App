@@ -7,8 +7,8 @@ const createCard = async (user: ReturnType<typeof userEvent.setup>, title: strin
   const triggerInput = screen.getByTestId('todoTrigger-input');
   await user.click(triggerInput);
 
-  const modal = screen.getByTestId('todoTrigger-modal');
-  const titleInput = within(modal).getByTestId('todoCard-title-input');
+  const modal = screen.getByTestId('todoCardEditor-modal');
+  const titleInput = within(modal).getByTestId('todoCardEditor-title-input');
   await user.type(titleInput, title);
 
   const saveButton = within(modal).getByRole('button', { name: 'Save' });
@@ -21,7 +21,7 @@ describe('App', () => {
       render(<App />);
       expect(screen.getByTestId('todoTrigger')).toBeInTheDocument();
       expect(screen.getByTestId('todoBoard')).toBeInTheDocument();
-      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('todoCardEditor-modal')).not.toBeInTheDocument();
     });
   });
 
@@ -33,7 +33,7 @@ describe('App', () => {
       const triggerInput = screen.getByTestId('todoTrigger-input');
       await user.click(triggerInput);
 
-      expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
+      expect(screen.getByTestId('todoCardEditor-modal')).toBeInTheDocument();
     });
 
     it('creates new card when saved', async () => {
@@ -42,7 +42,7 @@ describe('App', () => {
 
       await createCard(user, 'NewTestCard');
 
-      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('todoCardEditor-modal')).not.toBeInTheDocument();
       const todoBoard = screen.getByTestId('todoBoard');
       expect(within(todoBoard).getByText('NewTestCard')).toBeInTheDocument();
     });
@@ -53,10 +53,10 @@ describe('App', () => {
 
       const triggerInput = screen.getByTestId('todoTrigger-input');
       await user.click(triggerInput);
-      expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
+      expect(screen.getByTestId('todoCardEditor-modal')).toBeInTheDocument();
 
       await user.keyboard('{Escape}');
-      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('todoCardEditor-modal')).not.toBeInTheDocument();
     });
 
     it('saves and closes on backdrop click', async () => {
@@ -66,11 +66,11 @@ describe('App', () => {
       const triggerInput = screen.getByTestId('todoTrigger-input');
       await user.click(triggerInput);
 
-      const backdrop = screen.getByTestId('todoTrigger-modal');
+      const backdrop = screen.getByTestId('todoCardEditor-modal');
       await user.click(backdrop);
 
-      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
-      expect(screen.getByTestId('todoCard')).toBeInTheDocument();
+      expect(screen.queryByTestId('todoCardEditor-modal')).not.toBeInTheDocument();
+      expect(screen.getByTestId('todoCardDisplay')).toBeInTheDocument();
     });
   });
 
@@ -82,11 +82,11 @@ describe('App', () => {
       await createCard(user, 'OriginalCard');
 
       const todoBoard = screen.getByTestId('todoBoard');
-      const cardElement = within(todoBoard).getByTestId('todoCard');
+      const cardElement = within(todoBoard).getByTestId('todoCardDisplay');
       await user.click(cardElement);
 
-      expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
-      const editModal = screen.getByTestId('todoTrigger-modal');
+      expect(screen.getByTestId('todoCardEditor-modal')).toBeInTheDocument();
+      const editModal = screen.getByTestId('todoCardEditor-modal');
       expect(within(editModal).getByDisplayValue('OriginalCard')).toBeInTheDocument();
     });
 
@@ -97,10 +97,10 @@ describe('App', () => {
       await createCard(user, 'OriginalCard');
 
       const todoBoard = screen.getByTestId('todoBoard');
-      const cardElement = within(todoBoard).getByTestId('todoCard');
+      const cardElement = within(todoBoard).getByTestId('todoCardDisplay');
       await user.click(cardElement);
 
-      const editModal = screen.getByTestId('todoTrigger-modal');
+      const editModal = screen.getByTestId('todoCardEditor-modal');
       const modalTitleInput = within(editModal).getByDisplayValue('OriginalCard');
       await user.clear(modalTitleInput);
       await user.type(modalTitleInput, 'UpdatedCard');
@@ -108,7 +108,7 @@ describe('App', () => {
       const modalSaveButton = within(editModal).getByRole('button', { name: 'Save' });
       await user.click(modalSaveButton);
 
-      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('todoCardEditor-modal')).not.toBeInTheDocument();
       expect(within(todoBoard).getByText('UpdatedCard')).toBeInTheDocument();
       expect(within(todoBoard).queryByText('OriginalCard')).not.toBeInTheDocument();
     });
@@ -120,13 +120,13 @@ describe('App', () => {
       await createCard(user, 'TestCard');
 
       const todoBoard = screen.getByTestId('todoBoard');
-      const cardElement = within(todoBoard).getByTestId('todoCard');
+      const cardElement = within(todoBoard).getByTestId('todoCardDisplay');
       await user.click(cardElement);
 
-      expect(screen.getByTestId('todoTrigger-modal')).toBeInTheDocument();
+      expect(screen.getByTestId('todoCardEditor-modal')).toBeInTheDocument();
 
       await user.keyboard('{Escape}');
-      expect(screen.queryByTestId('todoTrigger-modal')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('todoCardEditor-modal')).not.toBeInTheDocument();
     });
   });
 
@@ -138,10 +138,10 @@ describe('App', () => {
       await createCard(user, 'TestCard');
 
       const todoBoard = screen.getByTestId('todoBoard');
-      const cardElement = within(todoBoard).getByTestId('todoCard');
+      const cardElement = within(todoBoard).getByTestId('todoCardDisplay');
       await user.click(cardElement);
 
-      const editModal = screen.getByTestId('todoTrigger-modal');
+      const editModal = screen.getByTestId('todoCardEditor-modal');
       const todoContainer = within(editModal).getByTestId('todoItem-list');
       
       let todoInputs = within(todoContainer).getAllByRole('textbox');
@@ -184,7 +184,7 @@ describe('App', () => {
       const todoBoard = screen.getByTestId('todoBoard');
       expect(within(todoBoard).getByText('FirstCard')).toBeInTheDocument();
       expect(within(todoBoard).getByText('SecondCard')).toBeInTheDocument();
-      expect(within(todoBoard).getAllByTestId('todoCard')).toHaveLength(2);
+      expect(within(todoBoard).getAllByTestId('todoCardDisplay')).toHaveLength(2);
     });
   });
 });
