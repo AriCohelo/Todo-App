@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { TodoItem } from './TodoItem';
-import { CardToolbar } from './CardToolbar';
+import { Icon } from './Icon';
+import { ColorPicker } from './ColorPicker';
 import { useCardContext } from '../context/CardContext';
 import {
   addTodoItem,
@@ -20,6 +21,8 @@ interface TodoCardDisplayProps {
 export const TodoCardDisplay = ({ cardId, onCardClick }: TodoCardDisplayProps) => {
   const { upsertCard, deleteCard, todoCards } = useCardContext();
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const colorPickerRef = useRef<HTMLDivElement>(null);
   const todoInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const card = todoCards.find(c => c.id === cardId) || createEmptyCard(getRandomColor());
@@ -52,6 +55,23 @@ export const TodoCardDisplay = ({ cardId, onCardClick }: TodoCardDisplayProps) =
     e.stopPropagation();
     action();
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        colorPickerRef.current &&
+        !colorPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowColorPicker(false);
+        setIsColorPickerOpen(false);
+      }
+    };
+
+    if (showColorPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showColorPicker]);
 
   return (
     <div
@@ -96,18 +116,62 @@ export const TodoCardDisplay = ({ cardId, onCardClick }: TodoCardDisplayProps) =
         </span>
       </div>
 
-      <CardToolbar
-        isModal={false}
-        isBeingEdited={false}
-        initialData={card}
-        backgroundColor={card.backgroundColor}
-        hasUnsavedChanges={false}
-        onColorSelect={handleColorChange}
-        onDelete={handleDeleteCard}
-        onSave={() => {}}
-        onColorPickerToggle={setIsColorPickerOpen}
-        onAddTodo={handleAddTodo}
-      />
+      <div
+        className="mt-1 grid grid-cols-9 opacity-0 group-hover:opacity-100 transition-opacity"
+        role="toolbar"
+      >
+        <button
+          onClick={handleClick(() => handleAddTodo())}
+          className="text-gray-700 hover:text-gray-700/80 justify-self-start cursor-pointer col-start-1"
+          title="Add task"
+          aria-label="add toDo"
+        >
+          <Icon
+            name="add-todoitem"
+            className="w-8 h-8 hover:opacity-80"
+            alt="Add task"
+          />
+        </button>
+
+        <button
+          onClick={handleClick(() => {
+            const newState = !showColorPicker;
+            setShowColorPicker(newState);
+            setIsColorPickerOpen(newState);
+          })}
+          className="text-gray-700 hover:text-gray-700/80 justify-self-end cursor-pointer relative col-start-8"
+          title="Color palette"
+        >
+          <Icon
+            name="palette"
+            className="w-4 h-4 hover:opacity-80"
+            alt="Color palette"
+          />
+          {showColorPicker && (
+            <ColorPicker
+              ref={colorPickerRef}
+              selectedColor={card.backgroundColor}
+              onColorSelect={handleColorChange}
+              onClose={() => {
+                setShowColorPicker(false);
+                setIsColorPickerOpen(false);
+              }}
+            />
+          )}
+        </button>
+
+        <button
+          onClick={handleClick(() => handleDeleteCard(card.id))}
+          className="text-gray-700 hover:text-red-600 justify-self-end cursor-pointer col-start-9"
+          title="Delete card"
+        >
+          <Icon
+            name="trash"
+            className="w-4 h-4 hover:opacity-80"
+            alt="Delete card"
+          />
+        </button>
+      </div>
     </div>
   );
 };

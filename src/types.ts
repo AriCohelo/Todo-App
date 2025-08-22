@@ -54,19 +54,6 @@ export interface ColorPickerProps {
   onClose: () => void;
 }
 
-export interface CardToolbarProps {
-  isModal: boolean;
-  isBeingEdited: boolean;
-  initialData?: TodoCardData;
-  backgroundColor: string;
-  hasUnsavedChanges: boolean;
-  onColorSelect: (color: string) => void;
-  onDelete: (cardId: string) => void;
-  onClose?: () => void;
-  onSave: () => void;
-  onColorPickerToggle?: (isOpen: boolean) => void;
-  onAddTodo: () => void;
-}
 
 export type IconName =
   | 'plus'
