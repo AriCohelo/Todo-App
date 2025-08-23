@@ -25,12 +25,12 @@ export type FocusTarget =
 // COMPONENT PROPS
 // =============================================================================
 
-export interface TodoCardDisplayProps {
+export interface CardDisplayProps {
   cardId: string;
   onCardClick?: (focusTarget: FocusTarget) => void;
 }
 
-export interface TodoCardEditorProps {
+export interface CardEditorProps {
   cardId: string;
   onClose?: () => void;
   focusTarget?: FocusTarget;
@@ -77,17 +77,12 @@ export interface IconProps {
 // HOOK PROPS
 // =============================================================================
 
-export interface UseCardRefsProps {
-  isModal: boolean;
-  focusTarget?: FocusTarget;
-  todos: Todo[];
-}
 
 // =============================================================================
 // CONTEXT TYPES
 // =============================================================================
 
-export interface CardContextType {
+export interface CardBoardContextType {
   // State
   todoCards: TodoCardData[];
 

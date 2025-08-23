@@ -1,31 +1,31 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { FocusTarget } from '../types';
 
-interface ModalState {
+interface CardEditorState {
   cardId: string;
   focusTarget: FocusTarget;
 }
 
-interface ModalContextType {
-  editingCardId: ModalState | null;
-  setEditingCardId: (state: ModalState | null) => void;
+interface CardEditorContextType {
+  editingCardId: CardEditorState | null;
+  setEditingCardId: (state: CardEditorState | null) => void;
   openEdit: (cardId: string, focusTarget?: FocusTarget) => void;
   closeEdit: () => void;
   isEditing: (cardId: string) => boolean;
 }
 
-const ModalContext = createContext<ModalContextType | undefined>(undefined);
+const CardEditorContext = createContext<CardEditorContextType | undefined>(undefined);
 
-export const useModal = () => {
-  const context = useContext(ModalContext);
+export const useCardEditorContext = () => {
+  const context = useContext(CardEditorContext);
   if (context === undefined) {
-    throw new Error('useModal must be used within a ModalProvider');
+    throw new Error('useCardEditorContext must be used within a CardEditorProvider');
   }
   return context;
 };
 
-export const ModalProvider = ({ children }: { children: ReactNode }) => {
-  const [editingCardId, setEditingCardId] = useState<ModalState | null>(null);
+export const CardEditorProvider = ({ children }: { children: ReactNode }) => {
+  const [editingCardId, setEditingCardId] = useState<CardEditorState | null>(null);
 
   const openEdit = (cardId: string, focusTarget: FocusTarget = 'title') => {
     setEditingCardId({ cardId, focusTarget });
@@ -40,7 +40,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ModalContext.Provider
+    <CardEditorContext.Provider
       value={{
         editingCardId,
         setEditingCardId,
@@ -50,6 +50,6 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-    </ModalContext.Provider>
+    </CardEditorContext.Provider>
   );
 };

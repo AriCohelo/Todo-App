@@ -1,34 +1,21 @@
-import { CardProvider, useCardContext } from './context/CardContext';
-import { ModalProvider, useModal } from './context/ModalContext';
-import { TodoTrigger } from './components/TodoTrigger';
-import { TodoBoard } from './components/TodoBoard';
-import { TodoCardEditor } from './components/TodoCardEditor';
-import type { TodoCardData, FocusTarget } from './types';
-import { createEmptyCard } from './utils/todoHelpers';
-import { getRandomColor } from './constants/colors';
+import { CardBoardProvider } from './context/CardBoardContext';
+import { CardEditorProvider, useCardEditorContext } from './context/CardEditorContext';
+import { CardTrigger } from './components/CardTrigger';
+import { CardBoard } from './components/CardBoard';
+import { CardEditor } from './components/CardEditor';
 
 function AppContent() {
-  const { upsertCard } = useCardContext();
-  const { openEdit, editingCardId, closeEdit } = useModal();
+  const { editingCardId } = useCardEditorContext();
 
-  const handleOpenEdit = (card: TodoCardData, focusTarget: FocusTarget = 'title') => {
-    openEdit(card.id, focusTarget);
-  };
 
-  const handleCreateCard = () => {
-    const newCard = createEmptyCard(getRandomColor());
-    upsertCard(newCard);
-    openEdit(newCard.id, 'title');
-  };
 
   return (
     <div className="min-h-screen p-8 lg:p-16 app-background">
-      <TodoTrigger onOpenCreate={handleCreateCard} />
-      <TodoBoard onOpenEdit={handleOpenEdit} />
+      <CardTrigger />
+      <CardBoard />
       {editingCardId && (
-        <TodoCardEditor
+        <CardEditor
           cardId={editingCardId.cardId}
-          onClose={closeEdit}
           focusTarget={editingCardId.focusTarget}
         />
       )}
@@ -38,11 +25,11 @@ function AppContent() {
 
 function App() {
   return (
-    <CardProvider>
-      <ModalProvider>
+    <CardBoardProvider>
+      <CardEditorProvider>
         <AppContent />
-      </ModalProvider>
-    </CardProvider>
+      </CardEditorProvider>
+    </CardBoardProvider>
   );
 }
 

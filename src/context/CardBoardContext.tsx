@@ -1,12 +1,12 @@
 import { createContext, useContext, useState } from 'react';
 import type {
   TodoCardData,
-  CardContextType,
+  CardBoardContextType,
 } from '../types';
 
-const CardContext = createContext<CardContextType | undefined>(undefined);
+const CardBoardContext = createContext<CardBoardContextType | undefined>(undefined);
 
-export const CardProvider = ({ children }: { children: React.ReactNode }) => {
+export const CardBoardProvider = ({ children }: { children: React.ReactNode }) => {
   const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);
 
   const upsertCard = (cardData: TodoCardData) => {
@@ -29,19 +29,19 @@ export const CardProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
 
-  const value: CardContextType = {
+  const value: CardBoardContextType = {
     todoCards,
     upsertCard,
     deleteCard,
   };
 
-  return <CardContext.Provider value={value}>{children}</CardContext.Provider>;
+  return <CardBoardContext.Provider value={value}>{children}</CardBoardContext.Provider>;
 };
 
-export const useCardContext = () => {
-  const context = useContext(CardContext);
+export const useCardBoardContext = () => {
+  const context = useContext(CardBoardContext);
   if (context === undefined) {
-    throw new Error('useCardContext must be used within a CardProvider');
+    throw new Error('useCardBoardContext must be used within a CardBoardProvider');
   }
   return context;
 };

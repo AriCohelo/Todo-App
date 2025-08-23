@@ -62,14 +62,3 @@
 - If applies, on the beggining of every response correct my english grammar and ortography if applies1
 
 ## Memories and Reminders
-
-- Remember that Context API is a thing I never had use so later I would need to explain me what are we going to do in this session in where we are gonna fix the prop drilling
-- Never suggest commit messages including double quotes "
-
-- Color Picker Implementation Memory:
-  - Used a state variable to manage the selected color
-  - Created an input of type "color" to allow direct color selection
-  - Implemented an onChange handler to update the color state when a new color is picked
-  - Passed the selected color to the relevant component/state for styling or task categorization
-  - Ensured the color picker integrates smoothly with the existing todo item creation/editing flow
-- Remember this talk and remind me the next session to do this change, change oncardclick to live in the todoCArd component sinces its mostly used to hanlde todocard bussiness

@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { TodoItem } from './TodoItem';
 import { Icon } from './Icon';
 import { ColorPicker } from './ColorPicker';
-import { useCardContext } from '../context/CardContext';
-import { useModal } from '../context/ModalContext';
+import { useCardBoardContext } from '../context/CardBoardContext';
+import { useCardEditorContext } from '../context/CardEditorContext';
 import { validateInput, isValidTitle, isValidContent } from '../utils/security';
 import {
   addTodoItem,
@@ -17,16 +17,14 @@ import {
 import { getRandomColor } from '../constants/colors';
 import type { TodoCardData, FocusTarget } from '../types';
 
-interface TodoCardEditorProps {
+interface CardEditorProps {
   cardId: string;
-  onClose?: () => void;
   focusTarget?: FocusTarget;
 }
 
-export const TodoCardEditor = ({ cardId, onClose, focusTarget }: TodoCardEditorProps) => {
-  const { upsertCard, deleteCard, todoCards } = useCardContext();
-  const { closeEdit } = useModal();
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
+  const { upsertCard, deleteCard, todoCards } = useCardBoardContext();
+  const { closeEdit } = useCardEditorContext();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -66,7 +64,6 @@ export const TodoCardEditor = ({ cardId, onClose, focusTarget }: TodoCardEditorP
         !colorPickerRef.current.contains(event.target as Node)
       ) {
         setShowColorPicker(false);
-        setIsColorPickerOpen(false);
       }
     };
 
@@ -78,13 +75,12 @@ export const TodoCardEditor = ({ cardId, onClose, focusTarget }: TodoCardEditorP
 
   const handleClose = () => {
     upsertCard(draftCard);
-    if (onClose) onClose();
-    if (closeEdit) closeEdit();
+    closeEdit();
   };
 
   const handleSave = () => {
     upsertCard(draftCard);
-    if (onClose) onClose();
+    closeEdit();
   };
 
   const handleTitleChange = (newTitle: string) => {
@@ -119,7 +115,7 @@ export const TodoCardEditor = ({ cardId, onClose, focusTarget }: TodoCardEditorP
 
   const handleDeleteCard = (cardIdToDelete: string) => {
     deleteCard(cardIdToDelete);
-    if (onClose) onClose();
+    closeEdit();
   };
 
   const handleClick = (action: () => void) => (e: React.MouseEvent) => {
@@ -150,7 +146,7 @@ export const TodoCardEditor = ({ cardId, onClose, focusTarget }: TodoCardEditorP
           shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
           cursor-pointer w-full border-6 border-[#B7B7B7] ${
             draftCard.backgroundColor || 'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
-          } ${isColorPickerOpen ? 'z-[10000]' : ''}`}
+          } ${showColorPicker ? 'z-[10000]' : ''}`}
         >
           <input
             ref={titleInputRef}
@@ -209,7 +205,6 @@ export const TodoCardEditor = ({ cardId, onClose, focusTarget }: TodoCardEditorP
               onClick={handleClick(() => {
                 const newState = !showColorPicker;
                 setShowColorPicker(newState);
-                setIsColorPickerOpen(newState);
               })}
               className="text-gray-700 hover:text-gray-700/80 justify-self-end cursor-pointer relative col-start-6"
               title="Color palette"
@@ -226,7 +221,6 @@ export const TodoCardEditor = ({ cardId, onClose, focusTarget }: TodoCardEditorP
                   onColorSelect={handleColorChange}
                   onClose={() => {
                     setShowColorPicker(false);
-                    setIsColorPickerOpen(false);
                   }}
                 />
               )}
@@ -235,7 +229,7 @@ export const TodoCardEditor = ({ cardId, onClose, focusTarget }: TodoCardEditorP
             <button
               onClick={handleClick(() => {
                 handleDeleteCard(draftCard.id);
-                if (onClose) onClose();
+                closeEdit();
               })}
               className="text-gray-700 hover:text-red-600 justify-self-end cursor-pointer col-start-7"
               title="Delete card"

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { TodoItem } from './TodoItem';
 import { Icon } from './Icon';
 import { ColorPicker } from './ColorPicker';
-import { useCardContext } from '../context/CardContext';
+import { useCardBoardContext } from '../context/CardBoardContext';
 import {
   addTodoItem,
   deleteTodoItem,
@@ -13,14 +13,13 @@ import {
 import { getRandomColor } from '../constants/colors';
 import type { FocusTarget } from '../types';
 
-interface TodoCardDisplayProps {
+interface CardDisplayProps {
   cardId: string;
   onCardClick?: (focusTarget: FocusTarget) => void;
 }
 
-export const TodoCardDisplay = ({ cardId, onCardClick }: TodoCardDisplayProps) => {
-  const { upsertCard, deleteCard, todoCards } = useCardContext();
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
+  const { upsertCard, deleteCard, todoCards } = useCardBoardContext();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const todoInputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -63,7 +62,6 @@ export const TodoCardDisplay = ({ cardId, onCardClick }: TodoCardDisplayProps) =
         !colorPickerRef.current.contains(event.target as Node)
       ) {
         setShowColorPicker(false);
-        setIsColorPickerOpen(false);
       }
     };
 
@@ -80,7 +78,7 @@ export const TodoCardDisplay = ({ cardId, onCardClick }: TodoCardDisplayProps) =
       shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
       cursor-pointer w-full border-6 border-[#B7B7B7] ${
         card.backgroundColor || 'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
-      } ${isColorPickerOpen ? 'z-[10000]' : ''}`}
+      } ${showColorPicker ? 'z-[10000]' : ''}`}
       onClick={onCardClick ? handleClick(() => onCardClick('title')) : undefined}
     >
       <div
@@ -137,7 +135,6 @@ export const TodoCardDisplay = ({ cardId, onCardClick }: TodoCardDisplayProps) =
           onClick={handleClick(() => {
             const newState = !showColorPicker;
             setShowColorPicker(newState);
-            setIsColorPickerOpen(newState);
           })}
           className="text-gray-700 hover:text-gray-700/80 justify-self-end cursor-pointer relative col-start-8"
           title="Color palette"
@@ -154,7 +151,6 @@ export const TodoCardDisplay = ({ cardId, onCardClick }: TodoCardDisplayProps) =
               onColorSelect={handleColorChange}
               onClose={() => {
                 setShowColorPicker(false);
-                setIsColorPickerOpen(false);
               }}
             />
           )}
