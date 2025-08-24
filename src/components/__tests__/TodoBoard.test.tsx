@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { TodoBoard } from '../TodoBoard';
-import { CardProvider, useCardContext } from '../../context/CardContext';
-import { ModalProvider } from '../../context/ModalContext';
+import { CardBoard } from '../CardBoard';
+import { CardBoardProvider, useCardBoardContext } from '../../context/CardBoardContext';
+import { CardEditorProvider } from '../../context/CardEditorContext';
 import type { TodoCardData } from '../../types';
 
 const mockTodoCard1: TodoCardData = {
@@ -29,38 +29,36 @@ const mockTodoCard2: TodoCardData = {
 };
 
 const TestTodoBoard = () => {
-  const mockOnOpenEdit = vi.fn();
   return (
-    <CardProvider>
-      <ModalProvider>
-        <TodoBoard onOpenEdit={mockOnOpenEdit} />
-      </ModalProvider>
-    </CardProvider>
+    <CardBoardProvider>
+      <CardEditorProvider>
+        <CardBoard />
+      </CardEditorProvider>
+    </CardBoardProvider>
   );
 };
 
 const TestTodoBoardWithCards = ({ cards }: { cards: TodoCardData[] }) => {
   return (
-    <CardProvider>
-      <ModalProvider>
+    <CardBoardProvider>
+      <CardEditorProvider>
         <TodoBoardWrapper cards={cards} />
-      </ModalProvider>
-    </CardProvider>
+      </CardEditorProvider>
+    </CardBoardProvider>
   );
 };
 
 const TodoBoardWrapper = ({ cards }: { cards: TodoCardData[] }) => {
-  const { upsertCard } = useCardContext();
-  const mockOnOpenEdit = vi.fn();
+  const { upsertCard } = useCardBoardContext();
 
   React.useEffect(() => {
     cards.forEach(card => upsertCard(card));
   }, []);
 
-  return <TodoBoard onOpenEdit={mockOnOpenEdit} />;
+  return <CardBoard />;
 };
 
-describe('TodoBoard', () => {
+describe('CardBoard', () => {
   describe('rendering', () => {
     it('renders empty board with correct structure', () => {
       render(<TestTodoBoard />);

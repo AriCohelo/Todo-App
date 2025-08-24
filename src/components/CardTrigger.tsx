@@ -5,12 +5,12 @@ import { getRandomColor } from '../constants/colors';
 
 export const CardTrigger = () => {
   const { upsertCard } = useCardBoardContext();
-  const { openEdit } = useCardEditorContext();
+  const { startEdit } = useCardEditorContext();
 
   const handleCreateCard = () => {
     const newCard = createEmptyCard(getRandomColor());
     upsertCard(newCard);
-    openEdit(newCard.id, 'title');
+    startEdit(newCard.id, 'title');
   };
 
   return (

@@ -11,20 +11,15 @@ import {
   createEmptyCard,
 } from '../utils/todoHelpers';
 import { getRandomColor } from '../constants/colors';
-import type { FocusTarget } from '../types';
-
-interface CardDisplayProps {
-  cardId: string;
-  onCardClick?: (focusTarget: FocusTarget) => void;
-}
+import type { CardDisplayProps } from '../types';
 
 export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
   const { upsertCard, deleteCard, todoCards } = useCardBoardContext();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
-  const todoInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const card = todoCards.find(c => c.id === cardId) || createEmptyCard(getRandomColor());
+  const card =
+    todoCards.find((c) => c.id === cardId) || createEmptyCard(getRandomColor());
 
   const handleColorChange = (newColor: string) => {
     const updatedCard = updateCardBackgroundColor(card, newColor);
@@ -46,8 +41,8 @@ export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
     upsertCard(updatedCard);
   };
 
-  const handleDeleteCard = (cardIdToDelete: string) => {
-    deleteCard(cardIdToDelete);
+  const handleDeleteCard = (cardId: string) => {
+    deleteCard(cardId);
   };
 
   const handleClick = (action: () => void) => (e: React.MouseEvent) => {
@@ -67,7 +62,8 @@ export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
 
     if (showColorPicker) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [showColorPicker]);
 
@@ -77,27 +73,27 @@ export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
       className={`group p-6 rounded-3xl flex flex-col relative min-h-0 opacity-75 hover:opacity-90 transition-opacity duration-200
       shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
       cursor-pointer w-full border-6 border-[#B7B7B7] ${
-        card.backgroundColor || 'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
+        card.backgroundColor ||
+        'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
       } ${showColorPicker ? 'z-[10000]' : ''}`}
-      onClick={onCardClick ? handleClick(() => onCardClick('title')) : undefined}
+      onClick={handleClick(() => onCardClick('title'))}
     >
       <div
         className="w-full bg-transparent border-none outline-none font-semibold text-2xl tracking-widest text-gray-700 placeholder-gray-700/60 mb-2 cursor-pointer"
-        onClick={onCardClick ? handleClick(() => onCardClick('title')) : undefined}
+        onClick={handleClick(() => onCardClick('title'))}
       >
         {card.title || 'Enter a title...'}
       </div>
 
       <div data-testid="todoItem-list" className="space-y-1 flex-1">
         {card.todos.map((todo, index) => (
-          <div key={todo.id} onClick={onCardClick ? handleClick(() => onCardClick(index)) : undefined}>
+          <div
+            key={todo.id}
+            onClick={handleClick(() => onCardClick(index))}
+          >
             <TodoItem
               todo={todo}
-              inputRef={(ref: HTMLInputElement | null) => {
-                todoInputRefs.current[index] = ref;
-              }}
               onDelete={handleDeleteTodo}
-              onEdit={() => {}}
               onToggle={handleToggleTodo}
             />
           </div>

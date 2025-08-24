@@ -9,8 +9,8 @@ interface CardEditorState {
 interface CardEditorContextType {
   editingCardId: CardEditorState | null;
   setEditingCardId: (state: CardEditorState | null) => void;
-  openEdit: (cardId: string, focusTarget?: FocusTarget) => void;
-  closeEdit: () => void;
+  startEdit: (cardId: string, focusTarget?: FocusTarget) => void;
+  finishEdit: () => void;
   isEditing: (cardId: string) => boolean;
 }
 
@@ -27,11 +27,11 @@ export const useCardEditorContext = () => {
 export const CardEditorProvider = ({ children }: { children: ReactNode }) => {
   const [editingCardId, setEditingCardId] = useState<CardEditorState | null>(null);
 
-  const openEdit = (cardId: string, focusTarget: FocusTarget = 'title') => {
+  const startEdit = (cardId: string, focusTarget: FocusTarget = 'title') => {
     setEditingCardId({ cardId, focusTarget });
   };
 
-  const closeEdit = () => {
+  const finishEdit = () => {
     setEditingCardId(null);
   };
 
@@ -44,8 +44,8 @@ export const CardEditorProvider = ({ children }: { children: ReactNode }) => {
       value={{
         editingCardId,
         setEditingCardId,
-        openEdit,
-        closeEdit,
+        startEdit,
+        finishEdit,
         isEditing,
       }}
     >

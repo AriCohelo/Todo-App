@@ -24,35 +24,33 @@ interface CardEditorProps {
 
 export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
   const { upsertCard, deleteCard, todoCards } = useCardBoardContext();
-  const { closeEdit } = useCardEditorContext();
+  const { finishEdit } = useCardEditorContext();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
-  const todoInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const todoItemRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const contextCard = todoCards.find(card => card.id === cardId) || createEmptyCard(getRandomColor());
+  const contextCard =
+    todoCards.find((card) => card.id === cardId) ||
+    createEmptyCard(getRandomColor());
   const [draftCard, setDraftCard] = useState<TodoCardData>(contextCard);
+  const hasUnsavedChanges =
+    JSON.stringify(draftCard) !== JSON.stringify(contextCard);
 
   useEffect(() => {
     setDraftCard(contextCard);
   }, [contextCard]);
 
   useEffect(() => {
-    const handleEscKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose();
-      }
-    };
-    document.addEventListener('keydown', handleEscKey);
-    return () => document.removeEventListener('keydown', handleEscKey);
-  }, []);
-
-  useEffect(() => {
     if (focusTarget !== undefined) {
       if (focusTarget === 'title' && titleInputRef.current) {
         titleInputRef.current.focus();
-      } else if (typeof focusTarget === 'number' && todoInputRefs.current[focusTarget]) {
-        todoInputRefs.current[focusTarget]?.focus();
+      } else if (
+        typeof focusTarget === 'number' &&
+        focusTarget < draftCard.todos.length &&
+        todoItemRefs.current[focusTarget]
+      ) {
+        todoItemRefs.current[focusTarget]?.focus();
       }
     }
   }, [focusTarget]);
@@ -69,18 +67,22 @@ export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
 
     if (showColorPicker) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [showColorPicker]);
 
-  const handleClose = () => {
-    upsertCard(draftCard);
-    closeEdit();
-  };
-
   const handleSave = () => {
     upsertCard(draftCard);
-    closeEdit();
+    finishEdit();
+  };
+
+  const handleDiscard = () => {
+    finishEdit();
+  };
+
+  const handleBackdropClick = () => {
+    hasUnsavedChanges ? handleSave() : finishEdit();
   };
 
   const handleTitleChange = (newTitle: string) => {
@@ -113,9 +115,9 @@ export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
     setDraftCard(toggleTodoItem(draftCard, todoId));
   };
 
-  const handleDeleteCard = (cardIdToDelete: string) => {
-    deleteCard(cardIdToDelete);
-    closeEdit();
+  const handleDeleteCard = (cardId: string) => {
+    deleteCard(cardId);
+    finishEdit();
   };
 
   const handleClick = (action: () => void) => (e: React.MouseEvent) => {
@@ -123,18 +125,13 @@ export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
     action();
   };
 
-  const hasUnsavedChanges = JSON.stringify(draftCard) !== JSON.stringify(contextCard);
-
-  const handleBackdropClick = () => {
-    upsertCard(draftCard);
-    handleClose();
-  };
-
   return (
     <div
       data-testid="todoCardEditor-modal"
       className="fixed inset-0 bg-gray-800/80 flex items-center justify-center p-4"
       onClick={handleBackdropClick}
+      onKeyDown={(e) => e.key === 'Escape' && handleDiscard()}
+      tabIndex={-1}
     >
       <div
         className="rounded-3xl shadow-lg w-full max-w-md app-background"
@@ -145,7 +142,8 @@ export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
           className={`group p-6 rounded-3xl flex flex-col relative min-h-0 opacity-100
           shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
           cursor-pointer w-full border-6 border-[#B7B7B7] ${
-            draftCard.backgroundColor || 'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
+            draftCard.backgroundColor ||
+            'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
           } ${showColorPicker ? 'z-[10000]' : ''}`}
         >
           <input
@@ -164,7 +162,7 @@ export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
                 <TodoItem
                   todo={todo}
                   inputRef={(ref: HTMLInputElement | null) => {
-                    todoInputRefs.current[index] = ref;
+                    todoItemRefs.current[index] = ref;
                   }}
                   onDelete={handleDeleteTodo}
                   onEdit={handleEditTodo}
@@ -184,10 +182,7 @@ export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
             </span>
           </div>
 
-          <div
-            className="mt-1 grid grid-cols-9"
-            role="toolbar"
-          >
+          <div className="mt-1 grid grid-cols-9" role="toolbar">
             <button
               onClick={handleClick(() => handleAddTodo())}
               className="text-gray-700 hover:text-gray-700/80 justify-self-start cursor-pointer col-start-1"
@@ -229,7 +224,7 @@ export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
             <button
               onClick={handleClick(() => {
                 handleDeleteCard(draftCard.id);
-                closeEdit();
+                finishEdit();
               })}
               className="text-gray-700 hover:text-red-600 justify-self-end cursor-pointer col-start-7"
               title="Delete card"
@@ -242,7 +237,7 @@ export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
             </button>
 
             <button
-              onClick={hasUnsavedChanges ? handleClick(() => handleSave()) : undefined}
+              onClick={handleClick(() => handleSave())}
               className="text-gray-700 hover:text-gray-700/80 text-lg tracking-widest font-medium justify-self-end cursor-pointer col-start-8 col-span-2"
               title="Save changes"
               disabled={!hasUnsavedChanges}

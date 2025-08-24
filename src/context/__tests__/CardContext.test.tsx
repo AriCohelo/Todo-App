@@ -1,14 +1,14 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { CardProvider, useCardContext } from '../CardContext';
+import { CardBoardProvider, useCardBoardContext } from '../CardBoardContext';
 import type { TodoCardData } from '../../types';
 
 const mockDate = new Date('2024-01-01T00:00:00.000Z');
 vi.setSystemTime(mockDate);
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <CardProvider>{children}</CardProvider>
+  <CardBoardProvider>{children}</CardBoardProvider>
 );
 
 const sampleCard: TodoCardData = {
@@ -21,15 +21,15 @@ const sampleCard: TodoCardData = {
   updatedAt: new Date('2023-01-01')
 };
 
-describe('CardContext', () => {
+describe('CardBoardContext', () => {
   describe('initialization', () => {
     it('starts with empty todoCards array', () => {
-      const { result } = renderHook(() => useCardContext(), { wrapper });
+      const { result } = renderHook(() => useCardBoardContext(), { wrapper });
       expect(result.current.todoCards).toEqual([]);
     });
 
     it('provides expected context functions', () => {
-      const { result } = renderHook(() => useCardContext(), { wrapper });
+      const { result } = renderHook(() => useCardBoardContext(), { wrapper });
       expect(result.current.upsertCard).toBeTypeOf('function');
       expect(result.current.deleteCard).toBeTypeOf('function');
     });
@@ -37,7 +37,7 @@ describe('CardContext', () => {
 
   describe('upsertCard', () => {
     it('adds new card to empty list', () => {
-      const { result } = renderHook(() => useCardContext(), { wrapper });
+      const { result } = renderHook(() => useCardBoardContext(), { wrapper });
 
       act(() => {
         result.current.upsertCard(sampleCard);
@@ -49,7 +49,7 @@ describe('CardContext', () => {
     });
 
     it('adds new card to beginning of existing list', () => {
-      const { result } = renderHook(() => useCardContext(), { wrapper });
+      const { result } = renderHook(() => useCardBoardContext(), { wrapper });
 
       const firstCard = { ...sampleCard, id: 'card-1', title: 'First Card' };
       const secondCard = { ...sampleCard, id: 'card-2', title: 'Second Card' };
@@ -65,7 +65,7 @@ describe('CardContext', () => {
     });
 
     it('updates existing card in place', () => {
-      const { result } = renderHook(() => useCardContext(), { wrapper });
+      const { result } = renderHook(() => useCardBoardContext(), { wrapper });
 
       act(() => {
         result.current.upsertCard(sampleCard);
@@ -85,7 +85,7 @@ describe('CardContext', () => {
 
   describe('deleteCard', () => {
     it('removes card by id', () => {
-      const { result } = renderHook(() => useCardContext(), { wrapper });
+      const { result } = renderHook(() => useCardBoardContext(), { wrapper });
 
       act(() => {
         result.current.upsertCard(sampleCard);
@@ -101,7 +101,7 @@ describe('CardContext', () => {
     });
 
     it('only removes matching card when multiple exist', () => {
-      const { result } = renderHook(() => useCardContext(), { wrapper });
+      const { result } = renderHook(() => useCardBoardContext(), { wrapper });
 
       const card1 = { ...sampleCard, id: 'card-1', title: 'Card 1' };
       const card2 = { ...sampleCard, id: 'card-2', title: 'Card 2' };
@@ -122,7 +122,7 @@ describe('CardContext', () => {
     });
 
     it('does nothing when card id does not exist', () => {
-      const { result } = renderHook(() => useCardContext(), { wrapper });
+      const { result } = renderHook(() => useCardBoardContext(), { wrapper });
 
       act(() => {
         result.current.upsertCard(sampleCard);
@@ -141,8 +141,8 @@ describe('CardContext', () => {
   describe('error handling', () => {
     it('throws error when used outside provider', () => {
       expect(() => {
-        renderHook(() => useCardContext());
-      }).toThrow('useCardContext must be used within a CardProvider');
+        renderHook(() => useCardBoardContext());
+      }).toThrow('useCardBoardContext must be used within a CardBoardProvider');
     });
   });
 });

@@ -1,19 +1,21 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { TodoTrigger } from '../TodoTrigger';
-import { CardProvider } from '../../context/CardContext';
+import { CardTrigger } from '../CardTrigger';
+import { CardBoardProvider } from '../../context/CardBoardContext';
+import { CardEditorProvider } from '../../context/CardEditorContext';
 
 const TestTodoTrigger = () => {
-  const mockOnOpenCreate = vi.fn();
   return (
-    <CardProvider>
-      <TodoTrigger onOpenCreate={mockOnOpenCreate} />
-    </CardProvider>
+    <CardBoardProvider>
+      <CardEditorProvider>
+        <CardTrigger />
+      </CardEditorProvider>
+    </CardBoardProvider>
   );
 };
 
-describe('TodoTrigger', () => {
+describe('CardTrigger', () => {
   describe('rendering', () => {
     it('renders todo trigger with input field', () => {
       render(<TestTodoTrigger />);

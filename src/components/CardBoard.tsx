@@ -4,7 +4,7 @@ import { useCardEditorContext } from '../context/CardEditorContext';
 
 export const CardBoard = () => {
   const { todoCards } = useCardBoardContext();
-  const { isEditing, openEdit } = useCardEditorContext();
+  const { isEditing, startEdit } = useCardEditorContext();
 
   return (
     <div
@@ -20,7 +20,7 @@ export const CardBoard = () => {
         >
           <CardDisplay
             cardId={card.id}
-            onCardClick={(focusTarget) => openEdit(card.id, focusTarget)}
+            onCardClick={(focusTarget) => startEdit(card.id, focusTarget)}
           />
         </div>
       ))}

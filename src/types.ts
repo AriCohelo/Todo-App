@@ -16,10 +16,7 @@ export interface TodoCardData {
   backgroundColor: string;
 }
 
-export type FocusTarget =
-  | 'title'
-  | 'new-todo'
-  | number;
+export type FocusTarget = 'title' | number;
 
 // =============================================================================
 // COMPONENT PROPS
@@ -27,7 +24,7 @@ export type FocusTarget =
 
 export interface CardDisplayProps {
   cardId: string;
-  onCardClick?: (focusTarget: FocusTarget) => void;
+  onCardClick: (focusTarget: FocusTarget) => void;
 }
 
 export interface CardEditorProps {
@@ -40,12 +37,11 @@ export interface TodoItemProps {
   todo: Todo;
   onDelete: (id: string) => void;
   onToggle: (id: string) => void;
-  onEdit: (id: string, newTask: string) => void;
+  onEdit?: (id: string, newTask: string) => void;
   inputRef?:
     | React.RefObject<HTMLInputElement>
     | ((ref: HTMLInputElement | null) => void);
   onClick?: () => void;
-  isBeingEdited?: boolean;
 }
 
 export interface ColorPickerProps {
@@ -53,7 +49,6 @@ export interface ColorPickerProps {
   onColorSelect: (colorId: string) => void;
   onClose: () => void;
 }
-
 
 export type IconName =
   | 'plus'
@@ -74,19 +69,12 @@ export interface IconProps {
 }
 
 // =============================================================================
-// HOOK PROPS
-// =============================================================================
-
-
-// =============================================================================
 // CONTEXT TYPES
 // =============================================================================
 
 export interface CardBoardContextType {
-  // State
   todoCards: TodoCardData[];
 
-  // Actions
   upsertCard: (cardData: TodoCardData) => void;
   deleteCard: (cardId: string) => void;
 }

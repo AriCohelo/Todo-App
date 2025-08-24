@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import type { TodoCardData } from '../types';
-import { useCardContext } from '../context/CardContext';
+import { useCardBoardContext } from '../context/CardBoardContext';
 import { createEmptyCard } from '../utils/todoHelpers';
 import { getRandomColor } from '../constants/colors';
 
 export const useModalCardEdit = ({ cardId }: { cardId?: string }) => {
-  const { todoCards } = useCardContext();
+  const { todoCards } = useCardBoardContext();
 
   const initialData = cardId
     ? todoCards.find((card) => card.id === cardId)

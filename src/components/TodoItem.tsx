@@ -18,11 +18,11 @@ export const TodoItem = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
-    onEdit(todo.id, e.target.value);
+    onEdit?.(todo.id, e.target.value);
   };
 
   const handleBlur = () => {
-    onEdit(todo.id, value);
+    onEdit?.(todo.id, value);
   };
 
   const handleClick = (action: () => void) => (e: React.MouseEvent) => {
