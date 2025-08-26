@@ -29,8 +29,6 @@ export interface CardDisplayProps {
 
 export interface CardEditorProps {
   cardId: string;
-  onClose?: () => void;
-  focusTarget?: FocusTarget;
 }
 
 export interface TodoItemProps {

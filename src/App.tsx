@@ -16,7 +16,6 @@ function AppContent() {
       {editingCardId && (
         <CardEditor
           cardId={editingCardId.cardId}
-          focusTarget={editingCardId.focusTarget}
         />
       )}
     </div>

@@ -15,16 +15,16 @@ import {
   createEmptyCard,
 } from '../utils/todoHelpers';
 import { getRandomColor } from '../constants/colors';
-import type { TodoCardData, FocusTarget } from '../types';
+import type { TodoCardData } from '../types';
 
 interface CardEditorProps {
   cardId: string;
-  focusTarget?: FocusTarget;
 }
 
-export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
+export const CardEditor = ({ cardId }: CardEditorProps) => {
   const { upsertCard, deleteCard, todoCards } = useCardBoardContext();
-  const { finishEdit } = useCardEditorContext();
+  const { finishEdit, editingCardId } = useCardEditorContext();
+  const focusTarget = editingCardId?.focusTarget;
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -142,9 +142,9 @@ export const CardEditor = ({ cardId, focusTarget }: CardEditorProps) => {
           className={`group p-6 rounded-3xl flex flex-col relative min-h-0 opacity-100
           shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
           cursor-pointer w-full border-6 border-[#B7B7B7] ${
-            draftCard.backgroundColor ||
-            'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
-          } ${showColorPicker ? 'z-[10000]' : ''}`}
+            draftCard.backgroundColor
+          } 
+          ${showColorPicker ? 'z-[10000]' : ''}`}
         >
           <input
             ref={titleInputRef}
