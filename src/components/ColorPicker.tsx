@@ -13,7 +13,7 @@ export const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
     return (
       <div
         ref={ref}
-        className="absolute top-full right-0 mt-2 bg-gray-900 rounded-xl p-3 z-[9999] shadow-xl w-max"
+        className="absolute bottom-full right-0 mb-2 md:top-full md:bottom-auto md:mt-2 md:mb-0 bg-gray-900 rounded-xl p-3 z-[9999] shadow-xl w-max"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="grid grid-cols-3 gap-2 w-max">

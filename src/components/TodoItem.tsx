@@ -32,7 +32,7 @@ export const TodoItem = ({
 
 
   return (
-    <div className="flex items-center gap-2 w-full">
+    <div className="flex items-center gap-1 w-full">
       <Icon name="grabber" className="w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80 " alt="grab and drag todoItem" />
 
       <div

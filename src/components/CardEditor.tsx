@@ -29,6 +29,7 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const todoItemRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const contextCard =
     todoCards.find((card) => card.id === cardId) ||
@@ -72,6 +73,25 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
     }
   }, [showColorPicker]);
 
+  useEffect(() => {
+    if (!window.visualViewport) return;
+    
+    const handleViewportChange = () => {
+      if (!window.visualViewport) return;
+      const height = window.innerHeight - window.visualViewport.height;
+      setKeyboardHeight(height > 50 ? height : 0);
+    };
+    
+    window.visualViewport.addEventListener('resize', handleViewportChange);
+    handleViewportChange();
+    
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewportChange);
+      }
+    };
+  }, []);
+
   const handleSave = () => {
     upsertCard(draftCard);
     finishEdit();
@@ -82,7 +102,11 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
   };
 
   const handleBackdropClick = () => {
-    hasUnsavedChanges ? handleSave() : finishEdit();
+    if (hasUnsavedChanges) {
+      handleSave();
+    } else {
+      finishEdit();
+    }
   };
 
   const handleTitleChange = (newTitle: string) => {
@@ -128,20 +152,20 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
   return (
     <div
       data-testid="todoCardEditor-modal"
-      className="fixed inset-0 bg-gray-800/80 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-gray-800/80 flex md:items-center md:justify-center md:p-4"
       onClick={handleBackdropClick}
       onKeyDown={(e) => e.key === 'Escape' && handleDiscard()}
       tabIndex={-1}
     >
       <div
-        className="rounded-3xl shadow-lg w-full max-w-md app-background"
+        className="w-full h-full flex flex-col md:rounded-3xl md:shadow-lg md:w-full md:max-w-md md:h-auto app-background"
         onClick={(e) => e.stopPropagation()}
       >
         <div
           data-testid="todoCardEditor"
-          className={`group p-6 rounded-3xl flex flex-col relative min-h-0 opacity-100
-          shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
-          cursor-pointer w-full border-6 border-[#B7B7B7] ${
+          className={`group p-4 md:p-6 flex flex-col relative h-full opacity-100
+          md:rounded-3xl md:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
+          cursor-pointer w-full md:border-6 md:border-[#B7B7B7] ${
             draftCard.backgroundColor
           } 
           ${showColorPicker ? 'z-[10000]' : ''}`}
@@ -152,11 +176,11 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
             placeholder="Enter a title..."
             value={draftCard.title}
             onChange={(e) => handleTitleChange(e.target.value)}
-            className="w-full bg-transparent border-none outline-none font-semibold text-2xl tracking-widest text-gray-700 placeholder-gray-700/60 mb-2"
+            className="w-full bg-transparent border-none outline-none font-semibold text-xl md:text-2xl tracking-wide md:tracking-widest text-gray-700 placeholder-gray-700/60 mb-2"
             data-testid="todoCardEditor-title-input"
           />
 
-          <div data-testid="todoItem-list" className="space-y-1 flex-1">
+          <div data-testid="todoItem-list" className="space-y-1 flex-1 overflow-y-auto pb-32 md:pb-0">
             {draftCard.todos.map((todo, index) => (
               <div key={todo.id}>
                 <TodoItem
@@ -182,7 +206,11 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
             </span>
           </div>
 
-          <div className="mt-1 grid grid-cols-9" role="toolbar">
+          <div 
+            className="fixed left-0 right-0 p-4 grid grid-cols-9 md:relative md:mt-1 md:p-0" 
+            role="toolbar"
+            style={{ bottom: keyboardHeight + 'px' }}
+          >
             <button
               onClick={handleClick(() => handleAddTodo())}
               className="text-gray-700 hover:text-gray-700/80 justify-self-start cursor-pointer col-start-1"
@@ -196,17 +224,17 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
               />
             </button>
 
-            <button
+            <div
               onClick={handleClick(() => {
                 const newState = !showColorPicker;
                 setShowColorPicker(newState);
               })}
-              className="text-gray-700 hover:text-gray-700/80 justify-self-end cursor-pointer relative col-start-6"
+              className="text-gray-700 hover:text-gray-700/80 justify-self-end cursor-pointer relative col-start-6 flex items-center justify-center"
               title="Color palette"
             >
               <Icon
                 name="palette"
-                className="w-4 h-4 hover:opacity-80"
+                className="w-6 h-6 hover:opacity-80"
                 alt="Color palette"
               />
               {showColorPicker && (
@@ -219,7 +247,7 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
                   }}
                 />
               )}
-            </button>
+            </div>
 
             <button
               onClick={handleClick(() => {
@@ -231,14 +259,14 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
             >
               <Icon
                 name="trash"
-                className="w-4 h-4 hover:opacity-80"
+                className="w-6 h-6 hover:opacity-80"
                 alt="Delete card"
               />
             </button>
 
             <button
               onClick={handleClick(() => handleSave())}
-              className="text-gray-700 hover:text-gray-700/80 text-lg tracking-widest font-medium justify-self-end cursor-pointer col-start-8 col-span-2"
+              className="text-gray-700 hover:text-gray-700/80 text-xl tracking-widest font-medium justify-self-end cursor-pointer col-start-8 col-span-2"
               title="Save changes"
               disabled={!hasUnsavedChanges}
             >

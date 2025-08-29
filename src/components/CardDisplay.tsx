@@ -70,16 +70,16 @@ export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
   return (
     <div
       data-testid="todoCardDisplay"
-      className={`group p-6 rounded-3xl flex flex-col relative min-h-0 opacity-75 hover:opacity-90 transition-opacity duration-200
+      className={`group p-4 md:p-6 rounded-3xl flex flex-col relative min-h-0 opacity-75 hover:opacity-90 transition-opacity duration-200
       shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),inset_-12px_-12px_15px_0px_rgba(55,65,81,0.24),inset_12px_12px_16px_0px_rgba(55,65,81,0.24)] 
-      cursor-pointer w-full border-6 border-[#B7B7B7] ${
+      cursor-pointer w-full border-[3px] md:border-6 border-[#B7B7B7] ${
         card.backgroundColor ||
         'bg-gradient-to-br from-gray-300/80 to-gray-100/40'
       } ${showColorPicker ? 'z-[10000]' : ''}`}
       onClick={handleClick(() => onCardClick('title'))}
     >
       <div
-        className="w-full bg-transparent border-none outline-none font-semibold text-2xl tracking-widest text-gray-700 placeholder-gray-700/60 mb-2 cursor-pointer"
+        className="w-full bg-transparent border-none outline-none font-semibold text-xl md:text-2xl tracking-wide md:tracking-widest text-gray-700 placeholder-gray-700/60 mb-2 cursor-pointer"
         onClick={handleClick(() => onCardClick('title'))}
       >
         {card.title || 'Enter a title...'}

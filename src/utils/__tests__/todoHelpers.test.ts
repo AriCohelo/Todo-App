@@ -10,10 +10,10 @@ import {
 } from '../todoHelpers';
 import type { TodoCardData } from '../../types';
 
-// Mock crypto.randomUUID for consistent testing
-const mockUUID = vi.fn();
-Object.defineProperty(global, 'crypto', {
-  value: { randomUUID: mockUUID }
+// Mock Math.random for consistent UUID generation
+const mockMathRandom = vi.fn();
+Object.defineProperty(Math, 'random', {
+  value: mockMathRandom
 });
 
 // Mock Date for consistent timestamps
@@ -33,8 +33,8 @@ describe('todoHelpers', () => {
   };
 
   beforeEach(() => {
-    mockUUID.mockClear();
-    mockUUID.mockReturnValue('new-uuid');
+    mockMathRandom.mockClear();
+    mockMathRandom.mockReturnValue(0);
   });
 
   describe('addTodoItem', () => {
@@ -43,7 +43,7 @@ describe('todoHelpers', () => {
 
       expect(result.todos).toHaveLength(3);
       expect(result.todos[2]).toEqual({
-        id: 'new-uuid',
+        id: '00000000-0000-4000-8000-000000000000',
         task: '',
         completed: false
       });
@@ -56,7 +56,7 @@ describe('todoHelpers', () => {
 
       expect(result.todos).toHaveLength(1);
       expect(result.todos[0]).toEqual({
-        id: 'new-uuid',
+        id: '00000000-0000-4000-8000-000000000000',
         task: '',
         completed: false
       });
@@ -135,17 +135,13 @@ describe('todoHelpers', () => {
 
   describe('createEmptyCard', () => {
     it('creates card with generated UUID, empty title, and one empty todo', () => {
-      mockUUID
-        .mockReturnValueOnce('card-uuid')
-        .mockReturnValueOnce('todo-uuid');
-
       const result = createEmptyCard('bg-test-color');
 
-      expect(result.id).toBe('card-uuid');
+      expect(result.id).toBe('00000000-0000-4000-8000-000000000000');
       expect(result.title).toBe('');
       expect(result.todos).toHaveLength(1);
       expect(result.todos[0]).toEqual({
-        id: 'todo-uuid',
+        id: '00000000-0000-4000-8000-000000000000',
         task: '',
         completed: false
       });
