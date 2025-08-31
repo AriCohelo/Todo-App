@@ -1,5 +1,3 @@
-import DOMPurify from 'dompurify';
-
 export const validateInput = (
   input: string,
   maxLength: number = 1000,
@@ -14,11 +12,7 @@ export const validateInput = (
     return processedInput.substring(0, maxLength);
   }
 
-  return DOMPurify.sanitize(processedInput, {
-    ALLOWED_TAGS: [],
-    ALLOWED_ATTR: [],
-    KEEP_CONTENT: true,
-  });
+  return processedInput.replace(/<[^>]*>/g, '');
 };
 
 export const isValidTitle = (title: string): boolean => {
