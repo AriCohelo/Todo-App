@@ -1,8 +1,8 @@
 import type { TodoItemProps } from '../types';
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from './Icon';
 
-export const TodoItem = memo(({
+export const TodoItem = ({
   todo,
   onDelete,
   onToggle,
@@ -66,4 +66,4 @@ export const TodoItem = memo(({
       </button>
     </div>
   );
-});
+};

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState } from 'react';
 import type {
   TodoCardData,
   CardBoardContextType,
@@ -9,7 +9,7 @@ const CardBoardContext = createContext<CardBoardContextType | undefined>(undefin
 export const CardBoardProvider = ({ children }: { children: React.ReactNode }) => {
   const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);
 
-  const upsertCard = useCallback((cardData: TodoCardData) => {
+  const upsertCard = (cardData: TodoCardData) => {
     setTodoCards((prev) => {
       const existingIndex = prev.findIndex((card) => card.id === cardData.id);
       if (existingIndex >= 0) {
@@ -22,11 +22,11 @@ export const CardBoardProvider = ({ children }: { children: React.ReactNode }) =
         return [{ ...cardData, updatedAt: new Date() }, ...prev];
       }
     });
-  }, []);
+  };
 
-  const deleteCard = useCallback((cardId: string) => {
+  const deleteCard = (cardId: string) => {
     setTodoCards((prev) => prev.filter((card) => card.id !== cardId));
-  }, []);
+  };
 
 
   const value: CardBoardContextType = {

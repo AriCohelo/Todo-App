@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { FocusTarget } from '../types';
 
 interface CardEditorState {
@@ -27,17 +27,17 @@ export const useCardEditorContext = () => {
 export const CardEditorProvider = ({ children }: { children: ReactNode }) => {
   const [editingCardId, setEditingCardId] = useState<CardEditorState | null>(null);
 
-  const startEdit = useCallback((cardId: string, focusTarget: FocusTarget = 'title') => {
+  const startEdit = (cardId: string, focusTarget: FocusTarget = 'title') => {
     setEditingCardId({ cardId, focusTarget });
-  }, []);
+  };
 
-  const finishEdit = useCallback(() => {
+  const finishEdit = () => {
     setEditingCardId(null);
-  }, []);
+  };
 
-  const isEditing = useCallback((cardId: string) => {
+  const isEditing = (cardId: string) => {
     return editingCardId?.cardId === cardId;
-  }, [editingCardId]);
+  };
 
   return (
     <CardEditorContext.Provider

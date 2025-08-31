@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { TodoItem } from './TodoItem';
 import { Icon } from './Icon';
 import { ColorPicker } from './ColorPicker';
@@ -21,34 +21,34 @@ export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
   const card =
     todoCards.find((c) => c.id === cardId) || createEmptyCard(getRandomColor());
 
-  const handleColorChange = useCallback((newColor: string) => {
+  const handleColorChange = (newColor: string) => {
     const updatedCard = updateCardBackgroundColor(card, newColor);
     upsertCard(updatedCard);
-  }, [card, upsertCard]);
+  };
 
-  const handleAddTodo = useCallback(() => {
+  const handleAddTodo = () => {
     const updatedCard = addTodoItem(card);
     upsertCard(updatedCard);
-  }, [card, upsertCard]);
+  };
 
-  const handleDeleteTodo = useCallback((todoId: string) => {
+  const handleDeleteTodo = (todoId: string) => {
     const updatedCard = deleteTodoItem(card, todoId);
     upsertCard(updatedCard);
-  }, [card, upsertCard]);
+  };
 
-  const handleToggleTodo = useCallback((todoId: string) => {
+  const handleToggleTodo = (todoId: string) => {
     const updatedCard = toggleTodoItem(card, todoId);
     upsertCard(updatedCard);
-  }, [card, upsertCard]);
+  };
 
-  const handleDeleteCard = useCallback((cardId: string) => {
+  const handleDeleteCard = (cardId: string) => {
     deleteCard(cardId);
-  }, [deleteCard]);
+  };
 
-  const handleClick = useCallback((action: () => void) => (e: React.MouseEvent) => {
+  const handleClick = (action: () => void) => (e: React.MouseEvent) => {
     e.stopPropagation();
     action();
-  }, []);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
