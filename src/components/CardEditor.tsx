@@ -16,6 +16,7 @@ import {
 } from '../utils/todoHelpers';
 import { getRandomColor } from '../constants/colors';
 import type { TodoCardData } from '../types';
+import { Reorder } from 'framer-motion';
 
 interface CardEditorProps {
   cardId: string;
@@ -197,9 +198,27 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
             data-testid="todoCardEditor-title-input"
           />
 
-          <div data-testid="todoItem-list" className="space-y-1 flex-1 overflow-y-auto pb-32 md:pb-0">
+          <Reorder.Group
+            axis="y"
+            data-testid="todoItem-list"
+            values={draftCard.todos}
+            onReorder={(newTodos) =>
+              setDraftCard({ ...draftCard, todos: newTodos })
+            }
+            className="flex-1 pb-32 md:pb-0"
+            style={{ gap: '4px' }}
+          >
             {draftCard.todos.map((todo, index) => (
-              <div key={todo.id}>
+              <Reorder.Item 
+                value={todo} 
+                key={todo.id}
+                style={{ marginBottom: '4px' }}
+                whileDrag={{ 
+                  scale: 1.02,
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+                  zIndex: 999
+                }}
+              >
                 <TodoItem
                   todo={todo}
                   inputRef={(ref: HTMLInputElement | null) => {
@@ -209,9 +228,9 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
                   onEdit={handleEditTodo}
                   onToggle={handleToggleTodo}
                 />
-              </div>
+              </Reorder.Item>
             ))}
-          </div>
+          </Reorder.Group>
 
           <div 
             className="fixed left-0 right-0 bg-inherit px-4 md:relative md:px-0" 

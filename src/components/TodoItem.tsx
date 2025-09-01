@@ -26,14 +26,22 @@ export const TodoItem = memo(({
   };
 
   const handleClick = (action: () => void) => (e: React.MouseEvent) => {
-    e.stopPropagation();
+    // Allow drag events from grabber, but block other event bubbling
+    if (!(e.target as HTMLElement).closest('[data-drag-handle]')) {
+      e.stopPropagation();
+    }
     action();
   };
 
 
   return (
     <div className="flex items-center gap-1 w-full">
-      <Icon name="grabber" className="w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80 " alt="grab and drag todoItem" />
+      <Icon
+        name="grabber"
+        className="w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80"
+        alt="grab and drag todoItem"
+        data-drag-handle="true"
+      />
 
       <div
         className="flex-shrink-0 w-3 h-3 cursor-pointer"
