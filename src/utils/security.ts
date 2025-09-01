@@ -1,18 +1,22 @@
+import DOMPurify from 'dompurify';
+
 export const validateInput = (
   input: string,
   maxLength: number = 1000,
   shouldTrim: boolean = true
 ): string => {
-  if (typeof input !== 'string') {
-    return '';
-  }
-
+  if (typeof input !== 'string') return '';
+  
   const processedInput = shouldTrim ? input.trim() : input;
-  if (processedInput.length > maxLength) {
-    return processedInput.substring(0, maxLength);
-  }
-
-  return processedInput.replace(/<[^>]*>/g, '');
+  const truncated = processedInput.length > maxLength 
+    ? processedInput.substring(0, maxLength) 
+    : processedInput;
+    
+  return DOMPurify.sanitize(truncated, { 
+    ALLOWED_TAGS: [],
+    KEEP_CONTENT: true,
+    ALLOW_DATA_ATTR: false
+  });
 };
 
 export const isValidTitle = (title: string): boolean => {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { TodoItem } from './TodoItem';
 import { Icon } from './Icon';
 import { ColorPicker } from './ColorPicker';
@@ -26,17 +26,33 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
   const { finishEdit, editingCardId } = useCardEditorContext();
   const focusTarget = editingCardId?.focusTarget;
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const todoItemRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const contextCard =
     todoCards.find((card) => card.id === cardId) ||
     createEmptyCard(getRandomColor());
   const [draftCard, setDraftCard] = useState<TodoCardData>(contextCard);
-  const hasUnsavedChanges =
-    JSON.stringify(draftCard) !== JSON.stringify(contextCard);
+  const hasUnsavedChanges = useMemo(() => {
+    if (!contextCard) return true;
+    return draftCard.title !== contextCard.title || 
+           draftCard.todos.length !== contextCard.todos.length ||
+           draftCard.backgroundColor !== contextCard.backgroundColor ||
+           !draftCard.todos.every((todo, i) => 
+             contextCard.todos[i] && 
+             todo.task === contextCard.todos[i].task && 
+             todo.completed === contextCard.todos[i].completed
+           );
+  }, [draftCard, contextCard]);
+
+  const formattedDate = useMemo(() => 
+    new Date(draftCard.updatedAt).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    }), [draftCard.updatedAt]
+  );
 
   useEffect(() => {
     setDraftCard(contextCard);
@@ -54,7 +70,7 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
         todoItemRefs.current[focusTarget]?.focus();
       }
     }
-  }, [focusTarget]);
+  }, [focusTarget, draftCard.todos.length]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -92,6 +108,7 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
     };
   }, []);
 
+
   const handleSave = () => {
     upsertCard(draftCard);
     finishEdit();
@@ -110,7 +127,7 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
   };
 
   const handleTitleChange = (newTitle: string) => {
-    const sanitizedTitle = validateInput(newTitle, 100);
+    const sanitizedTitle = validateInput(newTitle, 100, false);
     if (isValidTitle(sanitizedTitle) || sanitizedTitle === '') {
       setDraftCard(updateCardTitle(draftCard, sanitizedTitle));
     }
@@ -196,21 +213,20 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
             ))}
           </div>
 
-          <div className="mt-8 text-xs tracking-wide text-gray-700 w-full text-right">
-            <span>
-              Edited{' '}
-              {new Date(draftCard.updatedAt).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-              })}
-            </span>
-          </div>
-
           <div 
-            className="fixed left-0 right-0 p-4 grid grid-cols-9 md:relative md:mt-1 md:p-0" 
-            role="toolbar"
+            className="fixed left-0 right-0 bg-inherit px-4 md:relative md:px-0" 
             style={{ bottom: keyboardHeight + 'px' }}
           >
+            <div className="text-xs tracking-wide text-gray-700 w-full text-right mb-2 md:mt-8">
+              <span>
+                Edited {formattedDate}
+              </span>
+            </div>
+
+            <div 
+              className="grid grid-cols-9 pb-4 md:pb-0 md:mt-1" 
+              role="toolbar"
+            >
             <button
               onClick={handleClick(() => handleAddTodo())}
               className="text-gray-700 hover:text-gray-700/80 justify-self-start cursor-pointer col-start-1"
@@ -272,6 +288,7 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
             >
               Save
             </button>
+            </div>
           </div>
         </div>
       </div>

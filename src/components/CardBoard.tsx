@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import { CardDisplay } from './CardDisplay';
 import { useCardBoardContext } from '../context/CardBoardContext';
 import { useCardEditorContext } from '../context/CardEditorContext';
 
-export const CardBoard = () => {
+export const CardBoard = memo(() => {
   const { todoCards } = useCardBoardContext();
   const { isEditing, startEdit } = useCardEditorContext();
 
@@ -26,4 +27,4 @@ export const CardBoard = () => {
       ))}
     </div>
   );
-};
+});

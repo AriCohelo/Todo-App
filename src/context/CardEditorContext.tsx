@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
 import type { FocusTarget } from '../types';
 
 interface CardEditorState {
@@ -39,16 +39,16 @@ export const CardEditorProvider = ({ children }: { children: ReactNode }) => {
     return editingCardId?.cardId === cardId;
   }, [editingCardId]);
 
+  const value = useMemo(() => ({
+    editingCardId,
+    setEditingCardId,
+    startEdit,
+    finishEdit,
+    isEditing,
+  }), [editingCardId, setEditingCardId, startEdit, finishEdit, isEditing]);
+
   return (
-    <CardEditorContext.Provider
-      value={{
-        editingCardId,
-        setEditingCardId,
-        startEdit,
-        finishEdit,
-        isEditing,
-      }}
-    >
+    <CardEditorContext.Provider value={value}>
       {children}
     </CardEditorContext.Provider>
   );

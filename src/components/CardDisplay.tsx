@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, memo, useMemo } from 'react';
 import { TodoItem } from './TodoItem';
 import { Icon } from './Icon';
 import { ColorPicker } from './ColorPicker';
@@ -13,13 +13,20 @@ import {
 import { getRandomColor } from '../constants/colors';
 import type { CardDisplayProps } from '../types';
 
-export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
+export const CardDisplay = memo(({ cardId, onCardClick }: CardDisplayProps) => {
   const { upsertCard, deleteCard, todoCards } = useCardBoardContext();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const colorPickerRef = useRef<HTMLDivElement>(null);
 
   const card =
     todoCards.find((c) => c.id === cardId) || createEmptyCard(getRandomColor());
+
+  const formattedDate = useMemo(() => 
+    new Date(card.updatedAt).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    }), [card.updatedAt]
+  );
 
   const handleColorChange = useCallback((newColor: string) => {
     const updatedCard = updateCardBackgroundColor(card, newColor);
@@ -102,11 +109,7 @@ export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
 
       <div className="mt-8 text-xs tracking-wide text-gray-700 w-full text-right opacity-0 group-hover:opacity-100">
         <span>
-          Edited{' '}
-          {new Date(card.updatedAt).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-          })}
+          Edited {formattedDate}
         </span>
       </div>
 
@@ -166,4 +169,4 @@ export const CardDisplay = ({ cardId, onCardClick }: CardDisplayProps) => {
       </div>
     </div>
   );
-};
+});

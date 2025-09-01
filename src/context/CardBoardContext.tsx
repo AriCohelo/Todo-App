@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import type {
   TodoCardData,
   CardBoardContextType,
@@ -6,8 +6,27 @@ import type {
 
 const CardBoardContext = createContext<CardBoardContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'todoCards';
+const loadCards = () => { 
+  try { 
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]').map((c: TodoCardData) => ({
+      ...c, 
+      updatedAt: new Date(c.updatedAt)
+    })); 
+  } catch { 
+    return []; 
+  } 
+};
+const saveCards = (cards: TodoCardData[]) => { 
+  try { 
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cards)); 
+  } catch {
+    // Silent fail for storage unavailability
+  } 
+};
+
 export const CardBoardProvider = ({ children }: { children: React.ReactNode }) => {
-  const [todoCards, setTodoCards] = useState<TodoCardData[]>([]);
+  const [todoCards, setTodoCards] = useState<TodoCardData[]>(loadCards);
 
   const upsertCard = useCallback((cardData: TodoCardData) => {
     setTodoCards((prev) => {
@@ -28,12 +47,16 @@ export const CardBoardProvider = ({ children }: { children: React.ReactNode }) =
     setTodoCards((prev) => prev.filter((card) => card.id !== cardId));
   }, []);
 
+  useEffect(() => {
+    saveCards(todoCards);
+  }, [todoCards]);
 
-  const value: CardBoardContextType = {
+
+  const value = useMemo(() => ({
     todoCards,
     upsertCard,
     deleteCard,
-  };
+  }), [todoCards, upsertCard, deleteCard]);
 
   return <CardBoardContext.Provider value={value}>{children}</CardBoardContext.Provider>;
 };

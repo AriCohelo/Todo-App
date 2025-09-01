@@ -17,7 +17,7 @@ describe('Security Utils', () => {
     });
 
     it('should handle non-string input', () => {
-      const result = validateInput(123 as any);
+      const result = validateInput(123 as unknown as string);
       expect(result).toBe('');
     });
 
@@ -43,6 +43,13 @@ describe('Security Utils', () => {
       const htmlInput = '<div><p>Hello <strong>World</strong></p></div>';
       const result = validateInput(htmlInput);
       expect(result).toBe('Hello World');
+    });
+
+    it('should preserve spaces in text without trimming when shouldTrim is false', () => {
+      const titleInput = 'My Todo List Title';
+      const result = validateInput(titleInput, 1000, false);
+      expect(result).toBe('My Todo List Title');
+      expect(result.includes(' ')).toBe(true);
     });
   });
 
