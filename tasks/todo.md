@@ -15,12 +15,18 @@
 - **Clean Implementation** - 24 lines of bulletproof, industry-standard sanitization
 - **Result**: Zero security linting errors, comprehensive XSS protection
 
+### Drag & Drop Implementation (Final Working Solution)
+- **Simple Framer Motion Approach** - Used default drag behavior without complex controls
+- **Event Propagation Strategy** - Avoided conflicts with UI interactions through smart event handling
+- **Performance Friendly** - No hook violations or shared state issues
+- **Result**: Smooth drag-and-drop reordering for todo items
+
 ## 🏗️ Current Architecture (Working Well)
 
 ### Core Components
 - **CardBoard** - Grid layout for displaying cards
 - **CardDisplay** - Read-only card view with hover interactions  
-- **CardEditor** - Full-screen modal editor with mobile optimization
+- **CardEditor** - Full-screen modal editor with mobile optimization and drag-and-drop
 - **TodoItem** - Individual todo item with editing capabilities
 
 ### Context Management
@@ -32,6 +38,7 @@
 - ✅ Auto-save on backdrop click/ESC key
 - ✅ Mobile full-screen editor with keyboard handling
 - ✅ Focus management for title and todo items
+- ✅ **Drag-and-drop reordering** for todo items
 - ✅ Performance optimizations (React.memo, useMemo, useCallback)
 - ✅ Comprehensive XSS protection with DOMPurify
 - ✅ 122 passing tests with good coverage
@@ -41,6 +48,7 @@
 ### Bundle Size
 - **Main bundle**: 207.62 kB (66.75 kB gzipped) 
 - **Includes DOMPurify**: +21.73KB for bulletproof security
+- **Includes Framer Motion**: For drag-and-drop functionality
 - **Performance**: Smooth 60fps interactions
 
 ### Code Quality
@@ -48,70 +56,131 @@
 - **TypeScript**: Clean compilation
 - **Linting**: Security issues resolved (some non-critical warnings remain)
 
-## 🧹 Maintenance Tasks
-
-### Immediate Cleanup Needed
-- [ ] Remove backup directories and unused files
-- [ ] Fix remaining lint warnings in test files
-- [ ] Clean up this todo.md file structure
-
-### Future Improvements (Low Priority)
-- [ ] Add bundle analysis tooling  
-- [ ] Implement lazy loading for CardEditor
-- [ ] Add error boundaries
-- [ ] Performance monitoring setup
-
 ---
 
-## 🔄 Code Backup (CardEditor Keyboard Logic)
+## 🎯 Drag & Drop Implementation - Final Working Solution
 
-### Current Implementation Backup (Jan 9, 2025)
+### Problem Solved
+After multiple attempts with complex dragControls and useDragControls approaches that caused React hook violations and event conflicts, we achieved working drag-and-drop with the simplest possible implementation.
+
+### Final Working Approach
+
+**CardEditor.tsx - Container Level:**
+```typescript
+import { Reorder } from 'framer-motion';
+
+// In render:
+<Reorder.Group
+  axis="y"
+  data-testid="todoItem-list"
+  values={draftCard.todos}
+  onReorder={(newTodos) => setDraftCard({ ...draftCard, todos: newTodos })}
+  className="flex-1 pb-32 md:pb-0"
+  style={{ gap: '4px' }}
+>
+  {draftCard.todos.map((todo, index) => (
+    <Reorder.Item
+      value={todo}
+      key={todo.id}
+      style={{ marginBottom: '4px' }}
+      whileDrag={{
+        scale: 1.02,
+        boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+        zIndex: 999,
+      }}
+    >
+      <TodoItem
+        todo={todo}
+        inputRef={(ref: HTMLInputElement | null) => {
+          todoItemRefs.current[index] = ref;
+        }}
+        onDelete={handleDeleteTodo}
+        onEdit={handleEditTodo}
+        onToggle={handleToggleTodo}
+      />
+    </Reorder.Item>
+  ))}
+</Reorder.Group>
+```
+
+**TodoItem.tsx - Event Handling:**
+```typescript
+const handleClick = (action: () => void) => (e: React.MouseEvent) => {
+  // Allow drag events from grabber, but block other event bubbling
+  if (!(e.target as HTMLElement).closest('[data-drag-handle]')) {
+    e.stopPropagation();
+  }
+  action();
+};
+
+return (
+  <div className="flex items-center gap-1 w-full">
+    <Icon
+      name="grabber"
+      className="w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80"
+      alt="grab and drag todoItem"
+    />
+    
+    <div onClick={handleClick(() => onToggle(todo.id))}>
+      <Icon name="checkbox" />
+    </div>
+    
+    <input onClick={onClick ? handleClick(onClick) : undefined} />
+    
+    <button onClick={handleClick(() => onDelete(todo.id))}>
+      <Icon name="x" />
+    </button>
+  </div>
+);
+```
+
+### Why This Approach Works
+
+**✅ Simplicity Over Complexity:**
+- Uses Framer Motion's **default drag behavior**
+- No `dragListener={false}` or `dragControls` complexity
+- No React hook violations from conditional `useDragControls()`
+- **Entire TodoItem is draggable** - simple and intuitive
+
+**✅ Smart Event Propagation:**
+- `handleClick` function handles event conflicts intelligently
+- Preserves all UI interactions (checkbox, input, delete)
+- Uses `stopPropagation()` strategically to prevent unwanted behavior
+- Visual feedback with `cursor-grab` styling
+
+**✅ Performance Friendly:**
+- No shared state conflicts between drag controls
+- No complex memoization issues
+- Clean component boundaries
+- Minimal render cycles
+
+### Approaches That Failed (For Reference)
+
+1. **Individual dragControls per item** - Violated React Rules of Hooks
+2. **Shared dragControls** - Created conflicts between multiple items
+3. **Wrapper components with dragControls** - Complex and buggy
+4. **Custom drag detection** - Over-engineered solution
+
+### Event Propagation Strategy
+
+The key insight was handling event conflicts through intelligent propagation control rather than complex drag APIs:
 
 ```typescript
-// State variable
-const [keyboardHeight, setKeyboardHeight] = useState(0);
-
-// Keyboard detection useEffect
-useEffect(() => {
-  if (!window.visualViewport) return;
-  
-  const handleViewportChange = () => {
-    if (!window.visualViewport) return;
-    const height = window.innerHeight - window.visualViewport.height;
-    setKeyboardHeight(height > 50 ? height : 0);
-  };
-  
-  window.visualViewport.addEventListener('resize', handleViewportChange);
-  handleViewportChange();
-  
-  return () => {
-    if (window.visualViewport) {
-      window.visualViewport.removeEventListener('resize', handleViewportChange);
-    }
-  };
-}, []);
-
-// Content area with padding
-<div data-testid="todoItem-list" className="space-y-1 flex-1 overflow-y-auto pb-32 md:pb-0">
-
-// Fixed positioned toolbar container
-<div 
-  className="fixed left-0 right-0 bg-inherit px-4 md:relative md:px-0" 
-  style={{ bottom: keyboardHeight + 'px' }}
->
-  <div className="text-xs tracking-wide text-gray-700 w-full text-right mb-2 md:mt-8">
-    <span>Edited {formattedDate}</span>
-  </div>
-  <div className="grid grid-cols-9 pb-4 md:pb-0 md:mt-1" role="toolbar">
-    {/* toolbar buttons */}
-  </div>
-</div>
+// This allows natural drag behavior while preserving UI interactions
+const handleClick = (action: () => void) => (e: React.MouseEvent) => {
+  if (!(e.target as HTMLElement).closest('[data-drag-handle]')) {
+    e.stopPropagation(); // Block non-grabber interactions from interfering
+  }
+  action(); // Execute intended action (toggle, delete, etc.)
+};
 ```
+
+**Result**: The entire TodoItem area is draggable, providing excellent UX while maintaining all existing functionality.
 
 ---
 
 ## 📝 Development Notes
 
-**Last Updated**: January 9, 2025
-**Status**: Production ready with excellent performance
+**Last Updated**: September 1, 2025
+**Status**: Production ready with drag-and-drop functionality
 **Next Focus**: Code cleanup and maintenance

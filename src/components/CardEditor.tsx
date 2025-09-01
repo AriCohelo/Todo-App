@@ -38,21 +38,26 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
   const [draftCard, setDraftCard] = useState<TodoCardData>(contextCard);
   const hasUnsavedChanges = useMemo(() => {
     if (!contextCard) return true;
-    return draftCard.title !== contextCard.title || 
-           draftCard.todos.length !== contextCard.todos.length ||
-           draftCard.backgroundColor !== contextCard.backgroundColor ||
-           !draftCard.todos.every((todo, i) => 
-             contextCard.todos[i] && 
-             todo.task === contextCard.todos[i].task && 
-             todo.completed === contextCard.todos[i].completed
-           );
+    return (
+      draftCard.title !== contextCard.title ||
+      draftCard.todos.length !== contextCard.todos.length ||
+      draftCard.backgroundColor !== contextCard.backgroundColor ||
+      !draftCard.todos.every(
+        (todo, i) =>
+          contextCard.todos[i] &&
+          todo.task === contextCard.todos[i].task &&
+          todo.completed === contextCard.todos[i].completed
+      )
+    );
   }, [draftCard, contextCard]);
 
-  const formattedDate = useMemo(() => 
-    new Date(draftCard.updatedAt).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    }), [draftCard.updatedAt]
+  const formattedDate = useMemo(
+    () =>
+      new Date(draftCard.updatedAt).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      }),
+    [draftCard.updatedAt]
   );
 
   useEffect(() => {
@@ -92,23 +97,25 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
 
   useEffect(() => {
     if (!window.visualViewport) return;
-    
+
     const handleViewportChange = () => {
       if (!window.visualViewport) return;
       const height = window.innerHeight - window.visualViewport.height;
       setKeyboardHeight(height > 50 ? height : 0);
     };
-    
+
     window.visualViewport.addEventListener('resize', handleViewportChange);
     handleViewportChange();
-    
+
     return () => {
       if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleViewportChange);
+        window.visualViewport.removeEventListener(
+          'resize',
+          handleViewportChange
+        );
       }
     };
   }, []);
-
 
   const handleSave = () => {
     upsertCard(draftCard);
@@ -166,7 +173,6 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
     e.stopPropagation();
     action();
   };
-
   return (
     <div
       data-testid="todoCardEditor-modal"
@@ -209,14 +215,14 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
             style={{ gap: '4px' }}
           >
             {draftCard.todos.map((todo, index) => (
-              <Reorder.Item 
-                value={todo} 
+              <Reorder.Item
+                value={todo}
                 key={todo.id}
                 style={{ marginBottom: '4px' }}
-                whileDrag={{ 
+                whileDrag={{
                   scale: 1.02,
                   boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-                  zIndex: 999
+                  zIndex: 999,
                 }}
               >
                 <TodoItem
@@ -232,81 +238,79 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
             ))}
           </Reorder.Group>
 
-          <div 
-            className="fixed left-0 right-0 bg-inherit px-4 md:relative md:px-0" 
+          <div
+            className="fixed left-0 right-0 bg-inherit px-4 md:relative md:px-0"
             style={{ bottom: keyboardHeight + 'px' }}
           >
             <div className="text-xs tracking-wide text-gray-700 w-full text-right mb-2 md:mt-8">
-              <span>
-                Edited {formattedDate}
-              </span>
+              <span>Edited {formattedDate}</span>
             </div>
-
-            <div 
-              className="grid grid-cols-9 pb-4 md:pb-0 md:mt-1" 
-              role="toolbar"
-            >
-            <button
-              onClick={handleClick(() => handleAddTodo())}
-              className="text-gray-700 hover:text-gray-700/80 justify-self-start cursor-pointer col-start-1"
-              title="Add task"
-              aria-label="add toDo"
-            >
-              <Icon
-                name="add-todoitem"
-                className="w-8 h-8 hover:opacity-80"
-                alt="Add task"
-              />
-            </button>
 
             <div
-              onClick={handleClick(() => {
-                const newState = !showColorPicker;
-                setShowColorPicker(newState);
-              })}
-              className="text-gray-700 hover:text-gray-700/80 justify-self-end cursor-pointer relative col-start-6 flex items-center justify-center"
-              title="Color palette"
+              className="grid grid-cols-9 pb-4 md:pb-0 md:mt-1"
+              role="toolbar"
             >
-              <Icon
-                name="palette"
-                className="w-6 h-6 hover:opacity-80"
-                alt="Color palette"
-              />
-              {showColorPicker && (
-                <ColorPicker
-                  ref={colorPickerRef}
-                  selectedColor={draftCard.backgroundColor}
-                  onColorSelect={handleColorChange}
-                  onClose={() => {
-                    setShowColorPicker(false);
-                  }}
+              <button
+                onClick={handleClick(() => handleAddTodo())}
+                className="text-gray-700 hover:text-gray-700/80 justify-self-start cursor-pointer col-start-1"
+                title="Add task"
+                aria-label="add toDo"
+              >
+                <Icon
+                  name="add-todoitem"
+                  className="w-8 h-8 hover:opacity-80"
+                  alt="Add task"
                 />
-              )}
-            </div>
+              </button>
 
-            <button
-              onClick={handleClick(() => {
-                handleDeleteCard(draftCard.id);
-                finishEdit();
-              })}
-              className="text-gray-700 hover:text-red-600 justify-self-end cursor-pointer col-start-7"
-              title="Delete card"
-            >
-              <Icon
-                name="trash"
-                className="w-6 h-6 hover:opacity-80"
-                alt="Delete card"
-              />
-            </button>
+              <div
+                onClick={handleClick(() => {
+                  const newState = !showColorPicker;
+                  setShowColorPicker(newState);
+                })}
+                className="text-gray-700 hover:text-gray-700/80 justify-self-end cursor-pointer relative col-start-6 flex items-center justify-center"
+                title="Color palette"
+              >
+                <Icon
+                  name="palette"
+                  className="w-6 h-6 hover:opacity-80"
+                  alt="Color palette"
+                />
+                {showColorPicker && (
+                  <ColorPicker
+                    ref={colorPickerRef}
+                    selectedColor={draftCard.backgroundColor}
+                    onColorSelect={handleColorChange}
+                    onClose={() => {
+                      setShowColorPicker(false);
+                    }}
+                  />
+                )}
+              </div>
 
-            <button
-              onClick={handleClick(() => handleSave())}
-              className="text-gray-700 hover:text-gray-700/80 text-xl tracking-widest font-medium justify-self-end cursor-pointer col-start-8 col-span-2"
-              title="Save changes"
-              disabled={!hasUnsavedChanges}
-            >
-              Save
-            </button>
+              <button
+                onClick={handleClick(() => {
+                  handleDeleteCard(draftCard.id);
+                  finishEdit();
+                })}
+                className="text-gray-700 hover:text-red-600 justify-self-end cursor-pointer col-start-7"
+                title="Delete card"
+              >
+                <Icon
+                  name="trash"
+                  className="w-6 h-6 hover:opacity-80"
+                  alt="Delete card"
+                />
+              </button>
+
+              <button
+                onClick={handleClick(() => handleSave())}
+                className="text-gray-700 hover:text-gray-700/80 text-xl tracking-widest font-medium justify-self-end cursor-pointer col-start-8 col-span-2"
+                title="Save changes"
+                disabled={!hasUnsavedChanges}
+              >
+                Save
+              </button>
             </div>
           </div>
         </div>

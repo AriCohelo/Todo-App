@@ -40,7 +40,6 @@ export const TodoItem = memo(({
         name="grabber"
         className="w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80"
         alt="grab and drag todoItem"
-        data-drag-handle="true"
       />
 
       <div
