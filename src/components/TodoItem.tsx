@@ -40,7 +40,7 @@ export const TodoItem = memo(
         <Icon
           name="grabber"
           className="w-4 h-4 cursor-grab active:cursor-grabbing hover:opacity-80"
-          alt="grab and drag todoItem"
+          title="grab and drag todoItem"
           onPointerDown={(e: React.PointerEvent) => controls.start(e)}
         />
 

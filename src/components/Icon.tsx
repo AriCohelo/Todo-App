@@ -7,7 +7,6 @@ export const Icon: React.FC<IconProps> = ({
   onClick,
   onPointerDown,
   title,
-  alt,
 }) => {
   const basePath = import.meta.env.BASE_URL || '/';
   const iconPath =
