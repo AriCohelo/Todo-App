@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TodoItem } from '../TodoItem';
+import { Reorder } from 'framer-motion';
 import type { Todo } from '../../types';
 
 describe('TodoItem', () => {
@@ -19,8 +20,16 @@ describe('TodoItem', () => {
     onEdit: vi.fn(),
   };
 
+  const renderTodoItem = () => {
+    return render(
+      <Reorder.Group axis="y" values={[todo]} onReorder={() => {}}>
+        <TodoItem todo={todo} {...handlers} />
+      </Reorder.Group>
+    );
+  };
+
   beforeEach(() => {
-    render(<TodoItem todo={todo} {...handlers} />);
+    renderTodoItem();
     vi.clearAllMocks();
   });
 
@@ -30,7 +39,8 @@ describe('TodoItem', () => {
     });
 
     it('renders checkbox icon', () => {
-      expect(screen.getByAltText('Uncompleted task')).toBeInTheDocument();
+      const checkboxIcon = document.querySelector('div[style*="checkbox-empty.svg"]');
+      expect(checkboxIcon).toBeInTheDocument();
     });
 
     it('renders delete button', () => {
@@ -53,7 +63,8 @@ describe('TodoItem', () => {
       );
     });
     it('toggles completion when checkbox icon is clicked', async () => {
-      await user.click(screen.getByAltText('Uncompleted task'));
+      const checkboxContainer = document.querySelector('.flex-shrink-0.w-3.h-3.cursor-pointer') as HTMLElement;
+      await user.click(checkboxContainer);
       expect(handlers.onToggle).toHaveBeenCalledWith(todo.id);
     });
     it('deletes todo when delete button is clicked', async () => {

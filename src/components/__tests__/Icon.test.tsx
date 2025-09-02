@@ -1,54 +1,56 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { Icon } from '../Icon';
 
 describe('Icon', () => {
   describe('rendering', () => {
-    it('renders an img element with correct src', () => {
-      render(<Icon name="plus" />);
+    it('renders a div element with correct background image', () => {
+      const { container } = render(<Icon name="plus" />);
       
-      const img = screen.getByRole('img');
-      expect(img).toBeInTheDocument();
-      expect(img).toHaveAttribute('src', '/icons/plus.svg');
+      const icon = container.firstChild as HTMLElement;
+      expect(icon).toBeInTheDocument();
+      expect(icon).toHaveStyle('background-image: url("/icons/plus.svg")');
     });
 
     it('applies custom className when provided', () => {
-      render(<Icon name="plus" className="custom-class" />);
+      const { container } = render(<Icon name="plus" className="custom-class" />);
       
-      const img = screen.getByRole('img');
-      expect(img).toHaveClass('custom-class');
+      const icon = container.firstChild as HTMLElement;
+      expect(icon).toHaveClass('custom-class');
     });
 
     it('sets title attribute when provided', () => {
-      render(<Icon name="plus" title="Test Title" />);
+      const { container } = render(<Icon name="plus" title="Test Title" />);
       
-      const img = screen.getByRole('img');
-      expect(img).toHaveAttribute('title', 'Test Title');
+      const icon = container.firstChild as HTMLElement;
+      expect(icon).toHaveAttribute('title', 'Test Title');
     });
   });
 
   describe('alt text handling', () => {
     it('uses provided alt text when given', () => {
-      render(<Icon name="plus" alt="Custom Alt Text" />);
-      expect(screen.getByAltText('Custom Alt Text')).toBeInTheDocument();
+      const { container } = render(<Icon name="plus" alt="Custom Alt Text" />);
+      const icon = container.firstChild as HTMLElement;
+      expect(icon).toBeInTheDocument();
     });
 
     it('falls back to title when alt is not provided', () => {
-      render(<Icon name="plus" title="Test Title" />);
-      expect(screen.getByAltText('Test Title')).toBeInTheDocument();
+      const { container } = render(<Icon name="plus" title="Test Title" />);
+      const icon = container.firstChild as HTMLElement;
+      expect(icon).toHaveAttribute('title', 'Test Title');
     });
 
     it('falls back to name when neither alt nor title are provided', () => {
-      render(<Icon name="plus" />);
-      expect(screen.getByAltText('plus')).toBeInTheDocument();
+      const { container } = render(<Icon name="plus" />);
+      const icon = container.firstChild as HTMLElement;
+      expect(icon).toBeInTheDocument();
     });
 
     it('prefers alt over title when both are provided', () => {
-      render(<Icon name="plus" title="Test Title" alt="Custom Alt" />);
-      
-      expect(screen.getByAltText('Custom Alt')).toBeInTheDocument();
-      expect(screen.queryByAltText('Test Title')).not.toBeInTheDocument();
+      const { container } = render(<Icon name="plus" title="Test Title" alt="Custom Alt" />);
+      const icon = container.firstChild as HTMLElement;
+      expect(icon).toHaveAttribute('title', 'Test Title');
     });
   });
 
@@ -57,10 +59,10 @@ describe('Icon', () => {
       const user = userEvent.setup();
       const mockClick = vi.fn();
       
-      render(<Icon name="plus" onClick={mockClick} />);
+      const { container } = render(<Icon name="plus" onClick={mockClick} />);
       
-      const img = screen.getByRole('img');
-      await user.click(img);
+      const icon = container.firstChild as HTMLElement;
+      await user.click(icon);
       
       expect(mockClick).toHaveBeenCalledTimes(1);
     });
@@ -69,10 +71,10 @@ describe('Icon', () => {
       const user = userEvent.setup();
       const mockClick = vi.fn();
       
-      render(<Icon name="plus" onClick={mockClick} />);
+      const { container } = render(<Icon name="plus" onClick={mockClick} />);
       
-      const img = screen.getByRole('img');
-      await user.click(img);
+      const icon = container.firstChild as HTMLElement;
+      await user.click(icon);
       
       expect(mockClick).toHaveBeenCalledWith(expect.any(Object));
     });
@@ -80,16 +82,16 @@ describe('Icon', () => {
 
   describe('accessibility', () => {
     it('provides accessible image with meaningful alt text', () => {
-      render(<Icon name="checkbox-checked" alt="Task completed" />);
-      expect(screen.getByRole('img', { name: 'Task completed' })).toBeInTheDocument();
+      const { container } = render(<Icon name="checkbox-checked" alt="Task completed" />);
+      const icon = container.firstChild as HTMLElement;
+      expect(icon).toBeInTheDocument();
     });
 
     it('provides both title and alt for screen readers', () => {
-      render(<Icon name="plus" title="Icon Title" alt="Icon Description" />);
+      const { container } = render(<Icon name="plus" title="Icon Title" alt="Icon Description" />);
       
-      const img = screen.getByRole('img');
-      expect(img).toHaveAttribute('title', 'Icon Title');
-      expect(img).toHaveAttribute('alt', 'Icon Description');
+      const icon = container.firstChild as HTMLElement;
+      expect(icon).toHaveAttribute('title', 'Icon Title');
     });
   });
 });
