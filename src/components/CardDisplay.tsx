@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, memo, useMemo } from 'react';
+import { Reorder } from 'framer-motion';
 import { TodoItem } from './TodoItem';
 import { Icon } from './Icon';
 import { ColorPicker } from './ColorPicker';
@@ -92,20 +93,23 @@ export const CardDisplay = memo(({ cardId, onCardClick }: CardDisplayProps) => {
         {card.title || 'Enter a title...'}
       </div>
 
-      <div data-testid="todoItem-list" className="space-y-1 flex-1">
+      <Reorder.Group
+        axis="y"
+        data-testid="todoItem-list"
+        values={card.todos}
+        onReorder={() => {}} // No reordering in display mode
+        className="space-y-1 flex-1"
+      >
         {card.todos.map((todo, index) => (
-          <div
+          <TodoItem
             key={todo.id}
-            onClick={handleClick(() => onCardClick(index))}
-          >
-            <TodoItem
-              todo={todo}
-              onDelete={handleDeleteTodo}
-              onToggle={handleToggleTodo}
-            />
-          </div>
+            todo={todo}
+            onDelete={handleDeleteTodo}
+            onToggle={handleToggleTodo}
+            onClick={() => onCardClick(index)}
+          />
         ))}
-      </div>
+      </Reorder.Group>
 
       <div className="mt-8 text-xs tracking-wide text-gray-700 w-full text-right opacity-0 group-hover:opacity-100">
         <span>

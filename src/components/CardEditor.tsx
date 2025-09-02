@@ -205,7 +205,6 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
           />
 
           <Reorder.Group
-            axis="y"
             data-testid="todoItem-list"
             values={draftCard.todos}
             onReorder={(newTodos) =>
@@ -215,26 +214,16 @@ export const CardEditor = ({ cardId }: CardEditorProps) => {
             style={{ gap: '4px' }}
           >
             {draftCard.todos.map((todo, index) => (
-              <Reorder.Item
-                value={todo}
+              <TodoItem
                 key={todo.id}
-                style={{ marginBottom: '4px' }}
-                whileDrag={{
-                  scale: 1.02,
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-                  zIndex: 999,
+                todo={todo}
+                inputRef={(ref: HTMLInputElement | null) => {
+                  todoItemRefs.current[index] = ref;
                 }}
-              >
-                <TodoItem
-                  todo={todo}
-                  inputRef={(ref: HTMLInputElement | null) => {
-                    todoItemRefs.current[index] = ref;
-                  }}
-                  onDelete={handleDeleteTodo}
-                  onEdit={handleEditTodo}
-                  onToggle={handleToggleTodo}
-                />
-              </Reorder.Item>
+                onDelete={handleDeleteTodo}
+                onEdit={handleEditTodo}
+                onToggle={handleToggleTodo}
+              />
             ))}
           </Reorder.Group>
 

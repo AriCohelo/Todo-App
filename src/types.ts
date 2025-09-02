@@ -62,6 +62,7 @@ export interface IconProps {
   name: IconName;
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLImageElement>) => void;
+  onPointerDown?: (e: React.PointerEvent) => void;
   title?: string;
   alt?: string;
 }

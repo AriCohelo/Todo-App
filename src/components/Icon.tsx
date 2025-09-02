@@ -1,17 +1,30 @@
 import React from 'react';
 import type { IconProps } from '../types';
 
-export const Icon: React.FC<IconProps> = ({ name, className, onClick, title, alt }) => {
+export const Icon: React.FC<IconProps> = ({
+  name,
+  className,
+  onClick,
+  onPointerDown,
+  title,
+  alt,
+}) => {
   const basePath = import.meta.env.BASE_URL || '/';
-  const iconPath = basePath === '/' ? `/icons/${name}.svg` : `${basePath}icons/${name}.svg`;
-  
+  const iconPath =
+    basePath === '/' ? `/icons/${name}.svg` : `${basePath}icons/${name}.svg`;
+
   return (
-    <img
-      src={iconPath}
+    <div
       className={className}
       onClick={onClick}
+      onPointerDown={onPointerDown}
       title={title}
-      alt={alt || title || name}
+      style={{
+        backgroundImage: `url(${iconPath})`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+      }}
     />
   );
 };
