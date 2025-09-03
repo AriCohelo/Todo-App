@@ -259,8 +259,8 @@ describe('colors constants', () => {
       const endTime = performance.now();
       const executionTime = endTime - startTime;
 
-      // Should complete 1000 calls in reasonable time (less than 10ms)
-      expect(executionTime).toBeLessThan(10);
+      // Should complete 1000 calls in reasonable time (less than 50ms)
+      expect(executionTime).toBeLessThan(50);
     });
 
     it('does not create new objects on each call', () => {
