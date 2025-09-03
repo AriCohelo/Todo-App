@@ -49,9 +49,8 @@ describe('main.tsx - Application Bootstrap', () => {
 
   it('handles missing root element gracefully', async () => {
     const mockGetElementById = vi.spyOn(document, 'getElementById').mockReturnValue(null);
-    const { createRoot } = await import('react-dom/client');
 
-    // The test verifies that the mock would be called but createRoot doesn't throw with null in tests
+    // The test verifies that the mock would be called
     const rootElement = document.getElementById('root');
     expect(rootElement).toBeNull();
     expect(mockGetElementById).toHaveBeenCalledWith('root');
